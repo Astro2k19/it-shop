@@ -1,3 +1,4 @@
 /node_modules/
 /backend/dist/
 .idea
+/backend/config/config.env
