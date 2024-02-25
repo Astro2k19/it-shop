@@ -7,12 +7,12 @@ config({
     path: './backend/config/config.env'
 })
 
-connectDatabase()
-
 const app = express()
 
-app.use('/api/v1/', productsRouter)
+connectDatabase()
 
+app.use(express.json())
+app.use('/api/v1/', productsRouter)
 app.listen(process.env.PORT, () => {
     console.log(`Server running on ${process.env.PORT} in ${process.env.NODE_ENV} mode`)
 })
