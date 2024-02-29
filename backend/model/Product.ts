@@ -4,25 +4,25 @@ const Product = new mongoose.Schema({
     user: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
-        require: true
+        // required: true
     },
     name: {
         type: String,
         maxLength: [200, 'Product name cannot exceed 200 characters'],
-        require: [true, 'Please enter product name']
+        required: [true, 'Please enter product name']
     },
     description: {
         type: String,
-        require: [true, 'Please enter product description']
+        required: [true, 'Please enter product description']
     },
     price: {
         type: Number,
         maxLength: [5, 'Product price cannot exceed 5 digits'],
-        require: [true, 'Please enter product price']
+        required: [true, 'Please enter product price']
     },
-    categories: {
+    category: {
         type: String,
-        require: [true, 'Please enter product categories'],
+        required: [true, 'Please enter product categories'],
         enum: {
             values: [
                 "Electronics",
@@ -41,22 +41,22 @@ const Product = new mongoose.Schema({
     },
     stock: {
         type: Number,
-        require: [true, 'Please enter product stock']
+        required: [true, 'Please enter product stock']
     },
     seller: {
         type: String,
-        require: [true, 'Please enter product seller']
+        required: [true, 'Please enter product seller']
     },
     images: {
         type: [
             {
                 public_id: {
                     type: String,
-                    require: true
+                    required: true
                 },
                 url: {
                     type: String,
-                    require: true
+                    required: true
                 }
             }
         ],

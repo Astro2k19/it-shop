@@ -1,10 +1,28 @@
 import type {Request, Response, NextFunction} from "express";
+import {Error} from 'mongoose'
 import type {ApiError} from "../types/ApiError";
+import { MongoError } from 'mongodb';
+import ErrorHandler from "../utils/ErrorHandler";
 
-export default (err: ApiError, req: Request, res: Response, next: NextFunction) => {
-    const error = {
+export default (err: Error | ApiError | MongoError, req: Request, res: Response, next: NextFunction) => {
+    let error = {
         message: err.message || 'Internal Server Error',
-        statusCode: err.statusCode || 500,
+        statusCode: 'statusCode' in err ? err.statusCode : 500,
+    }
+
+    if (err instanceof Error.CastError) {
+        error = new ErrorHandler(
+            `Resource not found. Invalid: ${err.path}`,
+            404
+        )
+    }
+
+    if (err instanceof Error.ValidationError) {
+        const errors = Object.values(err.errors).map(errValue => errValue.message).join(', ')
+        error = new ErrorHandler(
+            errors,
+            400
+        )
     }
 
     if (process.env.NODE_ENV === 'DEVELOPMENT') {
@@ -18,5 +36,4 @@ export default (err: ApiError, req: Request, res: Response, next: NextFunction) 
     return res.status(error.statusCode).json({
         message: error.message
     })
-
 }
