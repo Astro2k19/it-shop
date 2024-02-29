@@ -1,4 +1,4 @@
-import * as mongoose from "mongoose";
+import mongoose from "mongoose";
 
 export const connectDatabase = () => {
     const connectionString =
@@ -8,8 +8,5 @@ export const connectDatabase = () => {
 
     mongoose.connect(connectionString).then(value => {
         console.log(`MongoDB database connected to ${value.connection?.host} host`)
-    })
-    .catch((reason) => {
-        console.log(`Mongodb database was not connected!`)
     })
 }

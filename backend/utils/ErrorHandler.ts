@@ -1,4 +1,4 @@
-export default class ErrorHandler extends Error{
+export default class ErrorHandler extends Error {
     statusCode: number
     constructor(message: string,  statusCode: number) {
         super(message)

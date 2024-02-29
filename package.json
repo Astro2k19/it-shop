@@ -8,7 +8,7 @@
     "build": "esbuild backend/app.ts --bundle --platform=node --outfile=backend/dist/index.js --format=esm",
     "start": "cross-env NODE_ENV=PRODUCTION node backend/dist/index.js",
     "dev": "cross-env NODE_ENV=DEVELOPMENT run-p dev:*",
-    "dev:tsc": "tsc --watch",
+    "dev:tsc": "tsc --watch --preserveWatchOutput",
     "dev:node": "node --watch backend/dist/index.js",
     "dev:esbuild": "pnpm run build --watch",
     "seeder": "esbuild backend/seeder/seeder.ts --bundle --platform=node --outfile=backend/dist/seeder.js --format=cjs && node backend/dist/seeder.js"
