@@ -6,3 +6,4 @@ declare namespace NodeJS {
         DATABASE_URI: string;
     }
 }
+

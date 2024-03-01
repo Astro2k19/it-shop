@@ -18,5 +18,9 @@
     "noEmit": true,
     /* If your code doesn't run in the DOM: */
     "lib": ["es2022"]
+  },
+  "ts-node": {
+    "esm": true,
+    "experimentalSpecifierResolution": "node"
   }
 }

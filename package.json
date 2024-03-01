@@ -8,9 +8,10 @@
     "build": "esbuild backend/app.ts --bundle --platform=node --outfile=backend/dist/index.js --format=esm",
     "start": "cross-env NODE_ENV=PRODUCTION node backend/dist/index.js",
     "dev": "cross-env NODE_ENV=DEVELOPMENT run-p dev:*",
-    "dev:tsc": "tsc --watch",
+    "dev:tsc": "tsc --watch --preserveWatchOutput",
     "dev:node": "node --watch backend/dist/index.js",
-    "dev:esbuild": "pnpm run build --watch"
+    "dev:esbuild": "pnpm run build --watch",
+    "seeder": "esbuild backend/seeder/seeder.ts --bundle --platform=node --outfile=backend/dist/seeder.js --format=cjs && node backend/dist/seeder.js"
   },
   "repository": {
     "type": "git",
@@ -31,6 +32,7 @@
     "dotenv": "^16.4.5",
     "esbuild": "^0.20.1",
     "express": "^4.18.2",
+    "mongodb": "^6.4.0",
     "mongoose": "^8.1.3",
     "npm-run-all": "^4.1.5"
   },
@@ -40,6 +42,7 @@
     "concurrently": "^8.2.2",
     "cross-env": "^7.0.3",
     "nodemon": "^3.1.0",
+    "ts-node": "^10.9.2",
     "typescript": "^5.3.3"
   }
 }
