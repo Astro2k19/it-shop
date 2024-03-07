@@ -1,7 +1,8 @@
 import express from "express";
 import productsRouter from './routes/products'
 import {connectDatabase} from "./config/connectDatabase";
-import errorMiddleware from "./middlewares/errorMiddleware";
+import errorMiddleware from "./shared/middlewares/errorMiddleware";
+import authRouter from "./routes/auth";
 
 
 const app = express()
@@ -9,6 +10,7 @@ connectDatabase()
 
 app.use(express.json())
 app.use('/api/v1/', productsRouter)
+app.use('/api/v1/', authRouter)
 
 app.use(errorMiddleware)
 const server = app.listen(process.env.PORT, () => {

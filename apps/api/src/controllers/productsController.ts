@@ -1,6 +1,6 @@
 import Product from "../model/Product";
 import ErrorHandler from "../utils/ErrorHandler";
-import asyncHandler from "../middlewares/asyncHandler";
+import asyncHandler from "../shared/middlewares/asyncHandler";
 import ApiFilters from "../utils/ApiFilters";
 
 // GET => /api/v1/products

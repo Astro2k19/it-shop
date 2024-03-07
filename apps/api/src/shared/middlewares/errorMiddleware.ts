@@ -2,9 +2,12 @@ import type {Request, Response, NextFunction} from "express";
 import {Error} from 'mongoose'
 import type {ApiErrorModel} from "@it-shop/types"
 import { MongoError } from 'mongodb';
-import ErrorHandler from "../utils/ErrorHandler";
+import Joi from 'joi'
+import ErrorHandler from "../../utils/ErrorHandler";
 
-export default (err: Error | ApiErrorModel | MongoError, req: Request, res: Response, next: NextFunction) => {
+type MiddlewareError = Error | ApiErrorModel | MongoError | Joi.ValidationError
+
+export default (err: MiddlewareError, req: Request, res: Response, next: NextFunction) => {
     let error = {
         message: err.message || 'Internal Server Error',
         statusCode: 'statusCode' in err ? err.statusCode : 500,
@@ -25,7 +28,13 @@ export default (err: Error | ApiErrorModel | MongoError, req: Request, res: Resp
         )
     }
 
-    if (process.env.NODE_ENV === 'DEVELOPMENT') {
+    if (err instanceof Joi.ValidationError) {
+      const errors = err.details.map(({ message }) => message.replace(/['"]/g, '')).join(', ')
+      console.log(errors)
+      err = new ErrorHandler(errors, 422)
+    }
+
+    if (process.env.NODE_ENV === 'development') {
         return res.status(error.statusCode).json({
             message: error.message,
             error: err,

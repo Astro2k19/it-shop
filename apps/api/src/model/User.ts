@@ -1,7 +1,14 @@
-import mongoose from "mongoose";
+import mongoose, {HydratedDocument} from "mongoose";
 import {UserModel} from "@it-shop/types";
+import bgcryp from 'bcrypt'
 
-const UserSchema = new mongoose.Schema<UserModel>({
+interface UserModelMethods {
+  comparePasswords: (password: string) => Promise<boolean>
+}
+
+type HydratedUser = HydratedDocument<UserModel, UserModelMethods>;
+
+const User = new mongoose.Schema<HydratedUser>({
     name: {
         type: String,
         required: [true, 'Please enter your name'],
@@ -28,7 +35,20 @@ const UserSchema = new mongoose.Schema<UserModel>({
         enum: ['User', 'Admin']
     },
     resetPasswordToken: String,
-    resetPasswordExpire: mongoose.Schema.Types.Date
+    resetPasswordExpire: mongoose.Schema.Types.Date,
 }, {timestamps: true})
 
-mongoose.model('User', UserSchema)
+User.pre('save', async function (next) {
+  if (!this.isModified('password')) {
+    next();
+    return;
+  }
+
+  this.password = await bgcryp.hash(this.password, 10);
+})
+
+User.methods.comparePasswords = async function (password: string) {
+  return bgcryp.compare(this.password, password)
+}
+
+export default mongoose.model('User', User)
