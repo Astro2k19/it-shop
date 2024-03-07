@@ -6,14 +6,16 @@ import {
     newProduct,
     updateProduct
 } from "../controllers/productsController";
+import authMiddleware from "../shared/middlewares/authMiddleware";
+import roleMiddleware from "../shared/middlewares/roleMiddleware";
 
 const router = express.Router()
 
 router.route('/products').get(getAllProducts)
-router.route('/admin/products').post(newProduct)
 
-router.route('/products/:id').get(getProductDetails)
-router.route('/products/:id').put(updateProduct)
-router.route('/products/:id').delete(deleteProduct)
+router.route('/admin/products').post(authMiddleware, roleMiddleware(['Admin']), newProduct)
+router.route('/products/:id').get(authMiddleware, getProductDetails)
+router.route('/admin/products/:id').put(authMiddleware, roleMiddleware(['Admin']), updateProduct)
+router.route('/admin/products/:id').delete(authMiddleware, roleMiddleware(['Admin']), deleteProduct)
 
 export default router

@@ -8,9 +8,11 @@ export interface UserModel extends Document {
     public_id: string
     url: string
   }
-  role: string
+  roles: UserRoles[]
   resetPasswordToken: string
   resetPasswordExpire: mongoose.Schema.Types.Date
   createdAt: mongoose.Schema.Types.Date
   updatedAt: mongoose.Schema.Types.Date
 }
+
+export type UserRoles = 'User' | 'Admin'
