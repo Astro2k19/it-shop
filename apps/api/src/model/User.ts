@@ -1,14 +1,17 @@
 import mongoose, {HydratedDocument} from "mongoose";
 import {UserModel, UserRoles} from "@it-shop/types";
 import bgcryp from 'bcrypt'
+import crypto from 'crypto'
+import ms from "ms";
 
 interface UserModelMethods {
   comparePasswords: (password: string) => Promise<boolean>
+  getResetPasswordToken: () => string
 }
 
 type HydratedUser = HydratedDocument<UserModel, UserModelMethods>;
 
-const roles = ['User', 'Admin']
+const roles: UserRoles[] = ['User', 'Admin']
 
 const User = new mongoose.Schema<HydratedUser>({
   name: {
@@ -33,7 +36,7 @@ const User = new mongoose.Schema<HydratedUser>({
   },
   roles: {
     type: [String],
-    enum: ['User', 'Admin'],
+    enum: roles,
     default: ['User']
   },
   resetPasswordToken: String,
@@ -51,6 +54,14 @@ User.pre('save', async function (next) {
 
 User.methods.comparePasswords = async function (password: string) {
   return bgcryp.compare(password, this.password)
+}
+
+User.methods.getResetPasswordToken = function () {
+  const resetToken = crypto.randomBytes(20).toString('hex')
+  this.resetPasswordToken = crypto.createHash('sha256').update(resetToken).digest('hex')
+  this.resetPasswordExpire = ms('15m')
+
+  return this.resetPasswordToken
 }
 
 export default mongoose.model('User', User)

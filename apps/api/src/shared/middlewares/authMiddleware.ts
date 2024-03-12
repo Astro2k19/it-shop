@@ -1,5 +1,5 @@
 import catchAsyncErrors from "./catchAsyncErrors";
-import ErrorHandler from "../../utils/ErrorHandler";
+import ErrorHandler from "../../shared/utils/ErrorHandler";
 import jwt, {JwtPayload} from 'jsonwebtoken'
 import User from "../../model/User";
 

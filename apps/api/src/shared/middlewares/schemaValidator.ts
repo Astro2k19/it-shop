@@ -1,7 +1,7 @@
 import { RequestHandler } from "express";
 import schemas from "../validators/auth.validator";
 import {Schema} from "joi";
-import ErrorHandler from "../../utils/ErrorHandler";
+import ErrorHandler from "../../shared/utils/ErrorHandler";
 
 const supportedMethods = ["post", "put", "patch", "delete"];
 

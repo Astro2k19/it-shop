@@ -2,7 +2,7 @@ import catchAsyncErrors from "../shared/middlewares/catchAsyncErrors";
 import User from '../model/User'
 import Token from "../model/Token";
 import ms from 'ms';
-import ErrorHandler from "../utils/ErrorHandler";
+import ErrorHandler from "../shared/utils/ErrorHandler";
 
 // POST => /api/v1/register
 export const registerUser = catchAsyncErrors(async (req, res, next) => {

@@ -3,7 +3,7 @@ import {Error} from 'mongoose'
 import type {ApiErrorModel} from "@it-shop/types"
 import { MongoError } from 'mongodb';
 import Joi from 'joi'
-import ErrorHandler from "../../utils/ErrorHandler";
+import ErrorHandler from "../../shared/utils/ErrorHandler";
 
 type MiddlewareError = Error | ApiErrorModel | MongoError | Joi.ValidationError
 

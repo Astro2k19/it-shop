@@ -1,7 +1,7 @@
 import Product from "../model/Product";
-import ErrorHandler from "../utils/ErrorHandler";
+import ErrorHandler from "../shared/utils/ErrorHandler";
 import catchAsyncErrors from "../shared/middlewares/catchAsyncErrors";
-import ApiFilters from "../utils/ApiFilters";
+import ApiFilters from "../shared/utils/ApiFilters";
 
 // GET => /api/v1/products
 export const getAllProducts = catchAsyncErrors(async (req, res) => {
@@ -18,6 +18,7 @@ export const getAllProducts = catchAsyncErrors(async (req, res) => {
 
 // POST => /api/v1/admin/products
 export const newProduct = catchAsyncErrors(async (req, res) => {
+    req.body.user = req.user
     const product = await Product.create(req.body)
     res.json(product)
 })
