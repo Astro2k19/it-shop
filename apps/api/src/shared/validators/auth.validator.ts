@@ -13,7 +13,7 @@ const authRegister = Joi.object().keys({
     'any.required': 'Please enter your password',
     'string.min': 'Your password must be at least 6 characters',
   }),
-})
+});
 
 const authLogin = Joi.object().keys({
   email: Joi.string().trim().email().required().messages({
@@ -24,9 +24,17 @@ const authLogin = Joi.object().keys({
     'string.required': 'Please enter your password',
     'string.min': 'Your password must be at least 6 characters',
   }),
-})
+});
+
+const passwordForgot = Joi.object().keys({
+  email: Joi.string().trim().email().required().messages({
+    'string.required': 'Please enter your email',
+    'string.email': 'Email must be valid',
+  }),
+});
 
 export default {
   '/auth/register': authRegister,
   '/auth/login': authLogin,
+  '/password/forgot': passwordForgot,
 }

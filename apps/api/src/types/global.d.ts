@@ -3,6 +3,7 @@ import {UserModel} from "@it-shop/types";
 declare global {
   namespace NodeJS {
     export interface ProcessEnv {
+      [key: string]: string | undefined
       PORT: string;
       DATABASE_URI: string;
       SECRET_REFRESH_TOKEN: string
