@@ -19,9 +19,7 @@ export default catchAsyncErrors(async (req, res, next) => {
 
   jwt.verify(bearerToken, process.env.SECRET_ACCESS_TOKEN, async (error, decoded: JwtPayload) => {
     if (error) {
-      return next(
-        new ErrorHandler('Login first to access this resource', 401)
-      )
+      return next(error)
     }
 
     const user = await User.findById(decoded.id)

@@ -1,26 +1,31 @@
 import type {Request, Response, NextFunction} from "express";
-import {Error} from 'mongoose'
+import {Error as MongooseError} from 'mongoose'
 import type {ApiErrorModel} from "@it-shop/types"
-import { MongoError } from 'mongodb';
+import { MongoServerError } from 'mongodb';
 import Joi from 'joi'
 import ErrorHandler from "../../shared/utils/ErrorHandler";
+import jwt from 'jsonwebtoken'
 
-type MiddlewareError = Error | ApiErrorModel | MongoError | Joi.ValidationError
+type MiddlewareError = MongooseError | ApiErrorModel | MongoServerError | Joi.ValidationError | jwt.VerifyErrors
+
+enum MongoServerErrorList {
+  DuplicateKey = 11000
+}
 
 export default (err: MiddlewareError, req: Request, res: Response, next: NextFunction) => {
-    let error = {
-        message: err.message || 'Internal Server Error',
-        statusCode: 'statusCode' in err ? err.statusCode : 500,
-    }
+    let error = new ErrorHandler(
+      err.message || 'Internal Server Error',
+      'statusCode' in err ? err.statusCode : 500
+    )
 
-    if (err instanceof Error.CastError) {
+    if (err instanceof MongooseError.CastError) {
         error = new ErrorHandler(
             `Resource not found. Invalid: ${err.path}`,
             404
         )
     }
 
-    if (err instanceof Error.ValidationError) {
+    if (err instanceof MongooseError.ValidationError) {
         const errors = Object.values(err.errors).map(errValue => errValue.message).join(', ')
         error = new ErrorHandler(
             errors,
@@ -30,15 +35,42 @@ export default (err: MiddlewareError, req: Request, res: Response, next: NextFun
 
     if (err instanceof Joi.ValidationError) {
       const errors = err.details.map(({ message }) => message.replace(/['"]/g, '')).join(', ')
-      console.log(errors)
-      err = new ErrorHandler(errors, 422)
+      error = new ErrorHandler(
+        errors,
+        422
+      )
     }
+
+  if ('code' in err && err.code === MongoServerErrorList.DuplicateKey) {
+    const [duplicatedField] = Object.keys(err.keyValue)
+    error = new ErrorHandler(
+      `Duplicate ${duplicatedField} entered`,
+      400
+    )
+  }
+
+
+  if (err instanceof jwt.TokenExpiredError) {
+    const message = `JSON Web Token is expired. Try again!`
+    error = new ErrorHandler(
+      message,
+      400
+    )
+  }
+
+  if (err instanceof jwt.JsonWebTokenError) {
+    const message = 'JSON Web Token is invalid. Try again!'
+    error = new ErrorHandler(
+      message,
+      400
+    )
+  }
 
     if (process.env.NODE_ENV === 'development') {
         return res.status(error.statusCode).json({
             message: error.message,
-            error: err,
-            stack: err.stack,
+            error: error,
+            stack: error.stack,
         })
     }
 

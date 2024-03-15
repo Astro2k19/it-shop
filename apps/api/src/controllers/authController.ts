@@ -9,13 +9,13 @@ import {getResetPasswordTemplate} from "../shared/utils/getResetPasswordTemplate
 // POST => /api/v1/register
 export const registerUser = catchAsyncErrors(async (req, res, next) => {
   const {name, email, password} = req.body
-  const existedUser = await User.findOne({email})
-
-  if (existedUser) {
-    return next(
-      new ErrorHandler('Email is already taken', 400)
-    )
-  }
+  // const existedUser = await User.findOne({email})
+  //
+  // if (existedUser) {
+  //   return next(
+  //     new ErrorHandler('Email is already taken', 400)
+  //   )
+  // }
 
   const user = await User.create({
     name,
