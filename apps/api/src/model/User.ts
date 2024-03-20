@@ -45,8 +45,7 @@ const User = new mongoose.Schema<HydratedUser>({
 
 User.pre('save', async function (next) {
   if (!this.isModified('password')) {
-    next();
-    return;
+    return next();
   }
 
   this.password = await bgcryp.hash(this.password, 10);
@@ -59,9 +58,9 @@ User.methods.comparePasswords = async function (password: string) {
 User.methods.getResetPasswordToken = function () {
   const resetToken = crypto.randomBytes(20).toString('hex')
   this.resetPasswordToken = crypto.createHash('sha256').update(resetToken).digest('hex')
-  this.resetPasswordExpire = ms('15m')
+  this.resetPasswordExpire = Date.now() + ms('15m')
 
-  return this.resetPasswordToken
+  return resetToken
 }
 
 export default mongoose.model('User', User)

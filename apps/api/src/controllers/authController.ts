@@ -5,6 +5,8 @@ import ms from 'ms';
 import ErrorHandler from "../shared/utils/ErrorHandler";
 import {sendEmail} from "../shared/utils/sendEmail";
 import {getResetPasswordTemplate} from "../shared/utils/getResetPasswordTemplate";
+import crypto from "crypto";
+import jwt from "jsonwebtoken";
 
 // POST => /api/v1/register
 export const registerUser = catchAsyncErrors(async (req, res, next) => {
@@ -54,7 +56,7 @@ export const loginUser = catchAsyncErrors(async (req, res, next) => {
     )
   }
 
-  // TODO: add sercives for Token etc., sendToken()
+  // TODO: add services for Token etc., sendToken()
   const token = await Token.create({user: user._id})
   const accessToken = token.getJwtAccessToken()
   res.cookie('refreshToken', token.refreshToken, {
@@ -80,7 +82,7 @@ export const logoutUser = catchAsyncErrors(async (req, res, next) => {
   })
 })
 
-// POST => /api/v1/login
+// POST => /api/v1/password/forgot
 export const forgotPassword = catchAsyncErrors(async (req, res, next) => {
   const {email} = req.body
   const user = await User.findOne({email})
@@ -110,11 +112,75 @@ export const forgotPassword = catchAsyncErrors(async (req, res, next) => {
     const error = e as Error
     user.resetPasswordToken = undefined
     user.resetPasswordExpire = undefined
-    console.log('error', e)
     next(
       new ErrorHandler(error.message, 500)
     )
   }
+})
+
+// POST => /api/v1/password/reset
+export const resetPassword = catchAsyncErrors(async (req, res, next) => {
+  const resetPasswordToken = crypto.createHash('sha256').update(req.params.token).digest('hex')
+  const user = await User.findOne({resetPasswordToken, resetPasswordExpire: { $gt: Date.now() }})
+
+  if (!user) {
+    return next(
+      new ErrorHandler('Reset password token is inactive or has been expired', 400)
+    )
+  }
+
+  if (req.body.password !== req.body.comparedPassword) {
+    return next(
+      new ErrorHandler('Passwords do not match', 400)
+    )
+  }
+
+  user.password = req.body.password
+  await user.save()
+
+  user.resetPasswordToken = undefined
+  user.resetPasswordExpire = undefined
+  await user.save()
+
+  // TODO: add services for Token etc., sendToken()
+  const token = await Token.create({user: user._id})
+  const accessToken = token.getJwtAccessToken()
+  res.cookie('refreshToken', token.refreshToken, {
+    httpOnly: true,
+    secure: true,
+    maxAge: ms(process.env.REFRESH_TOKEN_EXPIRE),
+    sameSite: 'none'
+  })
+  res.status(201).json({
+    accessToken
+  })
+})
+
+// POST => /api/v1/password/reset
+export const getUserDetails = catchAsyncErrors((req, res) => {
+  const user = req.user
+  res.json({
+    user
+  })
+})
+
+
+export const updatePassword = catchAsyncErrors(async (req, res, next) => {
+  const user = await User.findById(req.user._id).select('+password')
+  const isPasswordMatched = await user.comparePasswords(req.body.oldPassword)
+
+  if (!isPasswordMatched) {
+    return next(
+      new ErrorHandler('Old password is invalid', 400)
+    )
+  }
+
+  user.password = req.body.password
+  user.save()
+
+  res.json({
+    success: true
+  })
 })
 
 

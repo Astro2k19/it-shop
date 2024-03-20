@@ -33,8 +33,18 @@ const passwordForgot = Joi.object().keys({
   }),
 });
 
+
+const passwordReset = Joi.object().keys({
+  password: Joi.string().trim().required().messages({
+    'string.required': 'Please enter your password',
+    'string.min': 'Your password must be at least 6 characters',
+  }),
+  comparedPassword: Joi.ref('password')
+}).with('password', 'comparedPassword');
+
 export default {
   '/auth/register': authRegister,
   '/auth/login': authLogin,
   '/password/forgot': passwordForgot,
+  '/password/reset': passwordReset,
 }

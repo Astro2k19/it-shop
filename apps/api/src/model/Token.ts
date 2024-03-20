@@ -1,6 +1,7 @@
 import mongoose, {HydratedDocument} from "mongoose";
 import jwt from 'jsonwebtoken'
 import {TokenModel} from "@it-shop/types";
+import ms from "ms";
 
 interface TokenModelMethods {
   getJwtRefreshToken: () => string
@@ -24,13 +25,13 @@ Token.pre('save',  function (next) {
 
 Token.methods.getJwtRefreshToken = function () {
   return jwt.sign({id: this.user}, process.env.SECRET_REFRESH_TOKEN, {
-    expiresIn: process.env.REFRESH_TOKEN_EXPIRE
+    expiresIn: ms(process.env.REFRESH_TOKEN_EXPIRE)
   })
 }
 
 Token.methods.getJwtAccessToken = function () {
   return jwt.sign({id: this.user}, process.env.SECRET_ACCESS_TOKEN, {
-    expiresIn: process.env.ACCESS_TOKEN_EXPIRE
+    expiresIn: ms(process.env.ACCESS_TOKEN_EXPIRE)
   })
 }
 
