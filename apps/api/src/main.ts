@@ -4,6 +4,7 @@ import {connectDatabase} from "./config/connectDatabase";
 import errorMiddleware from "./shared/middlewares/errorMiddleware";
 import authRouter from "./routes/auth";
 import cookieParser from 'cookie-parser'
+import TokenService from "./services/TokenService";
 
 const app = express()
 connectDatabase()

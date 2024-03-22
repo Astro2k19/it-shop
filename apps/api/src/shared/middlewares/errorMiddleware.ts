@@ -4,9 +4,10 @@ import type {ApiErrorModel} from "@it-shop/types"
 import { MongoServerError } from 'mongodb';
 import Joi from 'joi'
 import ErrorHandler from "../../shared/utils/ErrorHandler";
-import jwt from 'jsonwebtoken'
+import {JsonWebTokenError, NotBeforeError, TokenExpiredError} from 'jwt-redis'
 
-type MiddlewareError = MongooseError | ApiErrorModel | MongoServerError | Joi.ValidationError | jwt.VerifyErrors
+type VerifyErrors = JsonWebTokenError | TokenExpiredError | NotBeforeError
+type MiddlewareError = MongooseError | ApiErrorModel | MongoServerError | Joi.ValidationError | VerifyErrors
 
 enum MongoServerErrorList {
   DuplicateKey = 11000
@@ -50,7 +51,7 @@ export default (err: MiddlewareError, req: Request, res: Response, next: NextFun
   }
 
 
-  if (err instanceof jwt.TokenExpiredError) {
+  if (err instanceof TokenExpiredError) {
     const message = `JSON Web Token is expired. Try again!`
     error = new ErrorHandler(
       message,
@@ -58,7 +59,7 @@ export default (err: MiddlewareError, req: Request, res: Response, next: NextFun
     )
   }
 
-  if (err instanceof jwt.JsonWebTokenError) {
+  if (err instanceof JsonWebTokenError) {
     const message = 'JSON Web Token is invalid. Try again!'
     error = new ErrorHandler(
       message,

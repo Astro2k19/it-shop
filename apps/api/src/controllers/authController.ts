@@ -1,41 +1,25 @@
 import catchAsyncErrors from "../shared/middlewares/catchAsyncErrors";
 import User from '../model/User'
-import Token from "../model/Token";
-import ms from 'ms';
 import ErrorHandler from "../shared/utils/ErrorHandler";
-import {sendEmail} from "../shared/utils/sendEmail";
 import {getResetPasswordTemplate} from "../shared/utils/getResetPasswordTemplate";
 import crypto from "crypto";
-import jwt from "jsonwebtoken";
+import TokenService from "../services/TokenService";
+import MailService from "../services/MailService";
 
 // POST => /api/v1/register
 export const registerUser = catchAsyncErrors(async (req, res, next) => {
   const {name, email, password} = req.body
-  // const existedUser = await User.findOne({email})
-  //
-  // if (existedUser) {
-  //   return next(
-  //     new ErrorHandler('Email is already taken', 400)
-  //   )
-  // }
 
-  const user = await User.create({
+  const {_id: userId} = await User.create({
     name,
     email,
     password
   })
-  const token = await Token.create({user: user._id})
-  const accessToken = token.getJwtAccessToken()
 
-  res.cookie('refreshToken', token.refreshToken, {
-    httpOnly: true,
-    secure: true,
-    maxAge: ms(process.env.REFRESH_TOKEN_EXPIRE),
-    sameSite: 'none'
-  })
-  res.status(201).json({
-    accessToken
-  })
+  const tokenService = await TokenService.getInstance()
+  const {accessToken, refreshToken} = await tokenService.getJwtTokens(userId)
+  await tokenService.saveRefreshToken(userId, refreshToken)
+  tokenService.sendTokens(res, accessToken, refreshToken)
 })
 
 // POST => /api/v1/login
@@ -56,27 +40,19 @@ export const loginUser = catchAsyncErrors(async (req, res, next) => {
     )
   }
 
-  // TODO: add services for Token etc., sendToken()
-  const token = await Token.create({user: user._id})
-  const accessToken = token.getJwtAccessToken()
-  res.cookie('refreshToken', token.refreshToken, {
-    httpOnly: true,
-    secure: true,
-    maxAge: ms(process.env.REFRESH_TOKEN_EXPIRE),
-    sameSite: 'none'
-  })
-  res.status(201).json({
-    accessToken
-  })
+  const tokenService = await TokenService.getInstance()
+  const {accessToken, refreshToken} = await tokenService.getJwtTokens(user._id)
+  await tokenService.saveRefreshToken(user._id, refreshToken)
+  tokenService.sendTokens(res, accessToken, refreshToken)
 })
 
 // POST => /api/v1/logout
 
 export const logoutUser = catchAsyncErrors(async (req, res, next) => {
   const {refreshToken} = req.cookies
-  await Token.findOneAndDelete(refreshToken)
 
-  res.clearCookie('refreshToken', {httpOnly: true, secure: true, sameSite: 'none'})
+  const tokenService = await TokenService.getInstance()
+  await tokenService.clearRefreshToken(res, refreshToken)
   res.status(200).json({
     message: 'logout'
   })
@@ -100,7 +76,7 @@ export const forgotPassword = catchAsyncErrors(async (req, res, next) => {
   const message = getResetPasswordTemplate(user.name, resetLink)
 
   try {
-    await sendEmail({
+    await MailService.sendEmail({
       to: user.email,
       subject: 'ItShop password recovery',
       message
@@ -121,7 +97,7 @@ export const forgotPassword = catchAsyncErrors(async (req, res, next) => {
 // POST => /api/v1/password/reset
 export const resetPassword = catchAsyncErrors(async (req, res, next) => {
   const resetPasswordToken = crypto.createHash('sha256').update(req.params.token).digest('hex')
-  const user = await User.findOne({resetPasswordToken, resetPasswordExpire: { $gt: Date.now() }})
+  const user = await User.findOne({resetPasswordToken, resetPasswordExpire: {$gt: Date.now()}})
 
   if (!user) {
     return next(
@@ -136,24 +112,14 @@ export const resetPassword = catchAsyncErrors(async (req, res, next) => {
   }
 
   user.password = req.body.password
-  await user.save()
-
   user.resetPasswordToken = undefined
   user.resetPasswordExpire = undefined
   await user.save()
 
-  // TODO: add services for Token etc., sendToken()
-  const token = await Token.create({user: user._id})
-  const accessToken = token.getJwtAccessToken()
-  res.cookie('refreshToken', token.refreshToken, {
-    httpOnly: true,
-    secure: true,
-    maxAge: ms(process.env.REFRESH_TOKEN_EXPIRE),
-    sameSite: 'none'
-  })
-  res.status(201).json({
-    accessToken
-  })
+  const tokenService = await TokenService.getInstance()
+  const {accessToken, refreshToken} = await tokenService.getJwtTokens(user._id)
+  await tokenService.saveRefreshToken(user._id, refreshToken)
+  tokenService.sendTokens(res, accessToken, refreshToken)
 })
 
 // POST => /api/v1/password/reset
@@ -174,6 +140,9 @@ export const updatePassword = catchAsyncErrors(async (req, res, next) => {
       new ErrorHandler('Old password is invalid', 400)
     )
   }
+
+  const tokenService = await TokenService.getInstance()
+  await tokenService.destroyJwtToken(user._id)
 
   user.password = req.body.password
   user.save()

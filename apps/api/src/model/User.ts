@@ -3,6 +3,7 @@ import {UserModel, UserRoles} from "@it-shop/types";
 import bgcryp from 'bcrypt'
 import crypto from 'crypto'
 import ms from "ms";
+import PasswordService from "../services/PasswordService";
 
 interface UserModelMethods {
   comparePasswords: (password: string) => Promise<boolean>
@@ -48,7 +49,7 @@ User.pre('save', async function (next) {
     return next();
   }
 
-  this.password = await bgcryp.hash(this.password, 10);
+  this.password = await PasswordService.hashPassword(this.password);
 })
 
 User.methods.comparePasswords = async function (password: string) {
