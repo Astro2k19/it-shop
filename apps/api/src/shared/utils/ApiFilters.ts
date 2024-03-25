@@ -11,7 +11,7 @@ class ApiFilters<DocType extends Document> {
 
     search() {
         const keywordFilter = this.queryString.keyword ? {
-            name: {
+            name:  {
                 $regex: this.queryString.keyword,
                 $options: 'i'
             }
