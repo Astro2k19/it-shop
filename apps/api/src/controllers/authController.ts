@@ -5,9 +5,10 @@ import {getResetPasswordTemplate} from "../shared/utils/getResetPasswordTemplate
 import crypto from "crypto";
 import TokenService from "../services/TokenService";
 import MailService from "../services/MailService";
+import PasswordService from "../services/PasswordService";
 
 // POST => /api/v1/register
-export const registerUser = catchAsyncErrors(async (req, res, next) => {
+export const registerUser = catchAsyncErrors(async (req, res) => {
   const {name, email, password} = req.body
 
   const {_id: userId} = await User.create({
@@ -48,7 +49,7 @@ export const loginUser = catchAsyncErrors(async (req, res, next) => {
 
 // POST => /api/v1/logout
 
-export const logoutUser = catchAsyncErrors(async (req, res, next) => {
+export const logoutUser = catchAsyncErrors(async (req, res) => {
   const {refreshToken} = req.cookies
 
   const tokenService = await TokenService.getInstance()
@@ -69,7 +70,9 @@ export const forgotPassword = catchAsyncErrors(async (req, res, next) => {
     )
   }
 
-  const resetToken = user.getResetPasswordToken()
+  const {resetToken, resetPasswordExpire} = PasswordService.getResetPasswordToken()
+  user.resetPasswordToken = resetToken
+  user.resetPasswordExpire = resetPasswordExpire
   await user.save()
 
   const resetLink = `${process.env.CLIENT_URL}/api/v1/password/reset/${resetToken}`

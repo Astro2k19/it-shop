@@ -10,7 +10,7 @@ export interface UserModel extends Document {
   }
   roles: UserRoles[]
   resetPasswordToken: string
-  resetPasswordExpire: mongoose.Schema.Types.Date
+  resetPasswordExpire: number
   createdAt: mongoose.Schema.Types.Date
   updatedAt: mongoose.Schema.Types.Date
 }

@@ -4,9 +4,9 @@ import type {ApiErrorModel} from "@it-shop/types"
 import { MongoServerError } from 'mongodb';
 import Joi from 'joi'
 import ErrorHandler from "../../shared/utils/ErrorHandler";
-import {JsonWebTokenError, NotBeforeError, TokenExpiredError} from 'jwt-redis'
+import {JsonWebTokenError, NotBeforeError, TokenExpiredError, TokenDestroyedError} from 'jwt-redis'
 
-type VerifyErrors = JsonWebTokenError | TokenExpiredError | NotBeforeError
+type VerifyErrors = JsonWebTokenError | TokenExpiredError | NotBeforeError | TokenDestroyedError
 type MiddlewareError = MongooseError | ApiErrorModel | MongoServerError | Joi.ValidationError | VerifyErrors
 
 enum MongoServerErrorList {
@@ -18,6 +18,8 @@ export default (err: MiddlewareError, req: Request, res: Response, next: NextFun
       err.message || 'Internal Server Error',
       'statusCode' in err ? err.statusCode : 500
     )
+
+  console.log(err, 'err')
 
     if (err instanceof MongooseError.CastError) {
         error = new ErrorHandler(
@@ -59,7 +61,7 @@ export default (err: MiddlewareError, req: Request, res: Response, next: NextFun
     )
   }
 
-  if (err instanceof JsonWebTokenError) {
+  if (err instanceof JsonWebTokenError || err instanceof TokenDestroyedError) {
     const message = 'JSON Web Token is invalid. Try again!'
     error = new ErrorHandler(
       message,

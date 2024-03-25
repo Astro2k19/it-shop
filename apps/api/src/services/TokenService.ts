@@ -3,12 +3,11 @@ import Token from "../model/Token";
 import mongoose from "mongoose";
 import {Response} from "express";
 import JWTRedis from "jwt-redis";
-import {createClient} from 'redis'
-import {RedisClientType} from 'redis'
+import {createClient, RedisClientType} from 'redis'
 
 class TokenService {
   private static instance: TokenService;
-  readonly jwt: JWTRedis
+  private readonly jwt: JWTRedis
 
   private constructor(redisClient: RedisClientType) {
     this.jwt = new JWTRedis(redisClient)
@@ -26,9 +25,7 @@ class TokenService {
 
   static async initRedisClient() {
     const redisClient = createClient()
-    console.log('client')
     await redisClient.connect()
-    console.log('connect')
     return redisClient
   }
 
