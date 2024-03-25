@@ -9,7 +9,7 @@ config({
 
 const seederProducts = async () => {
     try {
-        await mongoose.connect(process.env.LOCAL_DATABASE_URI)
+        await mongoose.connect(process.env.DATABASE_URI)
         await Product.deleteMany()
         await Product.insertMany(data)
     } catch (error) {

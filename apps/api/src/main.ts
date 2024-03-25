@@ -1,14 +1,18 @@
 import express from "express";
 import productsRouter from './routes/products'
 import {connectDatabase} from "./config/connectDatabase";
-import errorMiddleware from "./middlewares/errorMiddleware";
-
+import errorMiddleware from "./shared/middlewares/errorMiddleware";
+import authRouter from "./routes/auth";
+import cookieParser from 'cookie-parser'
+import TokenService from "./services/TokenService";
 
 const app = express()
 connectDatabase()
 
 app.use(express.json())
+app.use(cookieParser())
 app.use('/api/v1/', productsRouter)
+app.use('/api/v1/', authRouter)
 
 app.use(errorMiddleware)
 const server = app.listen(process.env.PORT, () => {
