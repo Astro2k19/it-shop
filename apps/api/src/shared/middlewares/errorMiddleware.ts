@@ -19,8 +19,6 @@ export default (err: MiddlewareError, req: Request, res: Response, next: NextFun
       'statusCode' in err ? err.statusCode : 500
     )
 
-  console.log(err, 'err')
-
     if (err instanceof MongooseError.CastError) {
         error = new ErrorHandler(
             `Resource not found. Invalid: ${err.path}`,

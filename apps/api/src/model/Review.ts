@@ -1,4 +1,4 @@
-import mongoose, {Document} from "mongoose";
+import mongoose from "mongoose";
 import {ReviewModel} from "@it-shop/types";
 
 const ReviewSchema = new mongoose.Schema<ReviewModel>({

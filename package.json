@@ -6,7 +6,11 @@
     "start:dev": "nx run-many --parallel --target=serve --projects=client,api",
     "build:prod": "nx run-many --parallel --target=build --projects=client,api",
     "start:client": "nx serve client",
-    "start:api": "nx serve api"
+    "start:api": "nx serve api",
+    "lint:api": "nx run api:lint",
+    "lint:api:fix": "nx run api:lint --fix",
+    "lint:client": "nx run client:lint",
+    "lint:client:fix": "nx run client:lint --fix"
   },
   "private": true,
   "dependencies": {

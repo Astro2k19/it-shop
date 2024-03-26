@@ -157,11 +157,7 @@ export const updatePassword = catchAsyncErrors(async (req, res, next) => {
 
 // PUT => /api/v1/me/update
 export const updateUserProfile = catchAsyncErrors(async (req, res) => {
-  const newUserData = {
-    email: req.body.email,
-    name: req.body.name,
-  }
-  const updatedUser = await User.findByIdAndUpdate(req.user._id, newUserData, {new: true})
+  const updatedUser = await User.findByIdAndUpdate(req.user._id,  req.body, {new: true})
   res.json(updatedUser)
 })
 
@@ -178,13 +174,40 @@ export const getUserDetails = catchAsyncErrors(async (req, res, next) => {
   if (!user) {
     return next(
       new ErrorHandler(
-        `User not found with ${user._id} id`,
+        `User not found with ${req.params.id} id`,
         404
       )
     )
   }
 
   res.json(user)
+})
+
+// PUT => /api/v1/admin/users/:id
+export const updateUserDetails = catchAsyncErrors(async (req, res) => {
+  const updatedUser = await User.findByIdAndUpdate(req.params.id, req.body, {new: true})
+  res.json(updatedUser)
+})
+
+// DELETE => /api/v1/admin/users/:id
+
+export const deleteUser = catchAsyncErrors(async (req, res, next) => {
+  const user = await User.findById(req.params.id)
+
+  if (!user) {
+    return next(
+      new ErrorHandler(
+        `User not found with ${user._id} id`,
+        404
+      )
+    )
+  }
+
+  await user.deleteOne()
+
+  res.json({
+    success: true
+  })
 })
 
 
