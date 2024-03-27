@@ -9,7 +9,7 @@ interface UserModelMethods {
 
 type HydratedUser = HydratedDocument<UserModel, UserModelMethods>;
 
-const roles: UserRoles[] = ['User', 'Admin']
+export const roles: UserRoles[] = ['User', 'Admin']
 
 const User = new mongoose.Schema<HydratedUser>({
   name: {

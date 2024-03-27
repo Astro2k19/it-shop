@@ -125,15 +125,15 @@ export const resetPassword = catchAsyncErrors(async (req, res, next) => {
   tokenService.sendTokens(res, accessToken, refreshToken)
 })
 
-// POST => /api/v1/password/reset
-export const getUserDetails = catchAsyncErrors((req, res) => {
+// GET => /api/v1/me
+export const getUserProfile = catchAsyncErrors((req, res) => {
   const user = req.user
   res.json({
     user
   })
 })
 
-
+// PUT => /api/v1/password/update
 export const updatePassword = catchAsyncErrors(async (req, res, next) => {
   const user = await User.findById(req.user._id).select('+password')
   const isPasswordMatched = await user.comparePasswords(req.body.oldPassword)
@@ -149,6 +149,61 @@ export const updatePassword = catchAsyncErrors(async (req, res, next) => {
 
   user.password = req.body.password
   user.save()
+
+  res.json({
+    success: true
+  })
+})
+
+// PUT => /api/v1/me/update
+export const updateUserProfile = catchAsyncErrors(async (req, res) => {
+  const updatedUser = await User.findByIdAndUpdate(req.user._id,  req.body, {new: true})
+  res.json(updatedUser)
+})
+
+// GET => /api/v1/admin/users
+export const getAllUsers = catchAsyncErrors(async (req, res) => {
+  const users = await User.find()
+  res.json(users)
+})
+
+// GET => /api/v1/admin/users/:id
+export const getUserDetails = catchAsyncErrors(async (req, res, next) => {
+  const user = await User.findById(req.params.id)
+
+  if (!user) {
+    return next(
+      new ErrorHandler(
+        `User not found with ${req.params.id} id`,
+        404
+      )
+    )
+  }
+
+  res.json(user)
+})
+
+// PUT => /api/v1/admin/users/:id
+export const updateUserDetails = catchAsyncErrors(async (req, res) => {
+  const updatedUser = await User.findByIdAndUpdate(req.params.id, req.body, {new: true})
+  res.json(updatedUser)
+})
+
+// DELETE => /api/v1/admin/users/:id
+
+export const deleteUser = catchAsyncErrors(async (req, res, next) => {
+  const user = await User.findById(req.params.id)
+
+  if (!user) {
+    return next(
+      new ErrorHandler(
+        `User not found with ${user._id} id`,
+        404
+      )
+    )
+  }
+
+  await user.deleteOne()
 
   res.json({
     success: true
