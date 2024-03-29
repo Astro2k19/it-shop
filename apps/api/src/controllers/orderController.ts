@@ -62,7 +62,7 @@ export const getAllOrders = catchAsyncErrors<undefined, OrderModel[]>(async (req
 })
 
 // PUT => /api/v1/admin/orders/:id
-export const updateOrder = catchAsyncErrors<Pick<OrderModel, 'orderStatus'>, OrderModel[]>(async (req, res, next) => {
+export const updateOrder = catchAsyncErrors<Pick<OrderModel, 'orderStatus'>>(async (req, res, next) => {
   const order = await Order.findById(req.params.id)
 
   if (!order) {
@@ -95,13 +95,18 @@ export const updateOrder = catchAsyncErrors<Pick<OrderModel, 'orderStatus'>, Ord
       );
     }
 
-    product.stock =- item.quantity
-    await product.save()
+    // TODO: fix problem with stock
+    product.stock = product.stock - item.quantity
+    await product.save({validateBeforeSave: false})
   }
 
   order.deliveredAt = Date.now()
   order.orderStatus = req.body.orderStatus
   await order.save()
+
+  res.json({
+    success: true
+  })
 })
 
 // DELETE => /api/v1/admin/orders/:id

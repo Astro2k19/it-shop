@@ -13,7 +13,7 @@ const newOrder = Joi.object<NewOrderSchema>().keys({
     name: Joi.string().required(),
     quantity: Joi.number().required(),
     image: Joi.string().required(),
-    price: Joi.string().required(),
+    price: Joi.number().required(),
     product: Joi.string().required()
   })),
   paymentMethod: Joi.string().required().valid('COD', 'Card'),

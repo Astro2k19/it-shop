@@ -36,7 +36,7 @@ const Order = new mongoose.Schema<OrderModel>({
         required: true
       },
       quantity: {
-        type: String,
+        type: Number,
         required: true
       },
       image: {
@@ -44,7 +44,7 @@ const Order = new mongoose.Schema<OrderModel>({
         required: true
       },
       price: {
-        type: String,
+        type: Number,
         required: true
       },
       product: {

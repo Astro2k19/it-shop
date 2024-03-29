@@ -7,7 +7,7 @@ interface OrderProductInfo {
   name: string
   quantity: number
   image: string
-  price: string
+  price: number
   product: mongoose.Schema.Types.ObjectId
 }
 
