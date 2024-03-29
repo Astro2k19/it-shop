@@ -9,7 +9,7 @@ interface UserModelMethods {
 
 type HydratedUser = HydratedDocument<UserModel, UserModelMethods>;
 
-const roles: UserRoles[] = ['User', 'Admin']
+export const roles: UserRoles[] = ['User', 'Admin']
 
 const User = new mongoose.Schema<HydratedUser>({
   name: {
@@ -38,7 +38,7 @@ const User = new mongoose.Schema<HydratedUser>({
     default: ['User']
   },
   resetPasswordToken: String,
-  resetPasswordExpire: Number,
+  resetPasswordExpire: Date,
 }, {timestamps: true})
 
 User.pre('save', async function (next) {

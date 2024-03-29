@@ -19,7 +19,8 @@ class PasswordService {
     const resetPasswordExpire = Date.now() + ms('15m')
 
     return {
-      resetToken: hashedRestToken,
+      resetToken,
+      hashedRestToken,
       resetPasswordExpire
     }
   }
