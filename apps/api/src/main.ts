@@ -3,6 +3,7 @@ import productsRouter from './routes/products'
 import {connectDatabase} from "./config/connectDatabase";
 import errorMiddleware from "./shared/middlewares/errorMiddleware";
 import authRouter from "./routes/auth";
+import orderRouter from "./routes/order";
 import cookieParser from 'cookie-parser'
 
 const app = express()
@@ -12,6 +13,7 @@ app.use(express.json())
 app.use(cookieParser())
 app.use('/api/v1/', productsRouter)
 app.use('/api/v1/', authRouter)
+app.use('/api/v1/', orderRouter)
 
 app.use(errorMiddleware)
 const server = app.listen(process.env.PORT, () => {

@@ -38,7 +38,7 @@ const User = new mongoose.Schema<HydratedUser>({
     default: ['User']
   },
   resetPasswordToken: String,
-  resetPasswordExpire: Number,
+  resetPasswordExpire: Date,
 }, {timestamps: true})
 
 User.pre('save', async function (next) {

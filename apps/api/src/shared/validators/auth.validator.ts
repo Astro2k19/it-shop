@@ -1,7 +1,15 @@
 import Joi from "joi";
 import {roles} from "../../model/User";
+import {
+  LoginSchema,
+  PasswordForgotSchema,
+  PasswordResetSchema,
+  PasswordUpdateSchema,
+  RegisterSchema, UpdateUserDetailsSchema, UpdateUserProfileSchema
+} from "./authValidatorSchemas";
 
-const authRegister = Joi.object().keys({
+
+const authRegister = Joi.object<RegisterSchema>().keys({
   name: Joi.string().trim().required().max(50).messages({
     'any.required': 'Please enter your name',
     'string.max': 'Your name cannot exceed 50 characters',
@@ -16,7 +24,7 @@ const authRegister = Joi.object().keys({
   }),
 });
 
-const authLogin = Joi.object().keys({
+const authLogin = Joi.object<LoginSchema>().keys({
   email: Joi.string().trim().email().required().messages({
     'string.required': 'Please enter your email',
     'string.email': 'Email must be valid',
@@ -27,7 +35,7 @@ const authLogin = Joi.object().keys({
   }),
 });
 
-const passwordForgot = Joi.object().keys({
+const passwordForgot = Joi.object<PasswordForgotSchema>().keys({
   email: Joi.string().trim().email().required().messages({
     'string.required': 'Please enter your email',
     'string.email': 'Email must be valid',
@@ -35,7 +43,7 @@ const passwordForgot = Joi.object().keys({
 });
 
 
-const passwordReset = Joi.object().keys({
+const passwordReset = Joi.object<PasswordResetSchema>().keys({
   password: Joi.string().trim().required().messages({
     'string.required': 'Please enter your password',
     'string.min': 'Your password must be at least 6 characters',
@@ -43,7 +51,7 @@ const passwordReset = Joi.object().keys({
   comparedPassword: Joi.ref('password')
 }).with('password', 'comparedPassword');
 
-const passwordUpdate = Joi.object().keys({
+const passwordUpdate = Joi.object<PasswordUpdateSchema>().keys({
   password: Joi.string().trim().min(6).required().messages({
     'any.required': 'Please enter your new password',
     'string.min': 'Your new password must be at least 6 characters',
@@ -53,7 +61,7 @@ const passwordUpdate = Joi.object().keys({
   }),
 })
 
-const updateUserProfile = Joi.object().keys({
+const updateUserProfile = Joi.object<UpdateUserProfileSchema>().keys({
   name: Joi.string().trim().max(50).messages({
     'string.max': 'Your name cannot exceed 50 characters',
   }),
@@ -62,7 +70,7 @@ const updateUserProfile = Joi.object().keys({
   }),
 })
 
-const updateUserDetails = Joi.object().keys({
+const updateUserDetails = Joi.object<UpdateUserDetailsSchema>().keys({
   name: Joi.string().trim().max(50).messages({
     'string.max': 'Your name cannot exceed 50 characters',
   }),
@@ -73,6 +81,7 @@ const updateUserDetails = Joi.object().keys({
     Joi.string().valid(...roles).required()
   )
 })
+
 
 export default {
   '/auth/register': authRegister,

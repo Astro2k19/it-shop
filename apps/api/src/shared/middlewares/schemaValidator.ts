@@ -1,5 +1,6 @@
 import { RequestHandler } from "express";
-import schemas from "../validators/auth.validator";
+import authSchema from "../validators/auth.validator";
+import orderSchema from "../validators/order.validator";
 import {Schema} from "joi";
 import ErrorHandler from "../../shared/utils/ErrorHandler";
 
@@ -12,7 +13,10 @@ const validationOptions = {
 };
 
 const schemaValidator = (path: string): RequestHandler => {
-  const schema: Schema = schemas[path];
+  const schema: Schema = {
+    ...authSchema,
+    ...orderSchema
+  }[path];
 
   if (!schema) {
     throw new ErrorHandler(`Schema not found for path: ${path}`, 500);

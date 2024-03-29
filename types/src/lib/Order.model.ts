@@ -10,7 +10,8 @@ interface OrderProductInfo {
   price: string
   product: mongoose.Schema.Types.ObjectId
 }
-export interface OrderModel extends Document {
+
+export interface IOrder {
   user: mongoose.Schema.Types.ObjectId
   shippingInfo: {
     country: string
@@ -29,8 +30,9 @@ export interface OrderModel extends Document {
   taxAmount: number
   shippingAmount: number
   totalAmount: number
-  orderStatus: OrderStatus
-  deliveredAt: Date
+  orderStatus?: OrderStatus
+  deliveredAt: number
   createdAt: mongoose.Schema.Types.Date
   updatedAt: mongoose.Schema.Types.Date
 }
+export interface OrderModel extends IOrder, Document {}

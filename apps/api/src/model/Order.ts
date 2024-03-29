@@ -96,10 +96,7 @@ const Order = new mongoose.Schema<OrderModel>({
     },
     default: 'Processing'
   },
-  deliveredAt: {
-    type: Date,
-    required: true
-  }
+  deliveredAt: Date
 }, {timestamps: true})
 
 export default mongoose.model('order', Order)

@@ -6,9 +6,16 @@ import crypto from "crypto";
 import TokenService from "../services/TokenService";
 import MailService from "../services/MailService";
 import PasswordService from "../services/PasswordService";
+import {
+  LoginSchema,
+  PasswordForgotSchema,
+  PasswordResetSchema, PasswordUpdateSchema,
+  RegisterSchema, UpdateUserProfileSchema
+} from "../shared/validators/authValidatorSchemas";
+import {UserModel} from "@it-shop/types";
 
 // POST => /api/v1/register
-export const registerUser = catchAsyncErrors(async (req, res) => {
+export const registerUser = catchAsyncErrors<RegisterSchema>(async (req, res) => {
   const {name, email, password} = req.body
 
   const {_id: userId} = await User.create({
@@ -24,7 +31,7 @@ export const registerUser = catchAsyncErrors(async (req, res) => {
 })
 
 // POST => /api/v1/login
-export const loginUser = catchAsyncErrors(async (req, res, next) => {
+export const loginUser = catchAsyncErrors<LoginSchema>(async (req, res, next) => {
   const {email, password} = req.body
   const user = await User.findOne({email}).select('+password')
 
@@ -60,7 +67,7 @@ export const logoutUser = catchAsyncErrors(async (req, res) => {
 })
 
 // POST => /api/v1/password/forgot
-export const forgotPassword = catchAsyncErrors(async (req, res, next) => {
+export const forgotPassword = catchAsyncErrors<PasswordForgotSchema>(async (req, res, next) => {
   const {email} = req.body
   const user = await User.findOne({email})
 
@@ -70,13 +77,21 @@ export const forgotPassword = catchAsyncErrors(async (req, res, next) => {
     )
   }
 
-  const {resetToken, resetPasswordExpire} = PasswordService.getResetPasswordToken()
-  user.resetPasswordToken = resetToken
+  const {
+    resetToken,
+    hashedRestToken,
+    resetPasswordExpire
+  } = PasswordService.getResetPasswordToken()
+
+
+  user.resetPasswordToken = hashedRestToken
   user.resetPasswordExpire = resetPasswordExpire
   await user.save()
 
   const resetLink = `${process.env.CLIENT_URL}/api/v1/password/reset/${resetToken}`
   const message = getResetPasswordTemplate(user.name, resetLink)
+  console.log(resetToken, 'resetToken')
+  console.log(hashedRestToken, 'hashedRestToken')
 
   try {
     await MailService.sendEmail({
@@ -98,9 +113,10 @@ export const forgotPassword = catchAsyncErrors(async (req, res, next) => {
 })
 
 // POST => /api/v1/password/reset
-export const resetPassword = catchAsyncErrors(async (req, res, next) => {
-  const resetPasswordToken = crypto.createHash('sha256').update(req.params.token).digest('hex')
-  const user = await User.findOne({resetPasswordToken, resetPasswordExpire: {$gt: Date.now()}})
+export const resetPassword = catchAsyncErrors<PasswordResetSchema>(async (req, res, next) => {
+  const resetPasswordToken = PasswordService.hashToken(req.params.token)
+  const user = await User.findOne({resetPasswordToken, resetPasswordExpire: { $gt: Date.now() }})
+  console.log(resetPasswordToken, 'resetPasswordToken')
 
   if (!user) {
     return next(
@@ -126,15 +142,13 @@ export const resetPassword = catchAsyncErrors(async (req, res, next) => {
 })
 
 // GET => /api/v1/me
-export const getUserProfile = catchAsyncErrors((req, res) => {
+export const getUserProfile = catchAsyncErrors<undefined, UserModel>((req, res) => {
   const user = req.user
-  res.json({
-    user
-  })
+  res.json(user)
 })
 
 // PUT => /api/v1/password/update
-export const updatePassword = catchAsyncErrors(async (req, res, next) => {
+export const updatePassword = catchAsyncErrors<PasswordUpdateSchema>(async (req, res, next) => {
   const user = await User.findById(req.user._id).select('+password')
   const isPasswordMatched = await user.comparePasswords(req.body.oldPassword)
 
@@ -156,13 +170,13 @@ export const updatePassword = catchAsyncErrors(async (req, res, next) => {
 })
 
 // PUT => /api/v1/me/update
-export const updateUserProfile = catchAsyncErrors(async (req, res) => {
+export const updateUserProfile = catchAsyncErrors<UpdateUserProfileSchema, UserModel>(async (req, res) => {
   const updatedUser = await User.findByIdAndUpdate(req.user._id,  req.body, {new: true})
   res.json(updatedUser)
 })
 
 // GET => /api/v1/admin/users
-export const getAllUsers = catchAsyncErrors(async (req, res) => {
+export const getAllUsers = catchAsyncErrors<undefined, UserModel[]>(async (req, res) => {
   const users = await User.find()
   res.json(users)
 })
