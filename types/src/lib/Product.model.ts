@@ -9,7 +9,6 @@ export interface ProductModel extends Document {
   stock: number
   seller: string
   images: ProductImage[]
-  ratings: number
   createdAt: mongoose.Schema.Types.Date
   updatedAt: mongoose.Schema.Types.Date
 }

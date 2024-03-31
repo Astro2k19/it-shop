@@ -1,12 +1,12 @@
 import Joi from "joi";
-import {roles} from "../../model/User";
+import {roles} from "../../../model/User";
 import {
   LoginSchema,
   PasswordForgotSchema,
   PasswordResetSchema,
   PasswordUpdateSchema,
   RegisterSchema, UpdateUserDetailsSchema, UpdateUserProfileSchema
-} from "./authValidatorSchemas";
+} from "./validatorSchemas";
 
 
 const authRegister = Joi.object<RegisterSchema>().keys({

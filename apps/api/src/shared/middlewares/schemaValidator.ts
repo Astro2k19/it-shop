@@ -1,6 +1,7 @@
 import { RequestHandler } from "express";
-import authSchema from "../validators/auth.validator";
-import orderSchema from "../validators/order.validator";
+import authSchema from "../validators/auth/validator";
+import orderSchema from "../validators/order/validator";
+import reviewSchema from "../validators/review/validator";
 import {Schema} from "joi";
 import ErrorHandler from "../../shared/utils/ErrorHandler";
 
@@ -15,7 +16,8 @@ const validationOptions = {
 const schemaValidator = (path: string): RequestHandler => {
   const schema: Schema = {
     ...authSchema,
-    ...orderSchema
+    ...orderSchema,
+    ...reviewSchema
   }[path];
 
   if (!schema) {

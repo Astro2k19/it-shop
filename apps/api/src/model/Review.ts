@@ -7,6 +7,12 @@ const ReviewSchema = new mongoose.Schema<ReviewModel>({
         ref: 'Product',
         require: true
     },
+    ratings: {
+        type: Number,
+        default: 0,
+        min: 0,
+        max: 5
+    },
     numOfReviews: {
         type: Number,
         default: 0
@@ -24,7 +30,9 @@ const ReviewSchema = new mongoose.Schema<ReviewModel>({
             },
             rating: {
                 type: Number,
-                require: true
+                require: true,
+                min: 1,
+                max: 5
             }
         }
     ]
