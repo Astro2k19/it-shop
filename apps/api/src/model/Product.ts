@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 import {ProductModel} from "@it-shop/types";
+import Review from "./Review";
 
 const ProductSchema = new mongoose.Schema<ProductModel>({
     user: {
@@ -61,11 +62,24 @@ const ProductSchema = new mongoose.Schema<ProductModel>({
                 }
             }
         ],
-    },
-    ratings: {
-        type: Number,
-        default: 0
     }
 }, {timestamps: true})
+
+ProductSchema.post('save', async function (product: ProductModel) {
+  const existingReview = await Review.findOne({product: product._id})
+  if (!existingReview) {
+    await Review.create({
+      product: product._id
+    })
+  }
+})
+
+ProductSchema.post('insertMany', function (products: ProductModel[]) {
+  products.forEach(async product => {
+    await Review.create({
+      product: product._id
+    })
+  })
+})
 
 export default mongoose.model('Product', ProductSchema)

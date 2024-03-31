@@ -1,4 +1,4 @@
-import mongoose, {Document} from "mongoose";
+import mongoose from "mongoose";
 import {ReviewModel} from "@it-shop/types";
 
 const ReviewSchema = new mongoose.Schema<ReviewModel>({
@@ -6,6 +6,12 @@ const ReviewSchema = new mongoose.Schema<ReviewModel>({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Product',
         require: true
+    },
+    ratings: {
+        type: Number,
+        default: 0,
+        min: 0,
+        max: 5
     },
     numOfReviews: {
         type: Number,
@@ -24,7 +30,9 @@ const ReviewSchema = new mongoose.Schema<ReviewModel>({
             },
             rating: {
                 type: Number,
-                require: true
+                require: true,
+                min: 1,
+                max: 5
             }
         }
     ]
