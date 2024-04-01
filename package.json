@@ -11,7 +11,8 @@
     "lint:api": "nx run api:lint",
     "lint:api:fix": "nx run api:lint --fix",
     "lint:client": "nx run client:lint",
-    "lint:client:fix": "nx run client:lint --fix"
+    "lint:client:fix": "nx run client:lint --fix",
+    "pretty-project": "prettier {**/*,*}.{js,ts,jsx,tsx} --write"
   },
   "private": true,
   "dependencies": {

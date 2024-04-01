@@ -1,9 +1,14 @@
 import type { RequestHandler, Request } from 'express';
-import { ParamsDictionary } from '../../types/global';
+import { ParamsDictionary, ParsedQs } from '../../types/global';
 
-type AsyncHandler = <T = Request, K = unknown, P = ParamsDictionary>(
-    middlewareFunction: RequestHandler<P, K, T>
-) => RequestHandler<P, K, T>;
+type AsyncHandler = <
+    T = Request,
+    K = unknown,
+    P = ParamsDictionary,
+    Q = ParsedQs
+>(
+    middlewareFunction: RequestHandler<P, K, T, Q>
+) => RequestHandler<P, K, T, Q>;
 
 const catchAsyncErrors: AsyncHandler =
     (middlewareFunction) => (req, res, next) =>

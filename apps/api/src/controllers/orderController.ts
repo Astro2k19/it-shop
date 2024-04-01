@@ -106,7 +106,7 @@ export const updateOrder = catchAsyncErrors<Pick<OrderModel, 'orderStatus'>>(
 
             // TODO: fix problem with stock
             product.stock = product.stock - item.quantity;
-            await product.save({ validateBeforeSave: false });
+            await product.save();
         }
 
         order.deliveredAt = Date.now();

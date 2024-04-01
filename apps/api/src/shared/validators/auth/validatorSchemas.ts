@@ -1,37 +1,37 @@
-import {UserRoles} from "@it-shop/types";
+import { UserRoles } from '@it-shop/types';
 
 export interface RegisterSchema {
-  name: string
-  email: string
-  password: string
+    name: string;
+    email: string;
+    password: string;
 }
 
 export interface LoginSchema {
-  email: string
-  password: string
+    email: string;
+    password: string;
 }
 
 export interface PasswordForgotSchema {
-  email: string
+    email: string;
 }
 
 export interface PasswordResetSchema {
-  password: string
-  comparedPassword: string
+    password: string;
+    comparedPassword: string;
 }
 
 export interface PasswordUpdateSchema {
-  password: string
-  oldPassword: string
+    password: string;
+    oldPassword: string;
 }
 
 export interface UpdateUserProfileSchema {
-  name: string
-  email: string
+    name: string;
+    email: string;
 }
 
 export interface UpdateUserDetailsSchema {
-  name: string
-  email: string
-  roles: UserRoles[]
+    name: string;
+    email: string;
+    roles: UserRoles[];
 }

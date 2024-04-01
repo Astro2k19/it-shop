@@ -1,6 +1,5 @@
-
 export interface NewReviewSchema {
-  productId: string
-  rating: number
-  comment: string
+    productId: string;
+    rating: number;
+    comment: string;
 }

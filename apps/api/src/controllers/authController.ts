@@ -92,8 +92,6 @@ export const forgotPassword = catchAsyncErrors<PasswordForgotSchema>(
 
         const resetLink = `${process.env.CLIENT_URL}/api/v1/password/reset/${resetToken}`;
         const message = getResetPasswordTemplate(user.name, resetLink);
-        console.log(resetToken, 'resetToken');
-        console.log(hashedRestToken, 'hashedRestToken');
 
         try {
             await MailService.sendEmail({

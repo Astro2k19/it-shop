@@ -1,4 +1,6 @@
-import {IOrder} from "@it-shop/types";
+import { IOrder } from '@it-shop/types';
 
-export type NewOrderSchema = Omit<IOrder, 'createdAt' | 'updatedAt' | 'user' | 'deliveredAt'>
-
+export type NewOrderSchema = Omit<
+    IOrder,
+    'createdAt' | 'updatedAt' | 'user' | 'deliveredAt'
+>;

@@ -35,3 +35,5 @@ interface ParsedQs {
 interface ParamsDictionary {
     [key: string]: undefined | string;
 }
+
+type Modify<T, R> = Omit<T, keyof R> & R;
