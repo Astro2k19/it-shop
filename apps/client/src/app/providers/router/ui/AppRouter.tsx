@@ -1,10 +1,10 @@
-import { routerConfig } from '../config/config';
+import { routerConfig } from '../config/routerConfig';
 import { ProtectedRouteType } from '@/shared/types/router';
 import { createBrowserRouter } from 'react-router-dom';
 import { ProtectedRoute } from './ProtectedRoute';
 import { RoleGuard } from './RoleGuard';
 import { ErrorBoundary } from '@/pages/ErrorBoundary';
-import App from '@/app/app';
+import { baseLayout } from '@/app/layouts/baseLayout';
 
 export const AppRouter = () => {
     const renderRoute = ([_, value]: [
@@ -35,7 +35,7 @@ export const AppRouter = () => {
     return createBrowserRouter([
         {
             path: '/',
-            element: <App />,
+            element: baseLayout,
             children: Object.entries(routerConfig).map(renderRoute),
         },
     ]);

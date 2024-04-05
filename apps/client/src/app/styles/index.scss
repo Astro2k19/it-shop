@@ -9,16 +9,7 @@ body {
   background-color: darkgrey;
  }
 
-body {
-  display: flex;
-  flex-direction: column;
-}
-
 #root {
-  flex: 1;
-}
-
-#root, #app  {
   height: 100%;
 }
 
