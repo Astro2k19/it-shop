@@ -98,7 +98,8 @@ export const routerConfig: Record<keyof typeof AppRoutes, ProtectedRouteType> =
     {
         [AppRoutes.HOME]: {
             path: getMainRoute(),
-            element: <div></div>,
+            element: <Home />,
+            index: true,
         },
         [AppRoutes.PRODUCT_DETAILS]: {
             path: getProductDetailsRoute(':id'),

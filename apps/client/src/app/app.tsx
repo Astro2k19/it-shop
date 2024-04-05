@@ -2,16 +2,18 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.bundle.min';
 import './styles/index.scss';
-import { RouterProvider } from 'react-router-dom';
-import { AppRouter } from '@/app/providers/router/ui/AppRouter';
-export function App() {
+import { Outlet } from 'react-router-dom';
+import { Header } from '@/widgets/Header';
+import { Footer } from '@/widgets/Footer';
+
+export const App = () => {
     return (
-        <div className={'row'}>
-            <div className="col">
-                <RouterProvider router={AppRouter} />
-            </div>
+        <div id={'app'}>
+            <Header />
+            <Outlet />
+            <Footer />
         </div>
     );
-}
+};
 
 export default App;

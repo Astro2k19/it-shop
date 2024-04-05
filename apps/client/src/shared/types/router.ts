@@ -1,7 +1,7 @@
-import { RouteProps } from 'react-router-dom';
+import { RouteObject } from 'react-router-dom';
 import { UserRoles } from '@/entities/User';
 
-export type ProtectedRouteType = RouteProps & {
+export type ProtectedRouteType = RouteObject & {
     requiredRoles?: UserRoles[];
     isProtected?: boolean;
 };

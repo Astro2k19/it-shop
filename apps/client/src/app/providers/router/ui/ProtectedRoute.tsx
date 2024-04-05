@@ -1,10 +1,6 @@
-import { ReactNode } from 'react';
-import { Navigate, useLocation } from 'react-router-dom';
+import { Navigate, Outlet, useLocation } from 'react-router-dom';
 
-interface ProtectedRouteProps {
-    children: ReactNode;
-}
-export const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
+export const ProtectedRoute = () => {
     const userData = true; // temp hard code
     const location = useLocation();
 
@@ -12,5 +8,5 @@ export const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
         return <Navigate to={'/'} state={location.state} />;
     }
 
-    return children;
+    return <Outlet />;
 };

@@ -1,15 +1,24 @@
+import logo from '@/shared/assets/images/shopit_logo.png';
+import avatar from '@/shared/assets/images/default_avatar.jpg';
+import { NavLink } from 'react-router-dom';
+import {
+    getDashboardRoute,
+    getLoginRoute,
+    getMainRoute,
+    getMyOrdersRoute,
+    getProfileRoute,
+} from '@/shared/const/router';
+import { FaSearch } from 'react-icons/fa';
+
 export const Header = () => {
     return (
         <header>
             <nav className="navbar row">
                 <div className="col-12 col-md-3 ps-5">
                     <div className="navbar-brand">
-                        <a href="/">
-                            <img
-                                src="../images/shopit_logo.png"
-                                alt="ShopIT Logo"
-                            />
-                        </a>
+                        <NavLink to={getMainRoute()}>
+                            <img src={logo} alt="ShopIT Logo" />
+                        </NavLink>
                     </div>
                 </div>
                 <div className="col-12 col-md-6 mt-2 mt-md-0">
@@ -29,23 +38,20 @@ export const Header = () => {
                                 className="btn"
                                 type="submit"
                             >
-                                <i
-                                    className="fa fa-search"
-                                    aria-hidden="true"
-                                ></i>
+                                <FaSearch />
                             </button>
                         </div>
                     </form>
                 </div>
                 <div className="col-12 col-md-3 mt-4 mt-md-0 text-center">
-                    <a href="/cart" style={{ textDecoration: 'none' }}>
+                    <NavLink to="/cart" style={{ textDecoration: 'none' }}>
                         <span id="cart" className="ms-3">
                             Cart
                         </span>
                         <span className="ms-1" id="cart_count">
                             0
                         </span>
-                    </a>
+                    </NavLink>
                     <div className="ms-4 dropdown">
                         <button
                             className="btn dropdown-toggle text-white"
@@ -56,7 +62,7 @@ export const Header = () => {
                         >
                             <figure className="avatar avatar-nav">
                                 <img
-                                    src="../images/default_avatar.jpg"
+                                    src={avatar}
                                     alt="User Avatar"
                                     className="rounded-circle"
                                 />
@@ -67,27 +73,40 @@ export const Header = () => {
                             className="dropdown-menu w-100"
                             aria-labelledby="dropDownMenuButton"
                         >
-                            <a
+                            <NavLink
                                 className="dropdown-item"
-                                href="/admin/dashboard"
+                                to={getDashboardRoute()}
                             >
                                 Dashboard
-                            </a>
-                            <a className="dropdown-item" href="/me/orders">
+                            </NavLink>
+                            <NavLink
+                                className="dropdown-item"
+                                to={getMyOrdersRoute()}
+                            >
                                 Orders
-                            </a>
-                            <a className="dropdown-item" href="/me/profile">
+                            </NavLink>
+                            <NavLink
+                                className="dropdown-item"
+                                to={getProfileRoute()}
+                            >
                                 Profile
-                            </a>
-                            <a className="dropdown-item text-danger" href="/">
+                            </NavLink>
+                            <NavLink
+                                className="dropdown-item text-danger"
+                                to="/"
+                            >
                                 Logout
-                            </a>
+                            </NavLink>
                         </div>
                     </div>
 
-                    <a href="/login" className="btn ms-4" id="login_btn">
+                    <NavLink
+                        to={getLoginRoute()}
+                        className="btn ms-4"
+                        id="login_btn"
+                    >
                         Login
-                    </a>
+                    </NavLink>
                 </div>
             </nav>
         </header>

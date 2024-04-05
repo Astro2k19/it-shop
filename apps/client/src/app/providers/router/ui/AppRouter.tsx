@@ -1,41 +1,42 @@
 import { routerConfig } from '../config/config';
 import { ProtectedRouteType } from '@/shared/types/router';
-import {
-    Route,
-    createBrowserRouter,
-    createRoutesFromElements,
-} from 'react-router-dom';
-import { Suspense } from 'react';
+import { createBrowserRouter } from 'react-router-dom';
 import { ProtectedRoute } from './ProtectedRoute';
-import { RoleGuard } from '@/app/providers/router/ui/RoleGuard';
+import { RoleGuard } from './RoleGuard';
+import { ErrorBoundary } from '@/pages/ErrorBoundary';
+import App from '@/app/app';
 
 export const AppRouter = () => {
-    const renderAppRoute = ([key, value]: [
+    const renderRoute = ([_, value]: [
         key: string,
         value: ProtectedRouteType
     ]) => {
-        const element = <Suspense>{value.element}</Suspense>;
+        const element = {
+            path: value.path,
+            element: value.element,
+        };
 
-        return (
-            <Route
-                key={key}
-                path={value.path}
-                element={
-                    value.isProtected ? (
-                        <RoleGuard requiredRoles={value.requiredRoles}>
-                            <ProtectedRoute>{element}</ProtectedRoute>
-                        </RoleGuard>
-                    ) : (
-                        element
-                    )
-                }
-            />
-        );
+        if (value.isProtected) {
+            return {
+                element: <RoleGuard requiredRoles={value.requiredRoles} />,
+                errorElement: <ErrorBoundary />,
+                children: [
+                    {
+                        element: <ProtectedRoute />,
+                        children: [element],
+                    },
+                ],
+            };
+        }
+
+        return element;
     };
 
-    return createBrowserRouter(
-        createRoutesFromElements(
-            Object.entries(routerConfig).map(renderAppRoute)
-        )
-    );
+    return createBrowserRouter([
+        {
+            path: '/',
+            element: <App />,
+            children: Object.entries(routerConfig).map(renderRoute),
+        },
+    ]);
 };

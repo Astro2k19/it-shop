@@ -1,6 +1,6 @@
 export const Footer = () => {
     return (
-        <footer className="py-1 pt-5">
+        <footer className="py-1 pt-5 mt-auto">
             <p className="text-center mt-1 fw-bold">
                 ShopIT - 2020-2023, All Rights Reserved
             </p>
