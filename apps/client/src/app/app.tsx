@@ -1,16 +1,19 @@
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-import styles from './app.module.scss';
+import 'bootstrap/dist/css/bootstrap.min.css';
+import 'bootstrap/dist/js/bootstrap.bundle.min';
+import './styles/index.scss';
+import { Outlet } from 'react-router-dom';
+import { Header } from '@/widgets/Header';
+import { Footer } from '@/widgets/Footer';
 
-import NxWelcome from './nx-welcome';
-import * as process from 'process';
-
-export function App() {
-    console.log(process.env);
+export const App = () => {
     return (
-        <div>
-            <NxWelcome title="client" />
+        <div id={'app'}>
+            <Header />
+            <Outlet />
+            <Footer />
         </div>
     );
-}
+};
 
 export default App;

@@ -18,6 +18,14 @@ export default defineConfig({
     },
 
     plugins: [react(), nxViteTsPaths()],
+    resolve: {
+        alias: [
+            {
+                find: '@',
+                replacement: '/src/',
+            },
+        ],
+    },
 
     // Uncomment this if you are using workers.
     // worker: {
