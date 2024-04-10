@@ -15,7 +15,6 @@ export const getPaymentMethodRoute = () => `/payment_method`;
 export const getMyOrdersRoute = () => `/me/orders`;
 export const getMyOrderDetailsRoute = (id: string) => `/me/order/${id}`;
 export const getInvoiceRoute = (id: string) => `/invoice/order/${id}`;
-
 // Admin routes
 export const getDashboardRoute = () => `/admin/dashboard`;
 export const getAllProductsRoute = () => `/admin/products`;
@@ -28,7 +27,6 @@ export const getProcessOrderRoute = (id: string) => `/admin/orders/${id}`;
 export const getAllUsersRoute = () => `/admin/users`;
 export const getUpdateUserRoute = (id: string) => `/admin/users/${id}`;
 export const getAllReviewsRoute = () => `/admin/reviews`;
-
 export const Routes = {
     HOME: 'HOME',
     PRODUCT_DETAILS: 'PRODUCT_DETAILS',
@@ -46,7 +44,6 @@ export const Routes = {
     MY_ORDERS: 'MY_ORDERS',
     INVOICE: 'INVOICE',
 } as const;
-
 export const AdminRoutes = {
     DASHBOARD: 'DASHBOARD',
     PRODUCTS: 'PRODUCTS',
@@ -59,5 +56,4 @@ export const AdminRoutes = {
     UPDATE_USER: 'UPDATE_USER',
     REVIEWS: 'REVIEWS',
 } as const;
-
 export const AppRoutes = { ...Routes, ...AdminRoutes } as const;

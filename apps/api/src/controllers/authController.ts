@@ -5,6 +5,7 @@ import { getResetPasswordTemplate } from '../shared/utils/getResetPasswordTempla
 import TokenService from '../services/TokenService';
 import MailService from '../services/MailService';
 import PasswordService from '../services/PasswordService';
+
 import {
     LoginSchema,
     PasswordForgotSchema,
@@ -12,8 +13,8 @@ import {
     PasswordUpdateSchema,
     RegisterSchema,
     UpdateUserProfileSchema,
-} from '../shared/validators/auth/validatorSchemas';
-import { UserModel } from '@it-shop/types';
+    UserModel,
+} from '@it-shop/types';
 
 // POST => /api/v1/register
 export const registerUser = catchAsyncErrors<RegisterSchema>(
@@ -59,6 +60,30 @@ export const loginUser = catchAsyncErrors<LoginSchema>(
     }
 );
 
+// POST => /api/v1/refresh
+export const loginUser = catchAsyncErrors<LoginSchema>(
+    async (req, res, next) => {
+        const { email, password } = req.body;
+        const user = await User.findOne({ email }).select('+password');
+
+        if (!user) {
+            return next(new ErrorHandler('Invalid email & password', 401));
+        }
+
+        const isPassEqual = await user.comparePasswords(password);
+        if (!isPassEqual) {
+            return next(new ErrorHandler('Invalid email & password', 401));
+        }
+
+        const tokenService = await TokenService.getInstance();
+        const { accessToken, refreshToken } = await tokenService.getJwtTokens(
+            user._id
+        );
+        await tokenService.saveRefreshToken(user._id, refreshToken);
+        tokenService.sendTokens(res, accessToken, refreshToken);
+    }
+);
+
 // POST => /api/v1/logout
 
 export const logoutUser = catchAsyncErrors(async (req, res) => {
@@ -66,6 +91,8 @@ export const logoutUser = catchAsyncErrors(async (req, res) => {
 
     const tokenService = await TokenService.getInstance();
     await tokenService.clearRefreshToken(res, refreshToken);
+    await tokenService.destroyJwtToken(req.user._id);
+
     res.status(200).json({
         message: 'logout',
     });

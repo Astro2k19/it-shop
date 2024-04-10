@@ -2,10 +2,7 @@ import Product from '../model/Product';
 import ErrorHandler from '../shared/utils/ErrorHandler';
 import catchAsyncErrors from '../shared/middlewares/catchAsyncErrors';
 import ApiFilters from '../shared/utils/ApiFilters';
-import {
-    ProductBodySchema,
-    ProductQueryFilterSchema,
-} from '../shared/validators/product/validatorSchemas';
+import { ProductBodySchema, ProductQueryFilterSchema } from '@it-shop/types';
 
 // GET => /api/v1/products
 export const getAllProducts = catchAsyncErrors<
@@ -15,7 +12,6 @@ export const getAllProducts = catchAsyncErrors<
     ProductQueryFilterSchema
 >(async (req, res) => {
     const resPerPage = 4;
-    console.log(req.query, 'test test');
     const apiFilters = new ApiFilters(Product, req.query).search().filter();
     apiFilters.paginate(resPerPage);
     const products = await apiFilters.query;

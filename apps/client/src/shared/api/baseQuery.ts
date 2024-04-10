@@ -1,14 +1,12 @@
 import { fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 
-const baseQuery = fetchBaseQuery({
-    baseUrl: import.meta.env.BASE_URL,
+export const baseQuery = fetchBaseQuery({
+    baseUrl: `${import.meta.env.BASE_URL}/api/v1/`,
     prepareHeaders: (headers, { getState }) => {
-        const { user } = getState() as RootState;
-
-        if (user.accessToken) {
-            headers.set('authorization', `Bearer ${user.accessToken}`);
+        const { session } = getState() as RootState;
+        if (session.accessToken) {
+            headers.set('authorization', `Bearer ${session.accessToken}`);
         }
-
         return headers;
     },
     credentials: 'include',

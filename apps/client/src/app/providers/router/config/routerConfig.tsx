@@ -1,4 +1,7 @@
+import { Home } from '@/pages/Home';
 import {
+    AdminRoutes,
+    AppRoutes,
     getAllOrderRoute,
     getAllProductsRoute,
     getAllReviewsRoute,
@@ -23,10 +26,8 @@ import {
     getUpdateUserRoute,
     getUploadAvatarRoute,
     getUploadProductImagesRoute,
-} from '@/shared/const/router';
-import { AppRoutes, AdminRoutes } from '@/shared/const/router';
-import { Home } from '@/pages/Home';
-import { ProtectedRouteType } from '@/shared/types/router';
+} from '@/shared/router/conts';
+import { ProtectedRouteType } from '@/shared/router/types';
 
 export const adminRouterConfig: Record<
     keyof typeof AdminRoutes,

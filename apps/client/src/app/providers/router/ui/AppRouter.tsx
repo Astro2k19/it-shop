@@ -1,10 +1,10 @@
 import { routerConfig } from '../config/routerConfig';
-import { ProtectedRouteType } from '@/shared/types/router';
 import { createBrowserRouter } from 'react-router-dom';
 import { ProtectedRoute } from './ProtectedRoute';
 import { RoleGuard } from './RoleGuard';
 import { ErrorBoundary } from '@/pages/ErrorBoundary';
 import { baseLayout } from '@/app/layouts/baseLayout';
+import { ProtectedRouteType } from '@/shared/router/types';
 
 export const AppRouter = () => {
     const renderRoute = ([_, value]: [

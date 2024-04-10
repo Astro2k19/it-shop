@@ -1,7 +1,7 @@
 import mongoose, { Document } from 'mongoose';
 
 export interface IProduct {
-    user?: mongoose.Schema.Types.ObjectId;
+    user: mongoose.Schema.Types.ObjectId;
     name: string;
     description: string;
     price: number;

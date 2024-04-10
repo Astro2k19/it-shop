@@ -2,7 +2,8 @@
   "compilerOptions": {
     "baseUrl": "./",
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": ["./src/*"],
+      "@it-shop/types": ["../../types/src/index.ts"]
     },
     "jsx": "react-jsx",
     "allowJs": false,

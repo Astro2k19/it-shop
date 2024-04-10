@@ -26,14 +26,14 @@ declare global {
             user?: UserModel;
         }
     }
-}
 
-interface ParsedQs {
-    [key: string]: undefined | string | string[] | ParsedQs | ParsedQs[];
-}
+    interface ParsedQs {
+        [key: string]: undefined | string | string[] | ParsedQs | ParsedQs[];
+    }
 
-interface ParamsDictionary {
-    [key: string]: undefined | string;
-}
+    interface ParamsDictionary {
+        [key: string]: undefined | string;
+    }
 
-type Modify<T, R> = Omit<T, keyof R> & R;
+    type Modify<T, R> = Omit<T, keyof R> & R;
+}

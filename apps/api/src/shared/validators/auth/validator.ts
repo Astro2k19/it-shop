@@ -8,7 +8,7 @@ import {
     RegisterSchema,
     UpdateUserDetailsSchema,
     UpdateUserProfileSchema,
-} from './validatorSchemas';
+} from '@it-shop/types';
 
 const authRegister = Joi.object<RegisterSchema>().keys({
     name: Joi.string().trim().required().max(50).messages({

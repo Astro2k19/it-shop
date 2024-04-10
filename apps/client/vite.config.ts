@@ -24,6 +24,10 @@ export default defineConfig({
                 find: '@',
                 replacement: '/src/',
             },
+            {
+                find: '@it-shop/types',
+                replacement: 'types/src/index.ts',
+            },
         ],
     },
 

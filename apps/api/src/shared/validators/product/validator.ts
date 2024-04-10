@@ -1,8 +1,5 @@
 import Joi from 'joi';
-import {
-    ProductBodySchema,
-    ProductQueryFilterSchema,
-} from './validatorSchemas';
+import { ProductBodySchema, ProductQueryFilterSchema } from '@it-shop/types';
 import { productCategories } from '../../../model/Product';
 
 const createProductBodySchema = Joi.object<ProductBodySchema>().keys({

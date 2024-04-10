@@ -1,5 +1,11 @@
-import { IProduct } from '@it-shop/types';
-import { Modify, ParsedQs } from '../../../types/global';
+import { IProduct } from '../Product.model';
+
+// TODO: fix this!
+interface ParsedQs {
+    [key: string]: undefined | string | string[] | ParsedQs | ParsedQs[];
+}
+
+type Modify<T, R> = Omit<T, keyof R> & R;
 
 export type ProductBodySchema = Omit<
     IProduct,

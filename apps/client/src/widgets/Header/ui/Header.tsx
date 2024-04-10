@@ -1,14 +1,14 @@
 import logo from '@/shared/assets/images/shopit_logo.png';
 import avatar from '@/shared/assets/images/default_avatar.jpg';
 import { NavLink } from 'react-router-dom';
+import { FaSearch } from 'react-icons/fa';
 import {
     getDashboardRoute,
     getLoginRoute,
     getMainRoute,
     getMyOrdersRoute,
     getProfileRoute,
-} from '@/shared/const/router';
-import { FaSearch } from 'react-icons/fa';
+} from '@/shared/router/conts';
 
 export const Header = () => {
     return (

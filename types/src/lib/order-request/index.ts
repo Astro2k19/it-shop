@@ -1,4 +1,4 @@
-import { IOrder } from '@it-shop/types';
+import { IOrder } from '../Order.model';
 
 export type NewOrderSchema = Omit<
     IOrder,

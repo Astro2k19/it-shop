@@ -1,9 +1,8 @@
 import catchAsyncErrors from '../shared/middlewares/catchAsyncErrors';
-import { NewReviewSchema } from '../shared/validators/review/validatorSchemas';
 import Review from '../model/Review';
 import ErrorHandler from '../shared/utils/ErrorHandler';
 import Product from '../model/Product';
-import { ReviewItem } from '@it-shop/types';
+import { ReviewItem, NewReviewSchema } from '@it-shop/types';
 import { updateProductReviewsRating } from '../shared/utils/review';
 
 export const createProductReview = catchAsyncErrors<NewReviewSchema>(

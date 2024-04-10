@@ -4,3 +4,7 @@ export * from './lib/Review.model';
 export * from './lib/ApiError.model';
 export * from './lib/Token.model';
 export * from './lib/Order.model';
+export * from './lib/auth-request';
+export * from './lib/order-request';
+export * from './lib/product-request';
+export * from './lib/review-request';

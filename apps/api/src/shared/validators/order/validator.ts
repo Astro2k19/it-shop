@@ -1,5 +1,5 @@
 import Joi from 'joi';
-import { NewOrderSchema } from './validatorSchemas';
+import { NewOrderSchema } from '@it-shop/types';
 
 const newOrder = Joi.object<NewOrderSchema>().keys({
     shippingInfo: Joi.object().keys({

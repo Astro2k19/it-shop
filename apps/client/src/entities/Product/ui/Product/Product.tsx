@@ -1,16 +1,17 @@
 import { NavLink } from 'react-router-dom';
 import productImage from '@/shared/assets/images/default_product.png';
 import { ProductModel } from '@it-shop/types';
-import { getProductDetailsRoute } from '@/shared/const/router';
+import { formatPrice } from '../../lib/formatPrice';
+import { getProductDetailsRoute } from '@/shared/router/conts';
 
-export const Product = (_: ProductModel) => {
+export const Product = (props: ProductModel) => {
     return (
         <div className="card p-3 rounded">
             <img className="card-img-top mx-auto" src={productImage} alt="" />
             <div className="card-body ps-3 d-flex justify-content-center flex-column">
                 <h5 className="card-title">
-                    <NavLink to={getProductDetailsRoute(':id')}>
-                        Product Name 1
+                    <NavLink to={getProductDetailsRoute(props.id)}>
+                        {props.name}
                     </NavLink>
                 </h5>
                 <div className="ratings mt-auto d-flex">
@@ -25,9 +26,9 @@ export const Product = (_: ProductModel) => {
                         (0)
                     </span>
                 </div>
-                <p className="card-text mt-2">$100</p>
+                <p className="card-text mt-2">{formatPrice(props.price)}</p>
                 <NavLink
-                    to={getProductDetailsRoute(':id')}
+                    to={getProductDetailsRoute(props.id)}
                     id="view_btn"
                     className="btn btn-block"
                 >

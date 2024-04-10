@@ -1,7 +1,6 @@
 import catchAsyncErrors from '../shared/middlewares/catchAsyncErrors';
 import Order from '../model/Order';
-import { OrderModel } from '@it-shop/types';
-import { NewOrderSchema } from '../shared/validators/order/validatorSchemas';
+import { OrderModel, NewOrderSchema } from '@it-shop/types';
 import ErrorHandler from '../shared/utils/ErrorHandler';
 import Product from '../model/Product';
 

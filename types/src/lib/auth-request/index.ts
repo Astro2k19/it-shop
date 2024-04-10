@@ -1,4 +1,4 @@
-import { UserRoles } from '@it-shop/types';
+import { UserRoles } from '../User.model';
 
 export interface RegisterSchema {
     name: string;
