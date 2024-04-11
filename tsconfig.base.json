@@ -15,7 +15,7 @@
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "paths": {
-      "@it-shop/types": ["types/src/index.ts"],
+      "@it-shop/types": ["types/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"]

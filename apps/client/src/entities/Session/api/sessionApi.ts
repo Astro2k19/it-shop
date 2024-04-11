@@ -57,3 +57,5 @@ export const sessionApi = baseApi.injectEndpoints({
         }),
     }),
 });
+
+export const useRefresh = sessionApi.useRefreshQuery;

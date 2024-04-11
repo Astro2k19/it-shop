@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-import { ProductCategories, ProductModel } from '@it-shop/types';
+import { Product, ProductCategories } from '@it-shop/types';
 import Review from './Review';
 
 export const productCategories: ProductCategories[] = [
@@ -15,7 +15,7 @@ export const productCategories: ProductCategories[] = [
     'Home',
 ];
 
-const ProductSchema = new mongoose.Schema<ProductModel>(
+const ProductSchema = new mongoose.Schema<Product>(
     {
         user: {
             type: mongoose.Schema.Types.ObjectId,
@@ -70,7 +70,7 @@ const ProductSchema = new mongoose.Schema<ProductModel>(
     { timestamps: true }
 );
 
-ProductSchema.post('save', async function (product: ProductModel) {
+ProductSchema.post('save', async function (product: Product) {
     const existingReview = await Review.findOne({ product: product._id });
     if (!existingReview) {
         await Review.create({
@@ -79,7 +79,7 @@ ProductSchema.post('save', async function (product: ProductModel) {
     }
 });
 
-ProductSchema.post('insertMany', function (products: ProductModel[]) {
+ProductSchema.post('insertMany', function (products: Product[]) {
     products.forEach(async (product) => {
         await Review.create({
             product: product._id,

@@ -1,7 +1,7 @@
 import mongoose from 'mongoose';
-import { OrderModel } from '@it-shop/types';
+import { Order } from '@it-shop/types';
 
-const Order = new mongoose.Schema<OrderModel>(
+const Order = new mongoose.Schema<Order>(
     {
         user: {
             type: mongoose.Schema.Types.ObjectId,

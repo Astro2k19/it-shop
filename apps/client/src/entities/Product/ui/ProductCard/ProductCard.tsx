@@ -4,7 +4,7 @@ import { ProductModel } from '@it-shop/types';
 import { formatPrice } from '../../lib/formatPrice';
 import { getProductDetailsRoute } from '@/shared/router/conts';
 
-export const Product = (props: ProductModel) => {
+export const ProductCard = (props: ProductModel) => {
     return (
         <div className="card p-3 rounded">
             <img className="card-img-top mx-auto" src={productImage} alt="" />

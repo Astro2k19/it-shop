@@ -1,5 +1,5 @@
 import { Document, Model, Query } from 'mongoose';
-import { ProductQueryFilterSchema } from '../validators/product/validatorSchemas';
+import { ProductQueryFilterSchema } from '@it-shop/types';
 
 class ApiFilters<
     DocType extends Document,

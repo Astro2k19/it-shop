@@ -1,6 +1,6 @@
 import ms from 'ms';
 import Token from '../model/Token';
-import mongoose from 'mongoose';
+import { Types } from 'mongoose';
 import { Response } from 'express';
 import JWTRedis from 'jwt-redis';
 import { createClient, RedisClientType } from 'redis';
@@ -71,10 +71,7 @@ class TokenService {
         return this.jwt.verify(token, process.env.SECRET_REFRESH_TOKEN);
     }
 
-    async saveRefreshToken(
-        userId: mongoose.Schema.Types.ObjectId,
-        token: string
-    ) {
+    async saveRefreshToken(userId: Types.ObjectId, token: string) {
         const existedToken = await Token.findOne({ user: userId });
 
         if (existedToken) {

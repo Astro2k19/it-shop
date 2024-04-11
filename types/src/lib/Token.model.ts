@@ -1,6 +1,6 @@
-import mongoose, { Document } from 'mongoose';
+import mongoose, { Require_id } from 'mongoose';
 
-export interface TokenModel extends Document {
+export type Token = Require_id<{
     user: mongoose.Schema.Types.ObjectId;
     refreshToken: string;
-}
+}>;

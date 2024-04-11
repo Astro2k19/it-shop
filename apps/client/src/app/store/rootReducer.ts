@@ -1,4 +1,4 @@
-import { baseApi } from '@/shared/api/baseApi';
+import { baseApi } from '@/shared/api';
 import { combineReducers } from '@reduxjs/toolkit';
 import { sessionSlice } from '@/entities/Session';
 

@@ -24,6 +24,8 @@ const server = app.listen(process.env.PORT, () => {
     );
 });
 
+// console.log(process.env, 'process.env');
+
 process.on('uncaughtException', (err) => {
     console.log(`UncaughtException ERROR: ${err}`);
     process.exit();

@@ -1,13 +1,15 @@
 import { useMemo } from 'react';
 import { Navigate, Outlet } from 'react-router-dom';
-import { UserRoles } from '@/entities/User';
+import { useAppSelector } from '@/shared/model';
+import { getRoles } from '@/entities/Session';
+import { UserRoles } from '@it-shop/types';
+import { getForbiddenRoute } from '@/shared/router';
 
 interface RoleGuardProps {
     requiredRoles?: UserRoles[];
 }
 export const RoleGuard = ({ requiredRoles }: RoleGuardProps) => {
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    const userRoles: UserRoles[] | undefined = ['Admin']; //temp hard code
+    const userRoles = useAppSelector(getRoles);
     const hasRequiredRoles = useMemo(() => {
         if (!requiredRoles) {
             return true;
@@ -17,7 +19,7 @@ export const RoleGuard = ({ requiredRoles }: RoleGuardProps) => {
     }, [requiredRoles, userRoles]);
 
     if (!hasRequiredRoles) {
-        return <Navigate to={'/forbidden'} replace />;
+        return <Navigate to={getForbiddenRoute()} replace />;
     }
 
     return <Outlet />;

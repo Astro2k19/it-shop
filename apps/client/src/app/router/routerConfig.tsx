@@ -26,8 +26,14 @@ import {
     getUpdateUserRoute,
     getUploadAvatarRoute,
     getUploadProductImagesRoute,
-} from '@/shared/router/conts';
-import { ProtectedRouteType } from '@/shared/router/types';
+} from '@/shared/router';
+import { RouteObject } from 'react-router-dom';
+import { UserRoles } from '@it-shop/types';
+
+export type ProtectedRouteType = RouteObject & {
+    requiredRoles?: UserRoles[];
+    isProtected?: boolean;
+};
 
 export const adminRouterConfig: Record<
     keyof typeof AdminRoutes,

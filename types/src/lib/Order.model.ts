@@ -1,17 +1,17 @@
-import mongoose, { Document } from 'mongoose';
+import mongoose, { Require_id } from 'mongoose';
 
 export type PaymentMethod = 'COD' | 'Card';
 export type OrderStatus = 'Processing' | 'Shipped' | 'Delivered';
 
-interface OrderProductInfo {
+type OrderProductInfo = {
     name: string;
     quantity: number;
     image: string;
     price: number;
     product: mongoose.Schema.Types.ObjectId;
-}
+};
 
-export interface IOrder {
+export type Order = Require_id<{
     user: mongoose.Schema.Types.ObjectId;
     shippingInfo: {
         country: string;
@@ -34,5 +34,4 @@ export interface IOrder {
     deliveredAt: number;
     createdAt: mongoose.Schema.Types.Date;
     updatedAt: mongoose.Schema.Types.Date;
-}
-export interface OrderModel extends IOrder, Document {}
+}>;

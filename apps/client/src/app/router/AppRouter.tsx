@@ -1,29 +1,37 @@
-import { routerConfig } from '../config/routerConfig';
-import { createBrowserRouter } from 'react-router-dom';
+import { routerConfig } from './routerConfig';
+import { createBrowserRouter, RouteObject } from 'react-router-dom';
 import { ProtectedRoute } from './ProtectedRoute';
 import { RoleGuard } from './RoleGuard';
 import { ErrorBoundary } from '@/pages/ErrorBoundary';
 import { baseLayout } from '@/app/layouts/baseLayout';
-import { ProtectedRouteType } from '@/shared/router/types';
+import { PersistentLogin } from './PersistentLogin';
+import { ProtectedRouteType } from './routerConfig';
 
 export const AppRouter = () => {
     const renderRoute = ([_, value]: [
         key: string,
         value: ProtectedRouteType
     ]) => {
-        const element = {
+        const element: RouteObject = {
             path: value.path,
             element: value.element,
+            errorElement: <ErrorBoundary />,
         };
 
         if (value.isProtected) {
             return {
-                element: <RoleGuard requiredRoles={value.requiredRoles} />,
-                errorElement: <ErrorBoundary />,
+                element: <PersistentLogin />,
                 children: [
                     {
-                        element: <ProtectedRoute />,
-                        children: [element],
+                        element: (
+                            <RoleGuard requiredRoles={value.requiredRoles} />
+                        ),
+                        children: [
+                            {
+                                element: <ProtectedRoute />,
+                                children: [element],
+                            },
+                        ],
                     },
                 ],
             };

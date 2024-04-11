@@ -8,7 +8,7 @@ import {
     getMainRoute,
     getMyOrdersRoute,
     getProfileRoute,
-} from '@/shared/router/conts';
+} from '@/shared/router';
 
 export const Header = () => {
     return (

@@ -1,6 +1,6 @@
-import mongoose, { Document } from 'mongoose';
+import mongoose, { Require_id } from 'mongoose';
 
-export interface IProduct {
+export type Product = Require_id<{
     user: mongoose.Schema.Types.ObjectId;
     name: string;
     description: string;
@@ -11,14 +11,12 @@ export interface IProduct {
     images: ProductImage[];
     createdAt: mongoose.Schema.Types.Date;
     updatedAt: mongoose.Schema.Types.Date;
-}
+}>;
 
-export interface ProductImage {
+export type ProductImage = {
     public_id: string;
     url: string;
-}
-
-export interface ProductModel extends IProduct, Document {}
+};
 
 export type ProductCategories =
     | 'Electronics'

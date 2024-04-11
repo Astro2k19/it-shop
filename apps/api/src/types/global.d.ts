@@ -1,10 +1,11 @@
-import { UserModel } from '@it-shop/types';
+import { User } from '@it-shop/types';
 
 declare global {
     namespace NodeJS {
         export interface ProcessEnv {
             PORT: string;
             CLIENT_URL: string;
+            API_URL: string;
             DATABASE_URI: string;
 
             SECRET_REFRESH_TOKEN: string;
@@ -23,7 +24,7 @@ declare global {
 
     namespace Express {
         interface Request {
-            user?: UserModel;
+            user?: User;
         }
     }
 

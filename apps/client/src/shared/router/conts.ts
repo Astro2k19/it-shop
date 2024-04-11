@@ -27,6 +27,7 @@ export const getProcessOrderRoute = (id: string) => `/admin/orders/${id}`;
 export const getAllUsersRoute = () => `/admin/users`;
 export const getUpdateUserRoute = (id: string) => `/admin/users/${id}`;
 export const getAllReviewsRoute = () => `/admin/reviews`;
+export const getForbiddenRoute = () => '/forbidden';
 export const Routes = {
     HOME: 'HOME',
     PRODUCT_DETAILS: 'PRODUCT_DETAILS',

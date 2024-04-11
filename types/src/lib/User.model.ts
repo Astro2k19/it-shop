@@ -1,6 +1,6 @@
-import mongoose, { Document } from 'mongoose';
+import mongoose, { Require_id } from 'mongoose';
 
-export interface UserModel extends Document {
+export type UserSchema = Require_id<{
     name: string;
     email: string;
     password: string;
@@ -13,9 +13,9 @@ export interface UserModel extends Document {
     resetPasswordExpire: number;
     createdAt: mongoose.Schema.Types.Date;
     updatedAt: mongoose.Schema.Types.Date;
-}
+}>;
 
-export interface IUser {
+export type User = Require_id<{
     name: string;
     email: string;
     avatar: {
@@ -23,6 +23,6 @@ export interface IUser {
         url: string;
     };
     roles: UserRoles[];
-}
+}>;
 
 export type UserRoles = 'User' | 'Admin';

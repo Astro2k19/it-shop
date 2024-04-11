@@ -3,7 +3,7 @@ import { IUser } from '@it-shop/types';
 import { sessionApi } from '../api/sessionApi';
 import { userApi } from '@/entities/User/@x/session';
 
-interface SessionSliceState {
+export interface SessionSliceState {
     accessToken?: string;
     user?: IUser;
     isAuthorized: boolean;

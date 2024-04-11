@@ -1,15 +1,14 @@
-import mongoose, { Document } from 'mongoose';
+import mongoose, { Require_id } from 'mongoose';
 
-export interface ReviewModel extends Document {
+export type Review = Require_id<{
     product: mongoose.Schema.Types.ObjectId;
     ratings: number;
     numOfReviews: number;
     reviews: ReviewItem[];
-}
+}>;
 
-export interface ReviewItem {
-    _id?: mongoose.Types.ObjectId;
+export type ReviewItem = Require_id<{
     user: mongoose.Schema.Types.ObjectId;
     comment: string;
     rating: number;
-}
+}>;

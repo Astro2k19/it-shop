@@ -1,5 +1,4 @@
 import type { RequestHandler, Request } from 'express';
-import { ParamsDictionary, ParsedQs } from '../../types/global';
 
 type AsyncHandler = <
     T = Request,

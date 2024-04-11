@@ -19,7 +19,6 @@ const createReduxStore = () => {
     setupListeners(store.dispatch);
     return store;
 };
-
 export const store = createReduxStore();
 
 export type RootState = ReturnType<typeof store.getState>;

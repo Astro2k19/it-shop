@@ -1,7 +1,7 @@
 import { fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 
 export const baseQuery = fetchBaseQuery({
-    baseUrl: `${import.meta.env.BASE_URL}/api/v1/`,
+    baseUrl: `${process.env.API_URL}/api/v1/`,
     prepareHeaders: (headers, { getState }) => {
         const { session } = getState() as RootState;
         if (session.accessToken) {

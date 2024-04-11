@@ -6,7 +6,8 @@ declare global {
      * and use it in @/shared/model/hooks.ts
      */
 
-    declare type RootState = import('../providers/store/appStore').RootState;
-    declare type AppDispatch =
-        import('../providers/store/appStore').AppDispatch;
+    declare type RootState = import('../store/appStore').RootState;
+    declare type AppDispatch = import('../store/appStore').AppDispatch;
 }
+
+export {};

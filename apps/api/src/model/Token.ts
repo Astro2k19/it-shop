@@ -1,7 +1,7 @@
 import mongoose from 'mongoose';
-import { TokenModel } from '@it-shop/types';
+import { Token } from '@it-shop/types';
 
-const Token = new mongoose.Schema<TokenModel>({
+const Token = new mongoose.Schema<Token>({
     user: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
     refreshToken: String,
 });
