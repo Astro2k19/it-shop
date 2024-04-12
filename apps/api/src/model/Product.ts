@@ -15,7 +15,7 @@ export const productCategories: ProductCategories[] = [
     'Home',
 ];
 
-const ProductSchema = new mongoose.Schema<Product>(
+const ProductModel = new mongoose.Schema<Product>(
     {
         user: {
             type: mongoose.Schema.Types.ObjectId,
@@ -70,7 +70,7 @@ const ProductSchema = new mongoose.Schema<Product>(
     { timestamps: true }
 );
 
-ProductSchema.post('save', async function (product: Product) {
+ProductModel.post('save', async function (product: Product) {
     const existingReview = await Review.findOne({ product: product._id });
     if (!existingReview) {
         await Review.create({
@@ -79,7 +79,7 @@ ProductSchema.post('save', async function (product: Product) {
     }
 });
 
-ProductSchema.post('insertMany', function (products: Product[]) {
+ProductModel.post('insertMany', function (products: Product[]) {
     products.forEach(async (product) => {
         await Review.create({
             product: product._id,
@@ -87,4 +87,4 @@ ProductSchema.post('insertMany', function (products: Product[]) {
     });
 });
 
-export default mongoose.model('Product', ProductSchema);
+export default mongoose.model('Product', ProductModel);

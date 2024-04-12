@@ -1,12 +1,10 @@
 import { baseApi } from '@/shared/api';
-import { IUser, UserModel } from '@it-shop/types';
-import { mapUser } from '../lib/mapUser';
+import { User } from '@it-shop/types';
 
 export const userApi = baseApi.injectEndpoints({
     endpoints: (build) => ({
-        me: build.query<IUser, void>({
+        me: build.query<User, void>({
             query: () => '/me',
-            transformResponse: (response: UserModel) => mapUser(response),
         }),
     }),
 });

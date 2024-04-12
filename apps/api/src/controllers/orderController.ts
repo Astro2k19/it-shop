@@ -1,11 +1,11 @@
 import catchAsyncErrors from '../shared/middlewares/catchAsyncErrors';
-import Order from '../model/Order';
-import { OrderModel, NewOrderSchema } from '@it-shop/types';
+import OrderModel from '../model/Order';
+import { Order, NewOrderSchema } from '@it-shop/types';
 import ErrorHandler from '../shared/utils/ErrorHandler';
 import Product from '../model/Product';
 
 // POST => /api/v1/admin/orders/new
-export const newOrder = catchAsyncErrors<NewOrderSchema, OrderModel>(
+export const newOrder = catchAsyncErrors<NewOrderSchema, Order>(
     async (req, res) => {
         const {
             shippingInfo,
@@ -18,7 +18,7 @@ export const newOrder = catchAsyncErrors<NewOrderSchema, OrderModel>(
             paymentInfo,
         } = req.body;
 
-        const order = await Order.create({
+        const order = await OrderModel.create({
             user: req.user._id,
             shippingInfo,
             orderItems,
@@ -35,17 +35,17 @@ export const newOrder = catchAsyncErrors<NewOrderSchema, OrderModel>(
 );
 
 // GET => /api/v1/orders/my
-export const getMyOrders = catchAsyncErrors<undefined, OrderModel[]>(
+export const getMyOrders = catchAsyncErrors<undefined, Order[]>(
     async (req, res) => {
-        const orders = await Order.find({ user: req.user._id });
+        const orders = await OrderModel.find({ user: req.user._id });
         res.json(orders);
     }
 );
 
 // GET => /api/v1/orders/:id
-export const getOrderDetails = catchAsyncErrors<undefined, OrderModel>(
+export const getOrderDetails = catchAsyncErrors<undefined, Order>(
     async (req, res, next) => {
-        const order = await Order.findById(req.params.id).populate(
+        const order = await OrderModel.findById(req.params.id).populate(
             'user',
             'name email'
         );
@@ -64,17 +64,17 @@ export const getOrderDetails = catchAsyncErrors<undefined, OrderModel>(
 );
 
 // GET => /api/v1/admin/orders/
-export const getAllOrders = catchAsyncErrors<undefined, OrderModel[]>(
+export const getAllOrders = catchAsyncErrors<undefined, Order[]>(
     async (req, res) => {
-        const orders = await Order.find();
+        const orders = await OrderModel.find();
         res.json(orders);
     }
 );
 
 // PUT => /api/v1/admin/orders/:id
-export const updateOrder = catchAsyncErrors<Pick<OrderModel, 'orderStatus'>>(
+export const updateOrder = catchAsyncErrors<Pick<Order, 'orderStatus'>>(
     async (req, res, next) => {
-        const order = await Order.findById(req.params.id);
+        const order = await OrderModel.findById(req.params.id);
 
         if (!order) {
             return next(
@@ -120,7 +120,7 @@ export const updateOrder = catchAsyncErrors<Pick<OrderModel, 'orderStatus'>>(
 
 // DELETE => /api/v1/admin/orders/:id
 export const deleteOrder = catchAsyncErrors(async (req, res, next) => {
-    const order = await Order.findById(req.params.id);
+    const order = await OrderModel.findById(req.params.id);
 
     if (!order) {
         return next(

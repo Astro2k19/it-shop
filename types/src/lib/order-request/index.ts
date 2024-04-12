@@ -1,6 +1,6 @@
-import { IOrder } from '../Order.model';
+import { Order } from '../order';
 
 export type NewOrderSchema = Omit<
-    IOrder,
+    Order,
     'createdAt' | 'updatedAt' | 'user' | 'deliveredAt'
 >;

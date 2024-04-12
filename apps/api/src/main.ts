@@ -6,10 +6,17 @@ import authRouter from './routes/auth';
 import orderRouter from './routes/order';
 import reviewRouter from './routes/review';
 import cookieParser from 'cookie-parser';
+import cors from 'cors';
 
 const app = express();
 connectDatabase();
 
+app.use(
+    cors({
+        origin: process.env.CLIENT_URL,
+        credentials: true,
+    })
+);
 app.use(express.json());
 app.use(cookieParser());
 app.use('/api/v1/', productsRouter);

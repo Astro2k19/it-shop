@@ -1,8 +1,8 @@
-import { Document, Model, Query } from 'mongoose';
+import { Model, Query } from 'mongoose';
 import { ProductQueryFilterSchema } from '@it-shop/types';
 
 class ApiFilters<
-    DocType extends Document,
+    DocType,
     FilterQueryBody extends ProductQueryFilterSchema = ProductQueryFilterSchema
 > {
     query: Model<DocType> | Query<DocType[], DocType>;
@@ -26,8 +26,7 @@ class ApiFilters<
               }
             : {};
 
-        this.query = (this.query as Model<DocType>).find(keywordFilter);
-
+        this.query = (this.query as Model<DocType>).find(keywordFilter).lean();
         return this;
     }
 
@@ -43,9 +42,9 @@ class ApiFilters<
             (match) => `$${match}`
         );
 
-        this.query = (this.query as Query<DocType[], DocType>).find(
-            JSON.parse(queryString)
-        );
+        this.query = (this.query as Query<DocType[], DocType>)
+            .find(JSON.parse(queryString))
+            .lean();
         return this;
     }
 
@@ -53,12 +52,11 @@ class ApiFilters<
         if (!(this.query instanceof Query)) {
             return this;
         }
-        console.log(typeof this.queryString.page);
 
         const currentPage = Number(this.queryString.page) || 1;
         const skip = currentPage * (currentPage - 1);
 
-        this.query = this.query.limit(resPerPage).skip(skip);
+        this.query = this.query.limit(resPerPage).skip(skip).lean();
         return this;
     }
 }

@@ -11,7 +11,7 @@ type HydratedUser = HydratedDocument<UserSchema, UserModelMethods>;
 
 export const roles: UserRoles[] = ['User', 'Admin'];
 
-const User = new mongoose.Schema<HydratedUser>(
+const UserModel = new mongoose.Schema<HydratedUser>(
     {
         name: {
             type: String,
@@ -44,7 +44,7 @@ const User = new mongoose.Schema<HydratedUser>(
     { timestamps: true }
 );
 
-User.pre('save', async function (next) {
+UserModel.pre('save', async function (next) {
     if (!this.isModified('password')) {
         return next();
     }
@@ -52,8 +52,8 @@ User.pre('save', async function (next) {
     this.password = await PasswordService.hashPassword(this.password);
 });
 
-User.methods.comparePasswords = async function (password: string) {
+UserModel.methods.comparePasswords = async function (password: string) {
     return bgcryp.compare(password, this.password);
 };
 
-export default mongoose.model('User', User);
+export default mongoose.model('User', UserModel);

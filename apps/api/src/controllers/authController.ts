@@ -14,6 +14,7 @@ import {
     RegisterSchema,
     UpdateUserProfileSchema,
     User,
+    UserSchema,
 } from '@it-shop/types';
 
 // POST => /api/v1/register
@@ -173,15 +174,17 @@ export const resetPassword = catchAsyncErrors<PasswordResetSchema>(
 );
 
 // GET => /api/v1/me
-export const getUserProfile = catchAsyncErrors<undefined, User>((req, res) => {
-    const user = req.user;
-    res.json(user);
-});
+export const getUserProfile = catchAsyncErrors<undefined, UserSchema>(
+    (req, res) => {
+        const user = req.user;
+        res.json(user);
+    }
+);
 
 // PUT => /api/v1/password/update
 export const updatePassword = catchAsyncErrors<PasswordUpdateSchema>(
     async (req, res, next) => {
-        const user = await User.findById(req.user._id).select('+password');
+        const user = await UserModel.findById(req.user._id).select('+password');
         const isPasswordMatched = await user.comparePasswords(
             req.body.oldPassword
         );
@@ -207,23 +210,27 @@ export const updateUserProfile = catchAsyncErrors<
     UpdateUserProfileSchema,
     User
 >(async (req, res) => {
-    const updatedUser = await User.findByIdAndUpdate(req.user._id, req.body, {
-        new: true,
-    });
+    const updatedUser = await UserModel.findByIdAndUpdate(
+        req.user._id,
+        req.body,
+        {
+            new: true,
+        }
+    );
     res.json(updatedUser);
 });
 
 // GET => /api/v1/admin/users
 export const getAllUsers = catchAsyncErrors<undefined, User[]>(
     async (req, res) => {
-        const users = await User.find();
+        const users = await UserModel.find();
         res.json(users);
     }
 );
 
 // GET => /api/v1/admin/users/:id
 export const getUserDetails = catchAsyncErrors(async (req, res, next) => {
-    const user = await User.findById(req.params.id);
+    const user = await UserModel.findById(req.params.id);
 
     if (!user) {
         return next(
@@ -236,16 +243,20 @@ export const getUserDetails = catchAsyncErrors(async (req, res, next) => {
 
 // PUT => /api/v1/admin/users/:id
 export const updateUserDetails = catchAsyncErrors(async (req, res) => {
-    const updatedUser = await User.findByIdAndUpdate(req.params.id, req.body, {
-        new: true,
-    });
+    const updatedUser = await UserModel.findByIdAndUpdate(
+        req.params.id,
+        req.body,
+        {
+            new: true,
+        }
+    );
     res.json(updatedUser);
 });
 
 // DELETE => /api/v1/admin/users/:id
 
 export const deleteUser = catchAsyncErrors(async (req, res, next) => {
-    const user = await User.findById(req.params.id);
+    const user = await UserModel.findById(req.params.id);
 
     if (!user) {
         return next(

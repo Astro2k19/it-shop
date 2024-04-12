@@ -1,6 +1,6 @@
-import mongoose, { Require_id } from 'mongoose';
+import mongoose, { Require_id, Document } from 'mongoose';
 
-export type UserSchema = Require_id<{
+export interface UserSchema extends Document {
     name: string;
     email: string;
     password: string;
@@ -13,7 +13,7 @@ export type UserSchema = Require_id<{
     resetPasswordExpire: number;
     createdAt: mongoose.Schema.Types.Date;
     updatedAt: mongoose.Schema.Types.Date;
-}>;
+}
 
 export type User = Require_id<{
     name: string;

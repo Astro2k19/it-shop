@@ -1,7 +1,7 @@
-import { ReviewItem, ReviewModel } from '@it-shop/types';
+import { ReviewItem, Review } from '@it-shop/types';
 
 export const updateProductReviewsRating = (
-    reviewModel: ReviewModel,
+    reviewModel: Review,
     updatedReviews: ReviewItem[]
 ) => {
     reviewModel.numOfReviews = updatedReviews.length;

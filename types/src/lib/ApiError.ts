@@ -1,4 +1,4 @@
-export interface ApiErrorModel extends Error {
+export interface ApiError extends Error {
     message: string;
     statusCode: number;
     stack?: string;

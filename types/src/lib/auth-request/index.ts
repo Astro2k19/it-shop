@@ -1,4 +1,4 @@
-import { UserRoles } from '../User.model';
+import { UserRoles } from '../user';
 
 export interface RegisterSchema {
     name: string;

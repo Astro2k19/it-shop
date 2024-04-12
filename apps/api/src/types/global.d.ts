@@ -1,4 +1,4 @@
-import { User } from '@it-shop/types';
+import { UserSchema } from '@it-shop/types';
 
 declare global {
     namespace NodeJS {
@@ -24,7 +24,7 @@ declare global {
 
     namespace Express {
         interface Request {
-            user?: User;
+            user?: UserSchema;
         }
     }
 

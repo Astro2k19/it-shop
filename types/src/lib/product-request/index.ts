@@ -1,6 +1,6 @@
-import { IProduct } from '../Product.model';
-
 // TODO: fix this!
+import { Product } from '../product';
+
 interface ParsedQs {
     [key: string]: undefined | string | string[] | ParsedQs | ParsedQs[];
 }
@@ -8,8 +8,8 @@ interface ParsedQs {
 type Modify<T, R> = Omit<T, keyof R> & R;
 
 export type ProductBodySchema = Omit<
-    IProduct,
-    'createdAt' | 'updatedAt' | 'user'
+    Product,
+    '_id' | 'createdAt' | 'updatedAt' | 'user'
 >;
 
 export interface ProductQueryFilterSchema

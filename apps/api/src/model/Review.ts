@@ -1,7 +1,7 @@
 import mongoose from 'mongoose';
 import { Review } from '@it-shop/types';
 
-const ReviewSchema = new mongoose.Schema<Review>({
+const ReviewModel = new mongoose.Schema<Review>({
     product: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Product',
@@ -38,4 +38,4 @@ const ReviewSchema = new mongoose.Schema<Review>({
     ],
 });
 
-export default mongoose.model('Review', ReviewSchema);
+export default mongoose.model('Review', ReviewModel);

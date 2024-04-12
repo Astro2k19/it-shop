@@ -9,8 +9,10 @@ import {
     getMyOrdersRoute,
     getProfileRoute,
 } from '@/shared/router';
+import { useState } from 'react';
 
 export const Header = () => {
+    const [search, setSearch] = useState('');
     return (
         <header>
             <nav className="navbar row">
@@ -31,7 +33,8 @@ export const Header = () => {
                                 className="form-control"
                                 placeholder="Enter Product Name ..."
                                 name="keyword"
-                                value=""
+                                value={search}
+                                onChange={(e) => setSearch(e.target.value)}
                             />
                             <button
                                 id="search_btn"

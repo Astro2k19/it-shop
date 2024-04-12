@@ -1,7 +1,7 @@
 import mongoose from 'mongoose';
 import { Order } from '@it-shop/types';
 
-const Order = new mongoose.Schema<Order>(
+const OrderModel = new mongoose.Schema<Order>(
     {
         user: {
             type: mongoose.Schema.Types.ObjectId,
@@ -102,4 +102,4 @@ const Order = new mongoose.Schema<Order>(
     { timestamps: true }
 );
 
-export default mongoose.model('order', Order);
+export default mongoose.model('order', OrderModel);
