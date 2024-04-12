@@ -1,6 +1,6 @@
 import type { Request, Response, NextFunction } from 'express';
 import { Error as MongooseError } from 'mongoose';
-import type { ApiErrorModel } from '@it-shop/types';
+import type { ApiError } from '@it-shop/types';
 import { MongoServerError } from 'mongodb';
 import Joi from 'joi';
 import ErrorHandler from '../../shared/utils/ErrorHandler';
@@ -18,7 +18,7 @@ type VerifyErrors =
     | TokenDestroyedError;
 type MiddlewareError =
     | MongooseError
-    | ApiErrorModel
+    | ApiError
     | MongoServerError
     | Joi.ValidationError
     | VerifyErrors;

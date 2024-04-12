@@ -1,10 +1,11 @@
 import catchAsyncErrors from '../shared/middlewares/catchAsyncErrors';
-import User from '../model/User';
+import UserModel from '../model/User';
 import ErrorHandler from '../shared/utils/ErrorHandler';
 import { getResetPasswordTemplate } from '../shared/utils/getResetPasswordTemplate';
 import TokenService from '../services/TokenService';
 import MailService from '../services/MailService';
 import PasswordService from '../services/PasswordService';
+
 import {
     LoginSchema,
     PasswordForgotSchema,
@@ -12,15 +13,16 @@ import {
     PasswordUpdateSchema,
     RegisterSchema,
     UpdateUserProfileSchema,
-} from '../shared/validators/auth/validatorSchemas';
-import { UserModel } from '@it-shop/types';
+    User,
+    UserSchema,
+} from '@it-shop/types';
 
 // POST => /api/v1/register
 export const registerUser = catchAsyncErrors<RegisterSchema>(
     async (req, res) => {
         const { name, email, password } = req.body;
 
-        const { _id: userId } = await User.create({
+        const { _id: userId } = await UserModel.create({
             name,
             email,
             password,
@@ -39,7 +41,7 @@ export const registerUser = catchAsyncErrors<RegisterSchema>(
 export const loginUser = catchAsyncErrors<LoginSchema>(
     async (req, res, next) => {
         const { email, password } = req.body;
-        const user = await User.findOne({ email }).select('+password');
+        const user = await UserModel.findOne({ email }).select('+password');
 
         if (!user) {
             return next(new ErrorHandler('Invalid email & password', 401));
@@ -59,6 +61,28 @@ export const loginUser = catchAsyncErrors<LoginSchema>(
     }
 );
 
+// POST => /api/v1/refresh
+export const refresh = catchAsyncErrors<LoginSchema>(async (req, res, next) => {
+    const { email, password } = req.body;
+    const user = await UserModel.findOne({ email }).select('+password');
+
+    if (!user) {
+        return next(new ErrorHandler('Invalid email & password', 401));
+    }
+
+    const isPassEqual = await user.comparePasswords(password);
+    if (!isPassEqual) {
+        return next(new ErrorHandler('Invalid email & password', 401));
+    }
+
+    const tokenService = await TokenService.getInstance();
+    const { accessToken, refreshToken } = await tokenService.getJwtTokens(
+        user.id
+    );
+    await tokenService.saveRefreshToken(user._id, refreshToken);
+    tokenService.sendTokens(res, accessToken, refreshToken);
+});
+
 // POST => /api/v1/logout
 
 export const logoutUser = catchAsyncErrors(async (req, res) => {
@@ -66,6 +90,8 @@ export const logoutUser = catchAsyncErrors(async (req, res) => {
 
     const tokenService = await TokenService.getInstance();
     await tokenService.clearRefreshToken(res, refreshToken);
+    await tokenService.destroyJwtToken(req.user._id);
+
     res.status(200).json({
         message: 'logout',
     });
@@ -75,7 +101,7 @@ export const logoutUser = catchAsyncErrors(async (req, res) => {
 export const forgotPassword = catchAsyncErrors<PasswordForgotSchema>(
     async (req, res, next) => {
         const { email } = req.body;
-        const user = await User.findOne({ email });
+        const user = await UserModel.findOne({ email });
 
         if (!user) {
             return next(
@@ -92,8 +118,6 @@ export const forgotPassword = catchAsyncErrors<PasswordForgotSchema>(
 
         const resetLink = `${process.env.CLIENT_URL}/api/v1/password/reset/${resetToken}`;
         const message = getResetPasswordTemplate(user.name, resetLink);
-        console.log(resetToken, 'resetToken');
-        console.log(hashedRestToken, 'hashedRestToken');
 
         try {
             await MailService.sendEmail({
@@ -117,7 +141,7 @@ export const forgotPassword = catchAsyncErrors<PasswordForgotSchema>(
 export const resetPassword = catchAsyncErrors<PasswordResetSchema>(
     async (req, res, next) => {
         const resetPasswordToken = PasswordService.hashToken(req.params.token);
-        const user = await User.findOne({
+        const user = await UserModel.findOne({
             resetPasswordToken,
             resetPasswordExpire: { $gt: Date.now() },
         });
@@ -150,7 +174,7 @@ export const resetPassword = catchAsyncErrors<PasswordResetSchema>(
 );
 
 // GET => /api/v1/me
-export const getUserProfile = catchAsyncErrors<undefined, UserModel>(
+export const getUserProfile = catchAsyncErrors<undefined, UserSchema>(
     (req, res) => {
         const user = req.user;
         res.json(user);
@@ -160,7 +184,7 @@ export const getUserProfile = catchAsyncErrors<undefined, UserModel>(
 // PUT => /api/v1/password/update
 export const updatePassword = catchAsyncErrors<PasswordUpdateSchema>(
     async (req, res, next) => {
-        const user = await User.findById(req.user._id).select('+password');
+        const user = await UserModel.findById(req.user._id).select('+password');
         const isPasswordMatched = await user.comparePasswords(
             req.body.oldPassword
         );
@@ -184,25 +208,29 @@ export const updatePassword = catchAsyncErrors<PasswordUpdateSchema>(
 // PUT => /api/v1/me/update
 export const updateUserProfile = catchAsyncErrors<
     UpdateUserProfileSchema,
-    UserModel
+    User
 >(async (req, res) => {
-    const updatedUser = await User.findByIdAndUpdate(req.user._id, req.body, {
-        new: true,
-    });
+    const updatedUser = await UserModel.findByIdAndUpdate(
+        req.user._id,
+        req.body,
+        {
+            new: true,
+        }
+    );
     res.json(updatedUser);
 });
 
 // GET => /api/v1/admin/users
-export const getAllUsers = catchAsyncErrors<undefined, UserModel[]>(
+export const getAllUsers = catchAsyncErrors<undefined, User[]>(
     async (req, res) => {
-        const users = await User.find();
+        const users = await UserModel.find();
         res.json(users);
     }
 );
 
 // GET => /api/v1/admin/users/:id
 export const getUserDetails = catchAsyncErrors(async (req, res, next) => {
-    const user = await User.findById(req.params.id);
+    const user = await UserModel.findById(req.params.id);
 
     if (!user) {
         return next(
@@ -215,16 +243,20 @@ export const getUserDetails = catchAsyncErrors(async (req, res, next) => {
 
 // PUT => /api/v1/admin/users/:id
 export const updateUserDetails = catchAsyncErrors(async (req, res) => {
-    const updatedUser = await User.findByIdAndUpdate(req.params.id, req.body, {
-        new: true,
-    });
+    const updatedUser = await UserModel.findByIdAndUpdate(
+        req.params.id,
+        req.body,
+        {
+            new: true,
+        }
+    );
     res.json(updatedUser);
 });
 
 // DELETE => /api/v1/admin/users/:id
 
 export const deleteUser = catchAsyncErrors(async (req, res, next) => {
-    const user = await User.findById(req.params.id);
+    const user = await UserModel.findById(req.params.id);
 
     if (!user) {
         return next(

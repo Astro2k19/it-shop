@@ -1,5 +1,10 @@
 {
   "compilerOptions": {
+    "baseUrl": "./",
+    "paths": {
+      "@/*": ["./src/*"],
+      "@it-shop/types": ["../../types/src/index.ts"],
+    },
     "jsx": "react-jsx",
     "allowJs": false,
     "esModuleInterop": false,
@@ -8,7 +13,6 @@
     "types": ["vite/client", "vitest"]
   },
   "files": [],
-  "include": [],
   "references": [
     {
       "path": "./tsconfig.app.json"

@@ -1,10 +1,11 @@
-import { UserModel } from '@it-shop/types';
+import { UserSchema } from '@it-shop/types';
 
 declare global {
     namespace NodeJS {
         export interface ProcessEnv {
             PORT: string;
             CLIENT_URL: string;
+            API_URL: string;
             DATABASE_URI: string;
 
             SECRET_REFRESH_TOKEN: string;
@@ -23,15 +24,17 @@ declare global {
 
     namespace Express {
         interface Request {
-            user?: UserModel;
+            user?: UserSchema;
         }
     }
-}
 
-interface ParsedQs {
-    [key: string]: undefined | string | string[] | ParsedQs | ParsedQs[];
-}
+    interface ParsedQs {
+        [key: string]: undefined | string | string[] | ParsedQs | ParsedQs[];
+    }
 
-interface ParamsDictionary {
-    [key: string]: undefined | string;
+    interface ParamsDictionary {
+        [key: string]: undefined | string;
+    }
+
+    type Modify<T, R> = Omit<T, keyof R> & R;
 }
