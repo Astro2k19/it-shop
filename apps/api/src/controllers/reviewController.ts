@@ -1,9 +1,8 @@
 import catchAsyncErrors from '../shared/middlewares/catchAsyncErrors';
-import { NewReviewSchema } from '../shared/validators/review/validatorSchemas';
 import Review from '../model/Review';
 import ErrorHandler from '../shared/utils/ErrorHandler';
 import Product from '../model/Product';
-import { ReviewItem } from '@it-shop/types';
+import { ReviewItem, NewReviewSchema } from '@it-shop/types';
 import { updateProductReviewsRating } from '../shared/utils/review';
 
 export const createProductReview = catchAsyncErrors<NewReviewSchema>(
@@ -22,7 +21,8 @@ export const createProductReview = catchAsyncErrors<NewReviewSchema>(
         };
         const review = await Review.findOne({ product: productId });
         const isReviewedItem = review.reviews.find(
-            (reviewItem) => req.user.id === reviewItem.user.toString()
+            (reviewItem) =>
+                req.user._id.toHexString() === reviewItem.user.toHexString()
         );
 
         if (isReviewedItem) {
@@ -64,7 +64,7 @@ export const deleteProductReviews = catchAsyncErrors(async (req, res, next) => {
     }
 
     const removedReview = review.reviews.find(
-        (review) => review._id?.toString() === reviewId
+        (review) => review._id?.toHexString() === reviewId
     );
 
     if (!removedReview) {

@@ -1,5 +1,5 @@
 import Joi from 'joi';
-import { NewReviewSchema } from './validatorSchemas';
+import { NewReviewSchema } from '@it-shop/types';
 
 const newReview = Joi.object<NewReviewSchema>().keys({
     productId: Joi.string().required(),

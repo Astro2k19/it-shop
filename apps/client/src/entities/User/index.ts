@@ -1,1 +1,1 @@
-export { type UserRoles } from './model/types/User';
+export { useGetMe, userApi } from './api/userApi';

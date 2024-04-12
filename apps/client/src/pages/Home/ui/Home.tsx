@@ -1,4 +1,5 @@
+import { PopularProductList } from '@/widgets/PopularProductList';
+
 export const Home = () => {
-    console.log('HOME PAGE');
-    return <div>Home page</div>;
+    return <PopularProductList />;
 };

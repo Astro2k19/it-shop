@@ -1,6 +1,6 @@
 import ms from 'ms';
 import Token from '../model/Token';
-import mongoose from 'mongoose';
+import { Types } from 'mongoose';
 import { Response } from 'express';
 import JWTRedis from 'jwt-redis';
 import { createClient, RedisClientType } from 'redis';
@@ -29,19 +29,19 @@ class TokenService {
         return redisClient;
     }
 
-    async getJwtTokens(id: number) {
+    async getJwtTokens(id: Types.ObjectId) {
         const accessToken = await this.getJwtAccessToken(id);
         const refreshToken = await this.getJwtRefreshToken(id);
-
         return {
             accessToken,
             refreshToken,
         };
     }
 
-    async getJwtRefreshToken(id: number) {
+    async getJwtRefreshToken(id: Types.ObjectId) {
+        const hexID = id.toHexString();
         return this.jwt.sign(
-            { id, jti: String(id) },
+            { id, jti: hexID },
             process.env.SECRET_REFRESH_TOKEN,
             {
                 expiresIn: ms(process.env.REFRESH_TOKEN_EXPIRE),
@@ -49,9 +49,10 @@ class TokenService {
         );
     }
 
-    async getJwtAccessToken(id: number) {
+    async getJwtAccessToken(id: Types.ObjectId) {
+        const hexID = id.toHexString();
         return this.jwt.sign(
-            { id, jti: String(id) },
+            { id, jti: hexID },
             process.env.SECRET_ACCESS_TOKEN,
             {
                 expiresIn: ms(process.env.ACCESS_TOKEN_EXPIRE),
@@ -59,8 +60,8 @@ class TokenService {
         );
     }
 
-    async destroyJwtToken(identifier: string) {
-        await this.jwt.destroy(identifier);
+    async destroyJwtToken(id: Types.ObjectId) {
+        await this.jwt.destroy(id.toHexString());
     }
 
     async verifyAccessToken(token: string) {
@@ -71,10 +72,7 @@ class TokenService {
         return this.jwt.verify(token, process.env.SECRET_REFRESH_TOKEN);
     }
 
-    async saveRefreshToken(
-        userId: mongoose.Schema.Types.ObjectId,
-        token: string
-    ) {
+    async saveRefreshToken(userId: Types.ObjectId, token: string) {
         const existedToken = await Token.findOne({ user: userId });
 
         if (existedToken) {

@@ -6,10 +6,17 @@ import authRouter from './routes/auth';
 import orderRouter from './routes/order';
 import reviewRouter from './routes/review';
 import cookieParser from 'cookie-parser';
+import cors from 'cors';
 
 const app = express();
 connectDatabase();
 
+app.use(
+    cors({
+        origin: process.env.CLIENT_URL,
+        credentials: true,
+    })
+);
 app.use(express.json());
 app.use(cookieParser());
 app.use('/api/v1/', productsRouter);
@@ -23,6 +30,8 @@ const server = app.listen(process.env.PORT, () => {
         `Server running on ${process.env.PORT} in ${process.env.NODE_ENV} mode`
     );
 });
+
+// console.log(process.env, 'process.env');
 
 process.on('uncaughtException', (err) => {
     console.log(`UncaughtException ERROR: ${err}`);
