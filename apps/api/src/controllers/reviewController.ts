@@ -5,10 +5,11 @@ import Product from '../model/Product';
 import { ReviewItem, NewReviewSchema } from '@it-shop/types';
 import { updateProductReviewsRating } from '../shared/utils/review';
 
+// PUT => /api/v1/reviews
 export const createProductReview = catchAsyncErrors<NewReviewSchema>(
     async (req, res, next) => {
         const { productId, rating, comment } = req.body;
-        const product = await Product.findById(productId);
+        const product = await Product.findById(productId).lean();
 
         if (!product) {
             return next(new ErrorHandler(`Product not found`, 404));
@@ -44,6 +45,7 @@ export const createProductReview = catchAsyncErrors<NewReviewSchema>(
     }
 );
 
+// GET => /api/v1/reviews
 export const getProductReviews = catchAsyncErrors(async (req, res, next) => {
     const productId = req.query.id;
     const review = await Review.findOne({ product: productId });
@@ -55,6 +57,7 @@ export const getProductReviews = catchAsyncErrors(async (req, res, next) => {
     res.json(review);
 });
 
+// DELETE => /api/v1/admin/reviews
 export const deleteProductReviews = catchAsyncErrors(async (req, res, next) => {
     const { productId, reviewId } = req.query;
     const review = await Review.findOne({ product: productId });

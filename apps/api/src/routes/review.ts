@@ -12,8 +12,10 @@ const router = express.Router();
 
 router
     .route('/reviews')
-    .put(schemaValidator('/reviews'), authMiddleware, createProductReview)
-    .get(getProductReviews)
+    .put(schemaValidator('/reviews'), authMiddleware, createProductReview);
+router.route('/reviews').get(getProductReviews);
+router
+    .route('/admin/reviews')
     .delete(authMiddleware, roleMiddleware(['Admin']), deleteProductReviews);
 
 export default router;
