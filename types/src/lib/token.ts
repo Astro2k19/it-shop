@@ -1,6 +1,6 @@
-import mongoose, { Require_id } from 'mongoose';
+import { Require_id, Types } from 'mongoose';
 
 export type Token = Require_id<{
-    user: mongoose.Schema.Types.ObjectId;
+    user: Types.ObjectId;
     refreshToken: string;
 }>;

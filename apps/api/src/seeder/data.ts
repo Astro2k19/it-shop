@@ -22,8 +22,6 @@ export default [
         category: 'Electronics',
         seller: 'Ebay',
         stock: 50,
-        numOfReviews: 32,
-        reviews: [],
     },
     {
         user: '6601d46f206ad3f961032139',
@@ -52,8 +50,6 @@ export default [
         category: 'Electronics',
         seller: 'Amazon',
         stock: 0,
-        numOfReviews: 2,
-        reviews: [],
     },
     {
         user: '6601d46f206ad3f961032139',
@@ -74,8 +70,6 @@ export default [
         category: 'Electronics',
         seller: 'Amazon',
         stock: 1,
-        numOfReviews: 12,
-        reviews: [],
     },
     {
         user: '6601d46f206ad3f961032139',
@@ -96,8 +90,6 @@ export default [
         category: 'Headphones',
         seller: 'Amazon',
         stock: 11,
-        numOfReviews: 112,
-        reviews: [],
     },
     {
         user: '6601d46f206ad3f961032139',
@@ -122,8 +114,6 @@ export default [
         category: 'Electronics',
         seller: 'Amazon',
         stock: 122,
-        numOfReviews: 2671,
-        reviews: [],
     },
     {
         user: '6601d46f206ad3f961032139',
@@ -140,8 +130,6 @@ export default [
         category: 'Accessories',
         seller: 'Amazon',
         stock: 1123,
-        numOfReviews: 6,
-        reviews: [],
     },
     {
         user: '6601d46f206ad3f961032139',
@@ -166,8 +154,6 @@ export default [
         category: 'Cameras',
         seller: 'Amazon',
         stock: 131,
-        numOfReviews: 222,
-        reviews: [],
     },
     {
         user: '6601d46f206ad3f961032139',
@@ -192,8 +178,6 @@ export default [
         category: 'Laptops',
         seller: 'Amazon',
         stock: 0,
-        numOfReviews: 56,
-        reviews: [],
     },
     {
         user: '6601d46f206ad3f961032139',
@@ -214,7 +198,5 @@ export default [
         category: 'Food',
         seller: "Kauffman's Fruit Farm & Market",
         stock: 500,
-        numOfReviews: 1,
-        reviews: [],
     },
 ];

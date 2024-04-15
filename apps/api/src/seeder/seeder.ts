@@ -1,13 +1,15 @@
 import mongoose from 'mongoose';
-import Product from '../model/Product';
+import ProductModel from '../model/Product';
 import data from './data';
+import ReviewModel from '../model/Review';
 
 const seederProducts = async () => {
     try {
         console.log(process.env.DATABASE_URI, 'process.env.DATABASE_URI');
         await mongoose.connect(process.env.DATABASE_URI);
-        await Product.deleteMany();
-        await Product.insertMany(data);
+        await ProductModel.deleteMany();
+        await ReviewModel.deleteMany();
+        await ProductModel.insertMany(data);
     } catch (error) {
         console.log(error, 'error');
     }

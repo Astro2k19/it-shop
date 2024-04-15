@@ -26,7 +26,11 @@ class ApiFilters<
               }
             : {};
 
-        this.query = (this.query as Model<DocType>).find(keywordFilter).lean();
+        // @ts-expect-error: test
+        this.query = (this.query as Model<DocType>)
+            .find(keywordFilter)
+            .populate('reviews')
+            .lean();
         return this;
     }
 
@@ -41,9 +45,10 @@ class ApiFilters<
             /\b(gte|gt|lte|lt)\b/g,
             (match) => `$${match}`
         );
-
+        // @ts-expect-error: test
         this.query = (this.query as Query<DocType[], DocType>)
             .find(JSON.parse(queryString))
+            .populate('reviews')
             .lean();
         return this;
     }
@@ -55,8 +60,12 @@ class ApiFilters<
 
         const currentPage = Number(this.queryString.page) || 1;
         const skip = currentPage * (currentPage - 1);
-
-        this.query = this.query.limit(resPerPage).skip(skip).lean();
+        // @ts-expect-error: test
+        this.query = this.query
+            .limit(resPerPage)
+            .populate('reviews')
+            .skip(skip)
+            .lean();
         return this;
     }
 }

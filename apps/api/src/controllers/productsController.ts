@@ -15,6 +15,7 @@ export const getAllProducts = catchAsyncErrors<
     const apiFilters = new ApiFilters(ProductModel, req.query)
         .search()
         .filter();
+
     apiFilters.paginate(resPerPage);
     const products = await apiFilters.query;
 

@@ -1,4 +1,4 @@
-import mongoose, { Require_id } from 'mongoose';
+import mongoose, { Require_id, Types } from 'mongoose';
 
 export type PaymentMethod = 'COD' | 'Card';
 export type OrderStatus = 'Processing' | 'Shipped' | 'Delivered';
@@ -8,11 +8,11 @@ type OrderProductInfo = {
     quantity: number;
     image: string;
     price: number;
-    product: mongoose.Schema.Types.ObjectId;
+    product: Types.ObjectId;
 };
 
 export type Order = Require_id<{
-    user: mongoose.Schema.Types.ObjectId;
+    user: Types.ObjectId;
     shippingInfo: {
         country: string;
         city: string;

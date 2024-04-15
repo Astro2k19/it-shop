@@ -7,6 +7,7 @@ export type Review = Require_id<{
     reviews: ReviewItem[];
 }>;
 
+// don't use Require_id because _id is required
 export type ReviewItem = {
     _id?: Types.ObjectId;
     user: Types.ObjectId;

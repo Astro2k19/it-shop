@@ -1,7 +1,8 @@
-import mongoose, { Require_id } from 'mongoose';
+import mongoose, { Require_id, Types } from 'mongoose';
+import { Review } from './review';
 
 export type Product = Require_id<{
-    user: mongoose.Schema.Types.ObjectId;
+    user: Types.ObjectId;
     name: string;
     description: string;
     price: number;
@@ -9,6 +10,7 @@ export type Product = Require_id<{
     stock: number;
     seller: string;
     images: ProductImage[];
+    reviews: Types.ObjectId | Review;
     createdAt: mongoose.Schema.Types.Date;
     updatedAt: mongoose.Schema.Types.Date;
 }>;

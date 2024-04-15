@@ -1,7 +1,7 @@
-// TODO: fix this!
 import { Product } from '../product';
 
-interface ParsedQs {
+// todo: make them global
+export interface ParsedQs {
     [key: string]: undefined | string | string[] | ParsedQs | ParsedQs[];
 }
 
@@ -9,7 +9,7 @@ type Modify<T, R> = Omit<T, keyof R> & R;
 
 export type ProductBodySchema = Omit<
     Product,
-    '_id' | 'createdAt' | 'updatedAt' | 'user'
+    '_id' | 'createdAt' | 'updatedAt' | 'user' | 'reviews'
 >;
 
 export interface ProductQueryFilterSchema
