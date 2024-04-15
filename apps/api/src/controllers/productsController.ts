@@ -38,7 +38,9 @@ export const newProduct = catchAsyncErrors<ProductBodySchema>(
 
 // GET => /api/v1/products/:id
 export const getProductDetails = catchAsyncErrors(async (req, res, next) => {
-    const product = await ProductModel.findById(req.params.id).lean();
+    const product = await ProductModel.findById(req.params.id)
+        .populate('reviews')
+        .lean();
     if (!product) {
         return next(new ErrorHandler('Product not found', 404));
     }

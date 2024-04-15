@@ -1,5 +1,8 @@
 import { useGetPopularProducts } from '../api/popularProductApi';
 import { BaseProductList } from '@/widgets/BaseProductList';
+import { useEffect } from 'react';
+import { toast } from 'react-hot-toast';
+import { ApiError } from '@it-shop/types';
 /**
  * 👇 ATTENTION (FSD Custom feature)
  *
@@ -14,7 +17,14 @@ import { BaseProductList } from '@/widgets/BaseProductList';
  */
 
 export const PopularProductList = () => {
-    const { data, isLoading } = useGetPopularProducts();
+    const { data, isLoading, error, isError } = useGetPopularProducts();
+
+    useEffect(() => {
+        if (isError) {
+            const err = error as ApiError;
+            toast.error(err.message);
+        }
+    }, [error, isError]);
 
     return (
         <div className="row">

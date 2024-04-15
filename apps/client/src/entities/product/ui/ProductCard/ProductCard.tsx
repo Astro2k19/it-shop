@@ -5,7 +5,6 @@ import { getProductDetailsRoute } from '@/shared/router';
 import { Rating } from 'react-simple-star-rating';
 import cx from 'classnames';
 import styles from './ProductCard.module.scss';
-import classNames from 'classnames';
 export const ProductCard = ({ _id, name, price, images, reviews }: Product) => {
     const productId = _id.toString();
     const review = reviews as Review;
@@ -39,7 +38,7 @@ export const ProductCard = ({ _id, name, price, images, reviews }: Product) => {
                             size={25}
                         />
                         <span
-                            className={classNames(
+                            className={cx(
                                 {
                                     [styles['no-reviews']]:
                                         review.numOfReviews === 0,

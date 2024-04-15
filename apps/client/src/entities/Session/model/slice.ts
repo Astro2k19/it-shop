@@ -1,11 +1,11 @@
 import { createSlice, isAnyOf } from '@reduxjs/toolkit';
-import { IUser } from '@it-shop/types';
+import { User } from '@it-shop/types';
 import { sessionApi } from '../api/sessionApi';
-import { userApi } from '@/entities/User/@x/session';
+import { userApi } from '@/entities/user/@x/session';
 
 export interface SessionSliceState {
     accessToken?: string;
-    user?: IUser;
+    user?: User;
     isAuthorized: boolean;
 }
 

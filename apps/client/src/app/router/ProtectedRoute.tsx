@@ -1,6 +1,6 @@
 import { Navigate, Outlet, useLocation } from 'react-router-dom';
 import { useAppSelector } from '@/shared/model';
-import { isAuthorized } from '@/entities/Session';
+import { isAuthorized } from '@/entities/session';
 import { getForbiddenRoute } from '@/shared/router';
 
 export const ProtectedRoute = () => {

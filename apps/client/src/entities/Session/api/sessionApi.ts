@@ -1,7 +1,7 @@
 import { baseApi } from '@/shared/api/baseApi';
 import { LoginSchema, RegisterSchema } from '@it-shop/types';
-import { SessionResponse } from '@/entities/Session/api/types';
-import { userApi } from '@/entities/User/@x/session';
+import { SessionResponse } from '@/entities/session/api/types';
+import { userApi } from '@/entities/user/@x/session';
 
 export const sessionApi = baseApi.injectEndpoints({
     endpoints: (build) => ({

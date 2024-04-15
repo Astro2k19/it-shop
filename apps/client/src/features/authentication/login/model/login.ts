@@ -1,5 +1,5 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
-import { sessionApi } from '@/entities/Session/api/sessionApi';
+import { sessionApi } from '@/entities/session/api/sessionApi';
 import { LoginSchema } from '@it-shop/types';
 
 export const loginThunk = createAsyncThunk(

@@ -2,7 +2,7 @@ import { routerConfig } from './routerConfig';
 import { createBrowserRouter, RouteObject } from 'react-router-dom';
 import { ProtectedRoute } from './ProtectedRoute';
 import { RoleGuard } from './RoleGuard';
-import { ErrorBoundary } from '@/pages/ErrorBoundary';
+import { ErrorBoundary } from '@/pages/errorBoundary';
 import { baseLayout } from '@/app/layouts/baseLayout';
 import { PersistentLogin } from './PersistentLogin';
 import { ProtectedRouteType } from './routerConfig';

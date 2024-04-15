@@ -17,6 +17,13 @@ app.use(
         credentials: true,
     })
 );
+
+app.use((req, res, next) => {
+    setTimeout(() => {
+        next();
+    }, 3000);
+});
+
 app.use(express.json());
 app.use(cookieParser());
 app.use('/api/v1/', productsRouter);

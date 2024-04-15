@@ -1,5 +1,6 @@
 import { Product } from '@it-shop/types';
 import { ProductCard } from '@/entities/product';
+import { Loader } from '@/shared/ui';
 
 interface BaseProductListProps {
     products?: Product[];
@@ -10,7 +11,7 @@ export const BaseProductList = ({
     isLoading,
 }: BaseProductListProps) => {
     if (isLoading) {
-        return <div>LOADING</div>;
+        return <Loader />;
     }
 
     return (
