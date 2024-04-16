@@ -2,11 +2,12 @@ import catchAsyncErrors from '../shared/middlewares/catchAsyncErrors';
 import Review from '../model/Review';
 import ErrorHandler from '../shared/utils/ErrorHandler';
 import Product from '../model/Product';
-import { ReviewItem, NewReviewSchema } from '@it-shop/types';
+import { ReviewItem } from '@it-shop/types';
 import { updateProductReviewsRating } from '../shared/utils/review';
+import { NewReviewSchemaType } from '@it-shop/schemas';
 
 // PUT => /api/v1/reviews
-export const createProductReview = catchAsyncErrors<NewReviewSchema>(
+export const createProductReview = catchAsyncErrors<NewReviewSchemaType>(
     async (req, res, next) => {
         const { productId, rating, comment } = req.body;
         const product = await Product.findById(productId).lean();

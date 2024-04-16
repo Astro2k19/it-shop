@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-import { Order } from '@it-shop/types';
+import { Order, orderStatuses, paymentMethods } from '@it-shop/types';
 
 const OrderModel = new mongoose.Schema<Order>(
     {
@@ -59,7 +59,7 @@ const OrderModel = new mongoose.Schema<Order>(
             type: String,
             required: [true, 'Please select payment method'],
             enum: {
-                values: ['COD', 'Card'],
+                values: paymentMethods,
                 message: 'Please select: COD or Card ',
             },
         },
@@ -92,7 +92,7 @@ const OrderModel = new mongoose.Schema<Order>(
         orderStatus: {
             type: String,
             enum: {
-                values: ['Processing', 'Shipped', 'Delivered'],
+                values: orderStatuses,
                 message: 'Please select correct order status',
             },
             default: 'Processing',

@@ -8,20 +8,25 @@ import {
 } from '../controllers/productsController';
 import authMiddleware from '../shared/middlewares/authMiddleware';
 import roleMiddleware from '../shared/middlewares/roleMiddleware';
-import schemaValidator from '../shared/middlewares/schemaValidator';
+import { validateData } from '../shared/middlewares/schemaValidator';
+import {
+    newProductSchema,
+    productsFilterQuerySchema,
+    updateProductSchema,
+} from '@it-shop/schemas';
 
 const router = express.Router();
 
 router
     .route('/products')
-    .get(schemaValidator('/products', 'query'), getAllProducts);
+    .get(validateData(productsFilterQuerySchema, 'query'), getAllProducts);
 
 router
     .route('/admin/products')
     .post(
         authMiddleware,
         roleMiddleware(['Admin']),
-        schemaValidator('/admin/products/:id/create'),
+        validateData(newProductSchema),
         newProduct
     );
 router.route('/products/:id').get(getProductDetails);
@@ -30,7 +35,7 @@ router
     .put(
         authMiddleware,
         roleMiddleware(['Admin']),
-        schemaValidator('/admin/products/:id/update'),
+        validateData(updateProductSchema),
         updateProduct
     );
 router

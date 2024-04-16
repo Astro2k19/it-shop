@@ -1,19 +1,6 @@
 import mongoose, { HydratedDocument } from 'mongoose';
-import { Product, ProductCategories } from '@it-shop/types';
+import { Product, productCategories } from '@it-shop/types';
 import Review from './Review';
-
-export const productCategories: ProductCategories[] = [
-    'Electronics',
-    'Cameras',
-    'Laptops',
-    'Accessories',
-    'Headphones',
-    'Food',
-    'Books',
-    'Sports',
-    'Outdoor',
-    'Home',
-];
 
 const ProductModel = new mongoose.Schema<Product>(
     {

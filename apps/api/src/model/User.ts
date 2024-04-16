@@ -1,15 +1,14 @@
 import mongoose, { HydratedDocument } from 'mongoose';
-import { UserRoles, UserSchema } from '@it-shop/types';
+import { UserSchema } from '@it-shop/types';
 import bgcryp from 'bcrypt';
 import PasswordService from '../services/PasswordService';
+import { roles } from '@it-shop/schemas';
 
 interface UserModelMethods {
     comparePasswords: (password: string) => Promise<boolean>;
 }
 
 type HydratedUser = HydratedDocument<UserSchema, UserModelMethods>;
-
-export const roles: UserRoles[] = ['User', 'Admin'];
 
 const UserModel = new mongoose.Schema<HydratedUser>(
     {

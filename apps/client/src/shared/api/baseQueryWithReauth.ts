@@ -8,8 +8,9 @@ import {
 import { baseQuery } from './baseQuery';
 import { invalidateAccessToken } from './invalidateAccessTokenEvent';
 import { Mutex } from 'async-mutex';
+import { StatusCodes } from 'http-status-codes';
 
-const AUTH_ERROR_CODES = new Set([401]);
+const AUTH_ERROR_CODES = new Set([StatusCodes.UNAUTHORIZED]);
 export const mutex = new Mutex();
 
 export const baseQueryWithReauth = async (

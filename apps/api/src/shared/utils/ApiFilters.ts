@@ -1,9 +1,9 @@
 import { Model, Query } from 'mongoose';
-import { ProductQueryFilterSchema } from '@it-shop/types';
+import { ProductsFilterQuerySchemaType } from '@it-shop/schemas';
 
 class ApiFilters<
     DocType,
-    FilterQueryBody extends ProductQueryFilterSchema = ProductQueryFilterSchema
+    FilterQueryBody extends ProductsFilterQuerySchemaType = ProductsFilterQuerySchemaType
 > {
     query: Model<DocType> | Query<DocType[], DocType>;
     queryString: FilterQueryBody;
@@ -17,20 +17,21 @@ class ApiFilters<
     }
 
     search() {
-        const keywordFilter = this.queryString.keyword
-            ? {
-                  name: {
-                      $regex: this.queryString.keyword,
-                      $options: 'i',
-                  },
-              }
-            : {};
+        let keywordFilter = {};
 
-        // @ts-expect-error: test
+        if (this.queryString.keyword) {
+            keywordFilter = {
+                name: {
+                    $regex: this.queryString.keyword,
+                    $options: 'i',
+                },
+            };
+        }
+
         this.query = (this.query as Model<DocType>)
             .find(keywordFilter)
             .populate('reviews')
-            .lean();
+            .lean() as Query<DocType[], DocType>;
         return this;
     }
 
@@ -45,11 +46,10 @@ class ApiFilters<
             /\b(gte|gt|lte|lt)\b/g,
             (match) => `$${match}`
         );
-        // @ts-expect-error: test
         this.query = (this.query as Query<DocType[], DocType>)
             .find(JSON.parse(queryString))
             .populate('reviews')
-            .lean();
+            .lean() as Query<DocType[], DocType>;
         return this;
     }
 
@@ -60,12 +60,11 @@ class ApiFilters<
 
         const currentPage = Number(this.queryString.page) || 1;
         const skip = currentPage * (currentPage - 1);
-        // @ts-expect-error: test
         this.query = this.query
             .limit(resPerPage)
             .populate('reviews')
             .skip(skip)
-            .lean();
+            .lean() as Query<DocType[], DocType>;
         return this;
     }
 }

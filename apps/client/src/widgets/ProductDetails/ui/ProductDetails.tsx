@@ -45,7 +45,7 @@ export const ProductDetails = ({
                 </div>
                 <div className="row justify-content-start mt-5">
                     {productDetails.images.map((image) => (
-                        <div className="col-2 ms-4 mt-2">
+                        <div className="col-2 ms-4 mt-2" key={image.public_id}>
                             <div
                                 role="button"
                                 onClick={() => setActiveImage(image.url)}

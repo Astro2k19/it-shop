@@ -31,3 +31,19 @@ export type ProductCategories =
     | 'Sports'
     | 'Outdoor'
     | 'Home';
+
+export const productCategories = [
+    'Electronics',
+    'Cameras',
+    'Laptops',
+    'Accessories',
+    'Headphones',
+    'Food',
+    'Books',
+    'Sports',
+    'Outdoor',
+    'Home',
+] as const;
+
+export const paymentMethods = ['COD', 'Card'] as const;
+export const orderStatuses = ['Processing', 'Shipped', 'Delivered'] as const;

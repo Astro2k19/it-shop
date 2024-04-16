@@ -2,7 +2,6 @@ import type { Request, Response, NextFunction } from 'express';
 import { Error as MongooseError } from 'mongoose';
 import type { ApiError } from '@it-shop/types';
 import { MongoServerError } from 'mongodb';
-import Joi from 'joi';
 import ErrorHandler from '../../shared/utils/ErrorHandler';
 import {
     JsonWebTokenError,
@@ -10,6 +9,8 @@ import {
     TokenExpiredError,
     TokenDestroyedError,
 } from 'jwt-redis';
+import { ZodError } from 'zod';
+import { StatusCodes } from 'http-status-codes';
 
 type VerifyErrors =
     | JsonWebTokenError
@@ -20,7 +21,7 @@ type MiddlewareError =
     | MongooseError
     | ApiError
     | MongoServerError
-    | Joi.ValidationError
+    | ZodError
     | VerifyErrors;
 
 enum MongoServerErrorList {
@@ -35,39 +36,44 @@ export default (
 ) => {
     let error = new ErrorHandler(
         err.message || 'Internal Server Error',
-        'statusCode' in err ? err.statusCode : 500
+        'statusCode' in err ? err.statusCode : StatusCodes.INTERNAL_SERVER_ERROR
     );
 
     if (err instanceof MongooseError.CastError) {
         error = new ErrorHandler(
             `Resource not found. Invalid: ${err.path}`,
-            404
+            StatusCodes.NOT_FOUND
         );
     }
-    console.log(err, 'err');
 
     if (err instanceof MongooseError.ValidationError) {
         const errors = Object.values(err.errors)
             .map((errValue) => errValue.message)
             .join(', ');
-        error = new ErrorHandler(errors, 400);
+        error = new ErrorHandler(errors, StatusCodes.BAD_REQUEST);
     }
 
-    if (err instanceof Joi.ValidationError) {
-        const errors = err.details
-            .map(({ message }) => message.replace(/['"]/g, ''))
+    if (err instanceof ZodError) {
+        const errors = err.errors
+            .map(
+                (issue) =>
+                    `${issue.path.join('.')} is ${issue.message.toLowerCase()}`
+            )
             .join(', ');
-        error = new ErrorHandler(errors, 422);
+        error = new ErrorHandler(errors, StatusCodes.BAD_REQUEST);
     }
 
     if ('code' in err && err.code === MongoServerErrorList.DuplicateKey) {
         const [duplicatedField] = Object.keys(err.keyValue);
-        error = new ErrorHandler(`Duplicate ${duplicatedField} entered`, 400);
+        error = new ErrorHandler(
+            `Duplicate ${duplicatedField} entered`,
+            StatusCodes.BAD_REQUEST
+        );
     }
 
     if (err instanceof TokenExpiredError) {
         const message = `JSON Web Token is expired. Try again!`;
-        error = new ErrorHandler(message, 400);
+        error = new ErrorHandler(message, StatusCodes.UNAUTHORIZED);
     }
 
     if (
@@ -75,7 +81,7 @@ export default (
         err instanceof TokenDestroyedError
     ) {
         const message = 'JSON Web Token is invalid. Try again!';
-        error = new ErrorHandler(message, 400);
+        error = new ErrorHandler(message, StatusCodes.BAD_REQUEST);
     }
 
     if (process.env.NODE_ENV === 'development') {
