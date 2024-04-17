@@ -21,12 +21,16 @@ export const getAllProducts = catchAsyncErrors<
         .search()
         .filter();
 
+    const filteredProducts = await apiFilters.query;
+
     apiFilters.paginate(resPerPage);
-    const products = await apiFilters.query;
+    //@ts-expect-error: need to fix
+    const paginatedProducts = await apiFilters.query?.clone();
 
     res.json({
-        products,
-        count: products?.length,
+        products: paginatedProducts,
+        count: filteredProducts?.length,
+        resPerPage,
     });
 });
 

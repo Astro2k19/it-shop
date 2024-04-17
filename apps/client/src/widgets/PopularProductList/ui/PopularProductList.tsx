@@ -1,8 +1,9 @@
 import { useGetPopularProducts } from '../api/popularProductApi';
 import { BaseProductList } from '@/widgets/BaseProductList';
-import { useEffect } from 'react';
+import { useCallback, useEffect } from 'react';
 import { toast } from 'react-hot-toast';
-import { ApiError } from '@it-shop/types';
+import { FetchBaseQueryError } from '@reduxjs/toolkit/query/react';
+import { useSearchParams } from 'react-router-dom';
 /**
  * 👇 ATTENTION (FSD Custom feature)
  *
@@ -13,18 +14,34 @@ import { ApiError } from '@it-shop/types';
  * So to solve this problem there is a new layer for base widgets (widgets/Base*),
  * which allow import them in other slices in this project.
  * For example you can import widgets/BaseProductList in other widgets
- *
  */
 
 export const PopularProductList = () => {
-    const { data, isLoading, error, isError } = useGetPopularProducts();
+    const [searchParams, setSearchParams] = useSearchParams();
+    const page = searchParams.get('page') || '1';
+    const { data, isFetching, error, isError } = useGetPopularProducts({
+        page,
+    });
 
     useEffect(() => {
         if (isError) {
-            const err = error as ApiError;
-            toast.error(err.message);
+            const err = error as FetchBaseQueryError;
+            console.log(err);
+            if (err.data instanceof Error) {
+                console.log('here');
+                toast.error(err.data.message);
+                return;
+            }
+            // toast.error(err.data);
         }
     }, [error, isError]);
+
+    const onChangePage = useCallback(
+        (page: number) => {
+            setSearchParams({ page: page.toString() });
+        },
+        [setSearchParams]
+    );
 
     return (
         <div className="row">
@@ -34,7 +51,10 @@ export const PopularProductList = () => {
                 </h1>
                 <BaseProductList
                     products={data?.products}
-                    isLoading={isLoading}
+                    count={data?.count}
+                    resPerPage={data?.resPerPage}
+                    onChangePage={onChangePage}
+                    isFetching={isFetching}
                 />
             </div>
         </div>

@@ -59,11 +59,11 @@ class ApiFilters<
         }
 
         const currentPage = Number(this.queryString.page) || 1;
-        const skip = currentPage * (currentPage - 1);
+        const skip = resPerPage * (currentPage - 1);
         this.query = this.query
             .limit(resPerPage)
-            .populate('reviews')
             .skip(skip)
+            .populate('reviews')
             .lean() as Query<DocType[], DocType>;
         return this;
     }

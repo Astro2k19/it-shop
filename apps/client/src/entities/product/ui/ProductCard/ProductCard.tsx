@@ -9,7 +9,7 @@ export const ProductCard = ({ _id, name, price, images, reviews }: Product) => {
     const productId = _id.toString();
     const review = reviews as Review;
     return (
-        <div className="col-sm-12 col-md-6 col-lg-3 my-3" key={productId}>
+        <div className="col-sm-12 col-md-6 col-lg-3 my-3">
             <div className={cx('card p-3 round ed', styles.card)}>
                 <img
                     className={cx(
