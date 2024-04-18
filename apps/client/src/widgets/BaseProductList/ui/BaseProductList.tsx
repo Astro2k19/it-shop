@@ -3,13 +3,13 @@ import { ProductCard } from '@/entities/product';
 import { Loader } from '@/shared/ui';
 import { Pagination } from '@/features/pagination';
 
-interface BaseProductListProps {
+type BaseProductListProps = {
     products?: Product[];
     count?: number;
     resPerPage?: number;
     isFetching?: boolean;
     onChangePage: (page: number) => void;
-}
+};
 export const BaseProductList = (props: BaseProductListProps) => {
     const { products, count, resPerPage, isFetching, onChangePage } = props;
 
@@ -24,13 +24,15 @@ export const BaseProductList = (props: BaseProductListProps) => {
                     <ProductCard key={product._id.toString()} {...product} />
                 ))}
             </div>
-            <div className={'d-flex justify-content-center'}>
-                <Pagination
-                    itemsCount={count as number}
-                    resPerPage={resPerPage as number}
-                    onChangePage={onChangePage}
-                />
-            </div>
+            {products && resPerPage && count && (
+                <div className={'d-flex justify-content-center'}>
+                    <Pagination
+                        itemsCount={count}
+                        resPerPage={resPerPage}
+                        onChangePage={onChangePage}
+                    />
+                </div>
+            )}
         </section>
     );
 };

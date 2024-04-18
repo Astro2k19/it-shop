@@ -3,7 +3,8 @@ import { BaseProductList } from '@/widgets/BaseProductList';
 import { useCallback, useEffect } from 'react';
 import { toast } from 'react-hot-toast';
 import { FetchBaseQueryError } from '@reduxjs/toolkit/query/react';
-import { useSearchParams } from 'react-router-dom';
+import { useProductFilters } from '@/entities/product';
+import { ProductsFilter } from '@/widgets/ProductsFilter/ui/ProductsFilter';
 /**
  * 👇 ATTENTION (FSD Custom feature)
  *
@@ -17,37 +18,35 @@ import { useSearchParams } from 'react-router-dom';
  */
 
 export const PopularProductList = () => {
-    const [searchParams, setSearchParams] = useSearchParams();
-    const page = searchParams.get('page') || '1';
+    const { page, keyword, setProductsFilter } = useProductFilters();
     const { data, isFetching, error, isError } = useGetPopularProducts({
         page,
+        keyword,
     });
 
     useEffect(() => {
         if (isError) {
             const err = error as FetchBaseQueryError;
-            console.log(err);
-            if (err.data instanceof Error) {
-                console.log('here');
-                toast.error(err.data.message);
-                return;
-            }
+            toast.error(err.data as string);
             // toast.error(err.data);
         }
     }, [error, isError]);
 
     const onChangePage = useCallback(
         (page: number) => {
-            setSearchParams({ page: page.toString() });
+            setProductsFilter({ page: page.toString() });
         },
-        [setSearchParams]
+        [setProductsFilter]
     );
 
     return (
         <div className="row">
+            <ProductsFilter />
             <div className="col-12 col-sm-6 col-md-12">
                 <h1 id="products_heading" className="text-secondary">
-                    Latest Products
+                    {keyword
+                        ? `${data?.products?.length} Products found with keyword: ${keyword}`
+                        : 'Popular Products'}
                 </h1>
                 <BaseProductList
                     products={data?.products}

@@ -9,11 +9,12 @@ const popularProductApi = baseApi.injectEndpoints({
             ProductsFilterQuerySchemaType
         >({
             // todo: implement /products/popular
-            query: ({ page }) => ({
+            query: ({ page, keyword }) => ({
                 url: '/products',
                 method: 'GET',
                 params: {
                     page,
+                    keyword,
                 },
             }),
         }),

@@ -19,14 +19,12 @@ export const newProductSchema = z.object({
 export const updateProductSchema = newProductSchema.partial();
 
 export const productsFilterQuerySchema = z.object({
-    name: z.string().optional().nullable(),
-    description: z.string().optional().nullable(),
-    price: z.string().optional().nullable(),
-    category: z.string().optional().nullable(),
-    stock: z.string().optional().nullable(),
-    seller: z.string().optional().nullable(),
     page: z.string().optional().nullable(),
     keyword: z.string().optional().nullable(),
+    category: z.string().optional().nullable(),
+    'price[gte]': z.string().optional().nullable(),
+    'price[lte]': z.string().optional().nullable(),
+    'ratings[lte]': z.string().optional().nullable(),
 });
 
 export type NewProductSchemaType = z.infer<typeof newProductSchema>;
