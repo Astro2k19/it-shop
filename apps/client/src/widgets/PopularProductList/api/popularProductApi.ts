@@ -1,20 +1,26 @@
 import { baseApi } from '@/shared/api';
-import { type ResponseGetProducts } from '@/entities/product';
-import { ProductsFilterQuerySchemaType } from '@it-shop/schemas';
+import {
+    ProductsFilterQueryArgs,
+    type ResponseGetProducts,
+} from '@/entities/product';
 
 const popularProductApi = baseApi.injectEndpoints({
     endpoints: (build) => ({
         getPopularProducts: build.query<
             ResponseGetProducts,
-            ProductsFilterQuerySchemaType
+            ProductsFilterQueryArgs
         >({
             // todo: implement /products/popular
-            query: ({ page, keyword }) => ({
+            query: ({ page, keyword, category, min, max, ratings }) => ({
                 url: '/products',
                 method: 'GET',
                 params: {
                     page,
                     keyword,
+                    category,
+                    'price[gte]': min,
+                    'price[lte]': max,
+                    'ratings[gte]': ratings,
                 },
             }),
         }),

@@ -3,8 +3,7 @@ import { BaseProductList } from '@/widgets/BaseProductList';
 import { useCallback, useEffect } from 'react';
 import { toast } from 'react-hot-toast';
 import { FetchBaseQueryError } from '@reduxjs/toolkit/query/react';
-import { useProductFilters } from '@/entities/product';
-import { ProductsFilter } from '@/widgets/ProductsFilter/ui/ProductsFilter';
+import { ProductsFilter, useProductFilters } from '@/features/product/filters';
 /**
  * 👇 ATTENTION (FSD Custom feature)
  *
@@ -18,10 +17,15 @@ import { ProductsFilter } from '@/widgets/ProductsFilter/ui/ProductsFilter';
  */
 
 export const PopularProductList = () => {
-    const { page, keyword, setProductsFilter } = useProductFilters();
+    const { page, keyword, ratings, min, max, category, setProductsFilter } =
+        useProductFilters();
     const { data, isFetching, error, isError } = useGetPopularProducts({
         page,
         keyword,
+        ratings,
+        min,
+        max,
+        category,
     });
 
     useEffect(() => {
