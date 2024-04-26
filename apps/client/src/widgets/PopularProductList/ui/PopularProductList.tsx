@@ -3,7 +3,7 @@ import { BaseProductList } from '@/widgets/BaseProductList';
 import { useCallback, useEffect } from 'react';
 import { toast } from 'react-hot-toast';
 import { FetchBaseQueryError } from '@reduxjs/toolkit/query/react';
-import { ProductsFilter, useProductFilters } from '@/features/product/filters';
+import { useProductFilters } from '@/features/product/filters';
 /**
  * 👇 ATTENTION (FSD Custom feature)
  *
@@ -31,8 +31,8 @@ export const PopularProductList = () => {
     useEffect(() => {
         if (isError) {
             const err = error as FetchBaseQueryError;
+            // todo: fix, handle this error
             toast.error(err.data as string);
-            // toast.error(err.data);
         }
     }, [error, isError]);
 
@@ -43,15 +43,14 @@ export const PopularProductList = () => {
         [setProductsFilter]
     );
 
+    const titleText = keyword
+        ? `${data?.products?.length} Products found with keyword: ${keyword}`
+        : 'Popular Products';
+
     return (
         <div className="row">
-            <ProductsFilter />
-            <div className="col-12 col-sm-6 col-md-12">
-                <h1 id="products_heading" className="text-secondary">
-                    {keyword
-                        ? `${data?.products?.length} Products found with keyword: ${keyword}`
-                        : 'Popular Products'}
-                </h1>
+            <div className="col-12">
+                <h1 className="text-secondary">{titleText}</h1>
                 <BaseProductList
                     products={data?.products}
                     count={data?.count}

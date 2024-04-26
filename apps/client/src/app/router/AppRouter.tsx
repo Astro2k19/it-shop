@@ -6,6 +6,30 @@ import { ErrorBoundary } from '@/pages/errorBoundary';
 import { baseLayout } from '@/app/layouts/baseLayout';
 import { PersistentLogin } from './PersistentLogin';
 import { ProtectedRouteType } from './routerConfig';
+import { baseLayoutWithProductsFilter } from '@/app/layouts/baseLayoutWithProductsFilter';
+import { getMainRoute } from '@/shared/router';
+import { Home } from '@/pages/home';
+import { UserRoles } from '@it-shop/types';
+
+const getProtectedRoute = (
+    element: RouteObject,
+    requiredRoles?: UserRoles[]
+) => {
+    return {
+        element: <PersistentLogin />,
+        children: [
+            {
+                element: <RoleGuard requiredRoles={requiredRoles} />,
+                children: [
+                    {
+                        element: <ProtectedRoute />,
+                        children: [element],
+                    },
+                ],
+            },
+        ],
+    };
+};
 
 export const AppRouter = () => {
     const renderRoute = ([_, value]: [
@@ -19,22 +43,7 @@ export const AppRouter = () => {
         };
 
         if (value.isProtected) {
-            return {
-                element: <PersistentLogin />,
-                children: [
-                    {
-                        element: (
-                            <RoleGuard requiredRoles={value.requiredRoles} />
-                        ),
-                        children: [
-                            {
-                                element: <ProtectedRoute />,
-                                children: [element],
-                            },
-                        ],
-                    },
-                ],
-            };
+            return getProtectedRoute(element, value.requiredRoles);
         }
 
         return element;
@@ -42,9 +51,18 @@ export const AppRouter = () => {
 
     return createBrowserRouter([
         {
-            path: '/',
             element: baseLayout,
             children: Object.entries(routerConfig).map(renderRoute),
+        },
+        {
+            element: baseLayoutWithProductsFilter,
+            children: [
+                {
+                    path: getMainRoute(),
+                    element: <Home />,
+                    index: true,
+                },
+            ],
         },
     ]);
 };

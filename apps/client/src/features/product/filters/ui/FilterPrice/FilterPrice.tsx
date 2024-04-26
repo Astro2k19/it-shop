@@ -29,7 +29,7 @@ export const FilterPrice = () => {
                 <div className="row">
                     <div className="col">
                         <input
-                            type="text"
+                            type="number"
                             className="form-control"
                             placeholder="Min ($)"
                             name="min"
@@ -39,7 +39,7 @@ export const FilterPrice = () => {
                     </div>
                     <div className="col">
                         <input
-                            type="text"
+                            type="number"
                             className="form-control"
                             placeholder="Max ($)"
                             name="max"

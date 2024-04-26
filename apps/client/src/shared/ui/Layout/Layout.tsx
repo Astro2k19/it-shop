@@ -2,9 +2,11 @@ import { ReactNode } from 'react';
 import { Outlet, ScrollRestoration } from 'react-router-dom';
 import styles from './Layout.module.scss';
 import { Toaster } from 'react-hot-toast';
+import cx from 'classnames';
 interface LayoutProps {
     navbarSlot?: ReactNode;
     headerSlot?: ReactNode;
+    sidebarSlot?: ReactNode;
     footerSlot?: ReactNode;
     announcementSlot?: ReactNode;
 }
@@ -16,8 +18,28 @@ export const Layout = (props: LayoutProps) => {
             {props.announcementSlot}
             {props.navbarSlot}
             {props.headerSlot}
-            <div className={styles.content}>
-                <div className="container">{<Outlet />}</div>
+            <div className={styles.main}>
+                <div className="container">
+                    <div className="row">
+                        {props.sidebarSlot && (
+                            <div
+                                className={cx(
+                                    styles.sidebar,
+                                    'col-12 col-md-3'
+                                )}
+                            >
+                                {props.sidebarSlot}
+                            </div>
+                        )}
+                        <main
+                            className={cx(styles.content, 'col-12', {
+                                'col-md-9': Boolean(props.sidebarSlot),
+                            })}
+                        >
+                            {<Outlet />}
+                        </main>
+                    </div>
+                </div>
             </div>
             {props.footerSlot}
             <ScrollRestoration />

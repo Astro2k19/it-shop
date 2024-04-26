@@ -1,6 +1,6 @@
 import { FaSearch } from 'react-icons/fa';
 import { FormEventHandler, useState } from 'react';
-import { useProductFilters } from '@/entities/product';
+import { useProductFilters } from '@/features/product/filters';
 
 export const Search = () => {
     const { setProductsFilter } = useProductFilters();

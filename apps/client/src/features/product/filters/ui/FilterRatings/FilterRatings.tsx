@@ -18,14 +18,14 @@ export const FilterRatings = () => {
                         className="form-check-input"
                         type="radio"
                         name="ratings"
-                        id={ratingNumber.toString()}
+                        id={`ratings-${ratingNumber}`}
                         checked={ratings === ratingNumber.toString()}
                         value={ratingNumber}
                         onChange={handleChange}
                     />
                     <label
                         className="form-check-label"
-                        htmlFor={ratingNumber.toString()}
+                        htmlFor={`ratings-${ratingNumber}`}
                     >
                         <Rating
                             initialValue={ratingNumber}
