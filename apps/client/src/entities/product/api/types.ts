@@ -7,7 +7,7 @@ export interface ResponseGetProducts {
     resPerPage: number;
 }
 
-export type ProductsFilterQueryArgs = Omit<
+export type ProductFilterQueryString = Omit<
     ProductsFilterQuerySchemaType,
     'price[gte]' | 'price[lte]' | 'ratings[gte]'
 > & {
@@ -15,3 +15,5 @@ export type ProductsFilterQueryArgs = Omit<
     max?: string;
     ratings?: string;
 };
+
+export type ProductFilterQueryStringKeys = keyof ProductFilterQueryString;

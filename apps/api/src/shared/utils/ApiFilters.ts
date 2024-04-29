@@ -46,9 +46,10 @@ class ApiFilters<
             /\b(gte|gt|lte|lt)\b/g,
             (match) => `$${match}`
         );
+        console.log(queryString, 'queryString');
         this.query = (this.query as Query<DocType[], DocType>)
-            .find(JSON.parse(queryString))
-            .populate('reviews')
+            .find({ ...JSON.parse(queryString), parts: [{}] })
+            .populate({ path: 'reviews', match: { ratings: { $gte: 1 } } })
             .lean() as Query<DocType[], DocType>;
         return this;
     }

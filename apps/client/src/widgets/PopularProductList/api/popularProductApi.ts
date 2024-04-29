@@ -1,6 +1,6 @@
 import { baseApi } from '@/shared/api';
 import {
-    ProductsFilterQueryArgs,
+    ProductFilterQueryString,
     type ResponseGetProducts,
 } from '@/entities/product';
 
@@ -8,7 +8,7 @@ const popularProductApi = baseApi.injectEndpoints({
     endpoints: (build) => ({
         getPopularProducts: build.query<
             ResponseGetProducts,
-            ProductsFilterQueryArgs
+            ProductFilterQueryString
         >({
             // todo: implement /products/popular
             query: ({ page, keyword, category, min, max, ratings }) => ({

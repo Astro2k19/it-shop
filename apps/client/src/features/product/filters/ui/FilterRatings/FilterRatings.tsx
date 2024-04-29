@@ -2,13 +2,13 @@ import { ChangeEventHandler } from 'react';
 import { Rating } from 'react-simple-star-rating';
 import { useProductFilters } from '../../lib/useProductFilters';
 
-const rating = [5, 4, 3, 2, 1] as const;
-export const FilterRatings = () => {
-    const { setProductsFilter, ratings } = useProductFilters();
-    const handleChange: ChangeEventHandler<HTMLInputElement> = ({ target }) => {
-        setProductsFilter({ [target.name]: target.value });
-    };
+interface FilterRatingsProps {
+    handleCheckbox: (value?: string) => ChangeEventHandler<HTMLInputElement>;
+}
 
+const rating = [5, 4, 3, 2, 1] as const;
+export const FilterRatings = ({ handleCheckbox }: FilterRatingsProps) => {
+    const { ratings } = useProductFilters();
     return (
         <>
             <h5 className="mb-3">Ratings</h5>
@@ -16,12 +16,12 @@ export const FilterRatings = () => {
                 <div className="form-check">
                     <input
                         className="form-check-input"
-                        type="radio"
+                        type="checkbox"
                         name="ratings"
                         id={`ratings-${ratingNumber}`}
                         checked={ratings === ratingNumber.toString()}
                         value={ratingNumber}
-                        onChange={handleChange}
+                        onChange={handleCheckbox(ratings)}
                     />
                     <label
                         className="form-check-label"

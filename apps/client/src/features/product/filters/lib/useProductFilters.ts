@@ -1,9 +1,13 @@
 import { useSearchParams } from 'react-router-dom';
 import { useCallback } from 'react';
-import { ProductsFilterQueryArgs } from '@/entities/product';
+import {
+    ProductFilterQueryString,
+    ProductFilterQueryStringKeys,
+} from '@/entities/product';
 
-type ProductsFilterResult = ProductsFilterQueryArgs & {
-    setProductsFilter: (newParams: ProductsFilterQueryArgs) => void;
+type ProductsFilterResult = ProductFilterQueryString & {
+    setProductsFilter: (newParams: ProductFilterQueryString) => void;
+    removeProductsFilter: (key: ProductFilterQueryStringKeys) => void;
 };
 
 export const useProductFilters = (): ProductsFilterResult => {
@@ -16,7 +20,7 @@ export const useProductFilters = (): ProductsFilterResult => {
     const ratings = searchParams.get('ratings') || undefined;
 
     const setProductsFilter = useCallback(
-        (newParams: ProductsFilterQueryArgs) => {
+        (newParams: ProductFilterQueryString) => {
             setSearchParams((prevParams) => {
                 return new URLSearchParams({
                     ...Object.fromEntries(prevParams.entries()),
@@ -27,6 +31,14 @@ export const useProductFilters = (): ProductsFilterResult => {
         [setSearchParams]
     );
 
+    const removeProductsFilter = useCallback(
+        (key: ProductFilterQueryStringKeys) => {
+            searchParams.delete(key);
+            setSearchParams(searchParams);
+        },
+        [searchParams, setSearchParams]
+    );
+
     return {
         page,
         keyword,
@@ -35,5 +47,6 @@ export const useProductFilters = (): ProductsFilterResult => {
         max,
         ratings,
         setProductsFilter,
+        removeProductsFilter,
     };
 };

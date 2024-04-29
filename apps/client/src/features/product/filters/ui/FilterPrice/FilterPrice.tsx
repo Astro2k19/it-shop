@@ -7,6 +7,7 @@ export const FilterPrice = () => {
         min: minPrice,
         max: maxPrice,
     } = useProductFilters();
+
     const [min, setMin] = useState<string>(minPrice || '0');
     const [max, setMax] = useState<string>(maxPrice || '0');
     const onSubmit: FormEventHandler<HTMLFormElement> = (event) => {
@@ -15,6 +16,10 @@ export const FilterPrice = () => {
             ...(min ? { min } : {}),
             ...(max ? { max } : {}),
         });
+    };
+
+    const replaceAllNonDigitCharacters = (value: string) => {
+        return value.replace(/\D/, '');
     };
 
     return (
@@ -29,22 +34,32 @@ export const FilterPrice = () => {
                 <div className="row">
                     <div className="col">
                         <input
-                            type="number"
+                            type="text"
                             className="form-control"
                             placeholder="Min ($)"
                             name="min"
+                            min={0}
                             value={min}
-                            onChange={(e) => setMin(e.target.value)}
+                            onChange={(e) =>
+                                setMin(
+                                    replaceAllNonDigitCharacters(e.target.value)
+                                )
+                            }
                         />
                     </div>
                     <div className="col">
                         <input
-                            type="number"
+                            type="text"
                             className="form-control"
                             placeholder="Max ($)"
                             name="max"
+                            min={0}
                             value={max}
-                            onChange={(e) => setMax(e.target.value)}
+                            onChange={(e) =>
+                                setMax(
+                                    replaceAllNonDigitCharacters(e.target.value)
+                                )
+                            }
                         />
                     </div>
                     <div className="col">
