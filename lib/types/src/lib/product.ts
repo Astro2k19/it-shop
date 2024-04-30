@@ -11,6 +11,7 @@ export type Product = Require_id<{
     seller: string;
     images: ProductImage[];
     reviews: Types.ObjectId | Review;
+    averageRating: number;
     createdAt: mongoose.Schema.Types.Date;
     updatedAt: mongoose.Schema.Types.Date;
 }>;

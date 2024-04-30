@@ -1,7 +1,7 @@
 import ProductModel from '../model/Product';
 import ErrorHandler from '../shared/utils/ErrorHandler';
 import catchAsyncErrors from '../shared/middlewares/catchAsyncErrors';
-import ApiFilters from '../shared/utils/ApiFilters';
+import ApiProductFilters from '../shared/utils/ApiProductFilters';
 import {
     NewProductSchemaType,
     ProductsFilterQuerySchemaType,
@@ -17,19 +17,12 @@ export const getAllProducts = catchAsyncErrors<
     ProductsFilterQuerySchemaType
 >(async (req, res) => {
     const resPerPage = 4;
-    const apiFilters = new ApiFilters(ProductModel, req.query)
-        .search()
-        .filter();
-
-    const filteredProducts = await apiFilters.query;
-
-    apiFilters.paginate(resPerPage);
-    //@ts-expect-error: need to fix
-    const paginatedProducts = await apiFilters.query?.clone();
+    const apiFilters = new ApiProductFilters(ProductModel, req.query);
+    const products = await apiFilters.applyFilters();
 
     res.json({
-        products: paginatedProducts,
-        count: filteredProducts?.length,
+        products: products,
+        count: 40,
         resPerPage,
     });
 });

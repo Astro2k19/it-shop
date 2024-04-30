@@ -5,37 +5,23 @@ const ReviewModel = new mongoose.Schema<Review>({
     product: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Product',
-        require: true,
+        required: true,
     },
-    ratings: {
+    user: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+        required: true,
+    },
+    comment: {
+        type: String,
+        required: true,
+    },
+    rating: {
         type: Number,
         default: 0,
-        min: 0,
+        min: 1,
         max: 5,
     },
-    numOfReviews: {
-        type: Number,
-        default: 0,
-    },
-    reviews: [
-        {
-            user: {
-                type: mongoose.Schema.Types.ObjectId,
-                ref: 'User',
-                require: true,
-            },
-            comment: {
-                type: String,
-                require: true,
-            },
-            rating: {
-                type: Number,
-                require: true,
-                min: 1,
-                max: 5,
-            },
-        },
-    ],
 });
 
 export default mongoose.model('Review', ReviewModel);

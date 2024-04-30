@@ -1,6 +1,6 @@
 import mongoose, { HydratedDocument } from 'mongoose';
-import { Product, productCategories } from '@it-shop/types';
-import Review from './Review';
+import { Product, productCategories } from '../../../../lib/types/src';
+import ReviewModel from './Review';
 
 const ProductModel = new mongoose.Schema<Product>(
     {
@@ -57,27 +57,33 @@ const ProductModel = new mongoose.Schema<Product>(
             type: mongoose.Schema.Types.ObjectId,
             ref: 'Review',
         },
+        averageRating: {
+            type: Number,
+            default: 0,
+        },
     },
     { timestamps: true }
 );
 
 ProductModel.post('save', async (product) => {
-    const existingReview = await Review.findOne({ product: product._id });
+    const existingReview = await ReviewModel.findOne({ product: product._id });
     if (!existingReview) {
-        const review = await Review.create({
+        const review = await ReviewModel.create({
             product: product._id,
+            user: product.user,
         });
-        product.reviews = review._id;
+        // product.reviews = review._id;
         await product.save();
     }
 });
 
 ProductModel.post('insertMany', (products: HydratedDocument<Product>[]) => {
     products.forEach(async (product) => {
-        const review = await Review.create({
+        const review = await ReviewModel.create({
             product: product._id,
+            user: product.user,
         });
-        product.reviews = review._id;
+        // product.reviews = review._id;
         await product.save();
     });
 });
