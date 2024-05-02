@@ -18,14 +18,20 @@ export const newProductSchema = z.object({
 
 export const updateProductSchema = newProductSchema.partial();
 
-export const productsFilterQuerySchema = z.object({
-    page: z.string().optional(),
-    keyword: z.string().optional(),
-    category: z.string().optional(),
-    'price[gte]': z.string().optional(),
-    'price[lte]': z.string().optional(),
-    'ratings[gte]': z.string().optional(),
-});
+export const productsFilterQuerySchema = z
+    .object({
+        page: z.string(),
+        keyword: z.string(),
+        category: z.string(),
+        price: z.object({
+            gte: z.string(),
+            lte: z.string(),
+        }),
+        ratings: z.object({
+            gte: z.string(),
+        }),
+    })
+    .deepPartial();
 
 export type NewProductSchemaType = z.infer<typeof newProductSchema>;
 export type UpdateProductSchemaType = z.infer<typeof updateProductSchema>;

@@ -9,7 +9,7 @@ export interface ResponseGetProducts {
 
 export type ProductFilterQueryString = Omit<
     ProductsFilterQuerySchemaType,
-    'price[gte]' | 'price[lte]' | 'ratings[gte]'
+    'price' | 'ratings'
 > & {
     min?: string;
     max?: string;

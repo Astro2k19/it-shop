@@ -1,100 +1,112 @@
-import { Model, PipelineStage } from 'mongoose';
+import { Model, Document, Aggregate } from 'mongoose';
 import { ProductsFilterQuerySchemaType } from '@it-shop/schemas';
 
 class ApiProductFilters<
-    DocType,
+    DocType extends Document,
     FilterQueryBody extends ProductsFilterQuerySchemaType = ProductsFilterQuerySchemaType
 > {
     query: Model<DocType>;
     queryString: FilterQueryBody;
-    pipeline: PipelineStage[];
 
     constructor(query: Model<DocType>, queryString: FilterQueryBody) {
         this.query = query;
         this.queryString = queryString;
-        this.pipeline = [];
     }
 
-    applyFilters() {
-        this.matchKeyword();
-        this.addCategoryFilterToPipeline();
-        this.addPriceFiltersToPipeline();
-        this.addRatingFilterToPipeline();
-        this.paginateResults();
-
-        return this.query.aggregate(this.pipeline).exec();
+    async applyFilters(): Promise<{ products: DocType[]; count: number }> {
+        const pipeline = this.buildPipeline();
+        const aggregationResult = await this.query.aggregate(pipeline).exec();
+        const [products, count] =
+            this.extractProductsAndCount(aggregationResult);
+        return { products, count };
     }
 
-    matchKeyword() {
+    private buildPipeline(): any[] {
+        const pipeline: any[] = [];
+        this.matchKeyword(pipeline);
+        this.addCategoryFilterToPipeline(pipeline);
+        this.addPriceFiltersToPipeline(pipeline);
+        this.addRatingFilterToPipeline(pipeline);
+        this.paginateResults(pipeline);
+        this.addTotalCountStage(pipeline);
+        return pipeline;
+    }
+
+    private matchKeyword(pipeline: any[]): void {
         const { keyword } = this.queryString;
         if (keyword) {
-            this.pipeline.push({
+            pipeline.push({
                 $match: { name: { $regex: keyword, $options: 'i' } },
             });
         }
     }
 
-    addCategoryFilterToPipeline() {
+    private addCategoryFilterToPipeline(pipeline: any[]): void {
         const { category } = this.queryString;
         if (category) {
-            this.pipeline.push({ $match: { category } });
+            pipeline.push({ $match: { category } });
         }
     }
 
-    addPriceFiltersToPipeline() {
-        const { 'price[gte]': priceGte, 'price[lte]': priceLte } =
-            this.queryString;
-        if (priceGte) {
-            this.pipeline.push({
-                $match: { price: { $gte: parseFloat(priceGte) } },
+    private addPriceFiltersToPipeline(pipeline: any[]): void {
+        const price = this.queryString.price;
+        if (price?.gte) {
+            pipeline.push({
+                $match: { price: { $gte: parseFloat(price.gte) } },
             });
         }
-        if (priceLte) {
-            this.pipeline.push({
-                $match: { price: { $lte: parseFloat(priceLte) } },
+        if (price?.lte) {
+            pipeline.push({
+                $match: { price: { $lte: parseFloat(price.lte) } },
             });
         }
     }
 
-    addRatingFilterToPipeline() {
-        const { 'ratings[gte]': ratingsGte } = this.queryString;
-        console.log(this.queryString, 'this.queryString');
-
-        this.pipeline.push({
-            $lookup: {
-                from: 'reviews',
-                localField: '_id',
-                foreignField: 'product',
-                as: 'reviews',
-            },
-        });
-
-        this.pipeline.push({
-            $addFields: {
-                averageRating: {
-                    $cond: {
-                        if: { $gt: [{ $size: '$reviews' }, 0] },
-                        then: { $avg: '$reviews.rating' },
-                        else: 0,
+    private addRatingFilterToPipeline(pipeline: any[]): void {
+        const ratings = this.queryString.ratings;
+        if (ratings?.gte) {
+            pipeline.push({
+                $lookup: {
+                    from: 'reviews',
+                    localField: '_id',
+                    foreignField: 'product',
+                    as: 'reviews',
+                },
+            });
+            pipeline.push({
+                $addFields: {
+                    averageRating: {
+                        $avg: { $ifNull: ['$reviews.rating', 0] },
                     },
                 },
-            },
-        });
-        console.log(ratingsGte, 'ratingsGte');
-        console.log(ratingsGte, "{ ratings: { gte: '2' } } this.queryString");
-        if (ratingsGte) {
-            this.pipeline.push({
-                $match: { averageRating: { $gte: parseFloat(ratingsGte) } },
+            });
+            pipeline.push({
+                $match: { averageRating: { $gte: parseFloat(ratings.gte) } },
             });
         }
     }
 
-    paginateResults() {
+    private paginateResults(pipeline: any[]): void {
         const { page = 1 } = this.queryString;
         const resPerPage = 4;
         const currentPage = Number(page);
         const skip = resPerPage * (currentPage - 1);
-        this.pipeline.push({ $skip: skip }, { $limit: resPerPage });
+        pipeline.push({ $skip: skip }, { $limit: resPerPage });
+    }
+
+    private addTotalCountStage(pipeline: any[]): void {
+        pipeline.push({ $group: { _id: null, count: { $sum: 1 } } });
+    }
+
+    private extractProductsAndCount(
+        aggregationResult: any[]
+    ): [DocType[], number] {
+        const products = aggregationResult.slice(0, -1); // Exclude the last element (total count)
+        const count =
+            aggregationResult.length > 0
+                ? aggregationResult[aggregationResult.length - 1].count
+                : 0;
+        return [products, count];
     }
 }
 

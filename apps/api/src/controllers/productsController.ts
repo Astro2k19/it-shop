@@ -18,12 +18,13 @@ export const getAllProducts = catchAsyncErrors<
 >(async (req, res) => {
     const resPerPage = 4;
     const apiFilters = new ApiProductFilters(ProductModel, req.query);
-    const products = await apiFilters.applyFilters();
+    const { products, count } = await apiFilters.applyFilters();
+    console.log(products, count);
 
     res.json({
-        products: products,
-        count: 40,
-        resPerPage,
+        products,
+        total: count,
+        count: resPerPage,
     });
 });
 
