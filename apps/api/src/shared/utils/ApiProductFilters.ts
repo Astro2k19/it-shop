@@ -1,112 +1,119 @@
-import { Model, Document, Aggregate } from 'mongoose';
+import { FilterQuery, Model, PipelineStage } from 'mongoose';
 import { ProductsFilterQuerySchemaType } from '@it-shop/schemas';
 
 class ApiProductFilters<
-    DocType extends Document,
-    FilterQueryBody extends ProductsFilterQuerySchemaType = ProductsFilterQuerySchemaType
+    DocType,
+    FilterQueryBody extends FilterQuery<ProductsFilterQuerySchemaType> = FilterQuery<ProductsFilterQuerySchemaType>
 > {
-    query: Model<DocType>;
-    queryString: FilterQueryBody;
+    readonly query: Model<DocType>;
+    readonly filterQueryBody: FilterQueryBody;
+    readonly pipeline: PipelineStage[];
+    readonly resPerPage = 4;
 
-    constructor(query: Model<DocType>, queryString: FilterQueryBody) {
+    constructor(query: Model<DocType>, filterQueryBody: FilterQueryBody) {
         this.query = query;
-        this.queryString = queryString;
+        this.filterQueryBody = filterQueryBody;
+        this.pipeline = [];
     }
 
-    async applyFilters(): Promise<{ products: DocType[]; count: number }> {
-        const pipeline = this.buildPipeline();
-        const aggregationResult = await this.query.aggregate(pipeline).exec();
-        const [products, count] =
-            this.extractProductsAndCount(aggregationResult);
+    public async applyFilters(): Promise<{
+        products: DocType[];
+        count: number;
+    }> {
+        this.buildPipeline();
+        const [products, count] = await Promise.all([
+            this.query.aggregate(this.pipeline).exec(),
+            this.getTotalCount(),
+        ]);
         return { products, count };
     }
 
-    private buildPipeline(): any[] {
-        const pipeline: any[] = [];
-        this.matchKeyword(pipeline);
-        this.addCategoryFilterToPipeline(pipeline);
-        this.addPriceFiltersToPipeline(pipeline);
-        this.addRatingFilterToPipeline(pipeline);
-        this.paginateResults(pipeline);
-        this.addTotalCountStage(pipeline);
-        return pipeline;
+    private buildPipeline() {
+        this.matchKeyword();
+        this.addCategoryFilterToPipeline();
+        this.addPriceFiltersToPipeline();
+        this.addRatingFilterToPipeline();
+        this.paginateResults();
     }
 
-    private matchKeyword(pipeline: any[]): void {
-        const { keyword } = this.queryString;
+    private async getTotalCount(): Promise<number> {
+        const countPipeline: PipelineStage[] = [...this.pipeline];
+        // Remove $skip and $limit stages from the pipeline
+        countPipeline.pop(); // Remove $limit
+        countPipeline.pop(); // Remove $skip
+        countPipeline.push({ $count: 'total' });
+        const result = await this.query.aggregate(countPipeline).exec();
+        return result.length > 0 ? result[0].total : 0;
+    }
+
+    private matchKeyword() {
+        const { keyword } = this.filterQueryBody;
         if (keyword) {
-            pipeline.push({
+            this.pipeline.push({
                 $match: { name: { $regex: keyword, $options: 'i' } },
             });
         }
     }
 
-    private addCategoryFilterToPipeline(pipeline: any[]): void {
-        const { category } = this.queryString;
+    private addCategoryFilterToPipeline() {
+        const { category } = this.filterQueryBody;
         if (category) {
-            pipeline.push({ $match: { category } });
+            this.pipeline.push({ $match: { category } });
         }
     }
 
-    private addPriceFiltersToPipeline(pipeline: any[]): void {
-        const price = this.queryString.price;
+    private addPriceFiltersToPipeline() {
+        const price = this.filterQueryBody.price;
+
         if (price?.gte) {
-            pipeline.push({
+            this.pipeline.push({
                 $match: { price: { $gte: parseFloat(price.gte) } },
             });
         }
+
         if (price?.lte) {
-            pipeline.push({
-                $match: { price: { $lte: parseFloat(price.lte) } },
+            this.pipeline.push({
+                $match: { price: { $gte: parseFloat(price.lte) } },
             });
         }
     }
 
-    private addRatingFilterToPipeline(pipeline: any[]): void {
-        const ratings = this.queryString.ratings;
-        if (ratings?.gte) {
-            pipeline.push({
-                $lookup: {
-                    from: 'reviews',
-                    localField: '_id',
-                    foreignField: 'product',
-                    as: 'reviews',
-                },
-            });
-            pipeline.push({
-                $addFields: {
-                    averageRating: {
-                        $avg: { $ifNull: ['$reviews.rating', 0] },
+    public addRatingFilterToPipeline() {
+        const ratings = this.filterQueryBody.ratings;
+
+        this.pipeline.push({
+            $lookup: {
+                from: 'reviews',
+                localField: '_id',
+                foreignField: 'product',
+                as: 'reviews',
+            },
+        });
+
+        this.pipeline.push({
+            $addFields: {
+                averageRating: {
+                    $cond: {
+                        if: { $gt: [{ $size: '$reviews' }, 0] },
+                        then: { $avg: '$reviews.rating' },
+                        else: 0,
                     },
                 },
-            });
-            pipeline.push({
+            },
+        });
+
+        if (ratings?.gte) {
+            this.pipeline.push({
                 $match: { averageRating: { $gte: parseFloat(ratings.gte) } },
             });
         }
     }
 
-    private paginateResults(pipeline: any[]): void {
-        const { page = 1 } = this.queryString;
-        const resPerPage = 4;
+    private paginateResults() {
+        const { page = 1 } = this.filterQueryBody;
         const currentPage = Number(page);
-        const skip = resPerPage * (currentPage - 1);
-        pipeline.push({ $skip: skip }, { $limit: resPerPage });
-    }
-
-    private addTotalCountStage(pipeline: any[]): void {
-        pipeline.push({ $group: { _id: null, count: { $sum: 1 } } });
-    }
-
-    private extractProductsAndCount(
-        aggregationResult: any[]
-    ): [DocType[], number] {
-        const products = aggregationResult.slice(0, -1); // Exclude the last element (total count)
-        const count =
-            aggregationResult.length > 0
-                ? aggregationResult[aggregationResult.length - 1].count
-                : 0;
-        return [products, count];
+        const skip = this.resPerPage * (currentPage - 1);
+        this.pipeline.push({ $skip: skip }, { $limit: this.resPerPage });
     }
 }
 

@@ -8,6 +8,7 @@ import {
     UpdateProductSchemaType,
 } from '@it-shop/schemas';
 import { Product } from '@it-shop/types';
+import mongoose from 'mongoose';
 
 // GET => /api/v1/products
 export const getAllProducts = catchAsyncErrors<
@@ -16,15 +17,13 @@ export const getAllProducts = catchAsyncErrors<
     undefined,
     ProductsFilterQuerySchemaType
 >(async (req, res) => {
-    const resPerPage = 4;
     const apiFilters = new ApiProductFilters(ProductModel, req.query);
     const { products, count } = await apiFilters.applyFilters();
-    console.log(products, count);
 
     res.json({
         products,
-        total: count,
-        count: resPerPage,
+        totalFilteredCount: count,
+        resPerPage: apiFilters.resPerPage,
     });
 });
 
@@ -41,9 +40,34 @@ export const newProduct = catchAsyncErrors<NewProductSchemaType>(
 
 // GET => /api/v1/products/:id
 export const getProductDetails = catchAsyncErrors(async (req, res, next) => {
-    const product = await ProductModel.findById(req.params.id)
-        .populate('reviews')
-        .lean();
+    console.log(req.params.id, 'req.params.id');
+    const _id = new mongoose.Types.ObjectId(req.params.id);
+    const [product] = await ProductModel.aggregate<Product>([
+        {
+            $match: {
+                _id,
+            },
+        },
+        {
+            $lookup: {
+                from: 'reviews',
+                localField: '_id',
+                foreignField: 'product',
+                as: 'reviews',
+            },
+        },
+        {
+            $addFields: {
+                averageRating: {
+                    $cond: {
+                        if: { $gt: [{ $size: '$reviews' }, 0] },
+                        then: { $avg: '$reviews.rating' },
+                        else: 0,
+                    },
+                },
+            },
+        },
+    ]).exec();
     if (!product) {
         return next(new ErrorHandler('Product not found', 404));
     }

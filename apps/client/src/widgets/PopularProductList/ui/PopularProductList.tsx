@@ -53,7 +53,7 @@ export const PopularProductList = () => {
                 <h1 className="text-secondary">{titleText}</h1>
                 <BaseProductList
                     products={data?.products}
-                    count={data?.count}
+                    count={data?.totalFilteredCount}
                     resPerPage={data?.resPerPage}
                     onChangePage={onChangePage}
                     isFetching={isFetching}
