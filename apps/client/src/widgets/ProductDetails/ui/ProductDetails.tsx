@@ -1,4 +1,4 @@
-import { Product, Review } from '@it-shop/types';
+import { Product } from '@it-shop/types';
 import { Loader } from '@/shared/ui';
 import { Rating } from 'react-simple-star-rating';
 import { useEffect, useState } from 'react';
