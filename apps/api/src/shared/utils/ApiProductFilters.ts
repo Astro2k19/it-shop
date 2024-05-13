@@ -1,32 +1,46 @@
-import { FilterQuery, Model } from 'mongoose';
+import mongoose, { FilterQuery, Model } from 'mongoose';
 import { ProductsFilterQuerySchemaType } from '@it-shop/schemas';
 import ProductsApiPipelineBuilder from './ProductsApiPipelineBuilder';
 
-class ProductsApi<
-    DocType,
-    FilterQueryBody extends FilterQuery<ProductsFilterQuerySchemaType> = FilterQuery<ProductsFilterQuerySchemaType>
-> {
+interface FilteredResult<DocType> {
+    products: DocType[];
+    count: [{ total: number } | undefined];
+}
+
+class ProductsApi<DocType> {
     private readonly model: Model<DocType>;
 
     constructor(model: Model<DocType>) {
         this.model = model;
     }
 
-    public async applyFilters(filterQueryBody: FilterQueryBody): Promise<{
-        products: DocType[];
-        count: number;
-    }> {
+    public async applyFilters(
+        filterQueryBody: FilterQuery<ProductsFilterQuerySchemaType>
+    ) {
         const productsApiPipelineBuilder = new ProductsApiPipelineBuilder();
         const pipeline =
             productsApiPipelineBuilder.buildAggregatePipeline(filterQueryBody);
-        const [result] = await this.model.aggregate(pipeline).exec();
-        const products = result.products;
-        const count =
-            result.count && result.count.length > 0 ? result.count[0].total : 0;
-        return { products, count };
+        const [result] = await this.model
+            .aggregate<FilteredResult<DocType>>(pipeline)
+            .exec();
+        const { products, count } = result;
+        const totalFilteredCount = count[0]?.total ?? 0;
+        return { products, totalFilteredCount };
     }
 
-    // findByMatch(match: {}) {}
+    public async findById(_id: mongoose.Types.ObjectId) {
+        const productsApiPipelineBuilder = new ProductsApiPipelineBuilder();
+        const matchPipeline = productsApiPipelineBuilder.buildMatchStage({
+            _id,
+        });
+        const ratingStages =
+            productsApiPipelineBuilder.buildLookupAndRatingStages();
+
+        const [product] = await this.model
+            .aggregate<DocType>([matchPipeline, ...ratingStages])
+            .exec();
+        return product;
+    }
 }
 
 export default ProductsApi;

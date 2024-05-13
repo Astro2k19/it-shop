@@ -1,117 +1,122 @@
 import { FilterQuery, PipelineStage } from 'mongoose';
 import { ProductsFilterQuerySchemaType } from '@it-shop/schemas';
 
-class ProductsApiPipelineBuilder<
-    FilterQueryBody extends FilterQuery<ProductsFilterQuerySchemaType> = FilterQuery<ProductsFilterQuerySchemaType>
-> {
+class ProductsApiPipelineBuilder {
     private readonly resPerPage = 4;
 
     public buildAggregatePipeline(
-        filterQueryBody: FilterQueryBody
+        filterQueryBody: FilterQuery<ProductsFilterQuerySchemaType>
     ): PipelineStage[] {
-        const aggregatePipeline: PipelineStage[] = [];
+        const countPipeline = this.buildCountPipeline();
+        const paginationStage = this.buildPaginationStages(filterQueryBody);
 
-        aggregatePipeline.push(...this.buildProductsPipeline(filterQueryBody), {
+        const productsPipeline = this.buildProductsPipeline(filterQueryBody);
+
+        const facetStage = {
             $facet: {
-                // @ts-expect-error: test
-                products: this.addPaginationStages(filterQueryBody),
-                // @ts-expect-error: test
-                count: this.addTotalCountStages(),
+                products: paginationStage,
+                count: countPipeline,
             },
-        });
+        } as PipelineStage;
 
-        return aggregatePipeline;
+        return [...productsPipeline, facetStage];
     }
 
-    private buildProductsPipeline(
-        filterQueryBody: FilterQueryBody
+    public buildProductsPipeline(
+        filterQueryBody: FilterQuery<ProductsFilterQuerySchemaType>
     ): PipelineStage[] {
-        const productsPipeline: Array<PipelineStage | Record<never, never>> = [
-            this.addKeywordMatchStage(filterQueryBody),
-            this.addCategoryFilterStage(filterQueryBody),
-            this.addPriceFilterStages(filterQueryBody),
-            this.addRatingFilterStages(filterQueryBody),
+        return [
+            this.buildMatchStage(filterQueryBody),
+            ...this.buildLookupAndRatingStages(filterQueryBody),
         ];
-
-        return productsPipeline as PipelineStage[];
     }
 
-    private addTotalCountStages() {
-        return {
-            $count: 'count',
-        };
+    public buildCountPipeline(): PipelineStage[] {
+        return [{ $count: 'total' }];
     }
 
-    private addKeywordMatchStage(filterQueryBody: FilterQueryBody) {
-        const { keyword } = filterQueryBody;
-        if (keyword) {
-            return {
-                $match: { name: { $regex: keyword, $options: 'i' } },
+    public buildMatchStage(
+        filterQueryBody: FilterQuery<ProductsFilterQuerySchemaType>
+    ): PipelineStage {
+        const matchConditions: Record<string, any> = {};
+
+        if (filterQueryBody.keyword) {
+            matchConditions.name = {
+                $regex: filterQueryBody.keyword,
+                $options: 'i',
             };
         }
-    }
 
-    private addCategoryFilterStage(filterQueryBody: FilterQueryBody) {
-        const { category } = filterQueryBody;
-        if (category) {
-            return { $match: { category } };
-        }
-    }
-
-    private addPriceFilterStages(filterQueryBody: FilterQueryBody) {
-        const price = filterQueryBody.price;
-        const priceStage: PipelineStage | Record<never, never> = {};
-
-        if (price?.gte) {
-            Object.assign(priceStage, {
-                $match: { price: { $gte: parseFloat(price.gte) } },
-            });
+        if (filterQueryBody.category) {
+            matchConditions.category = filterQueryBody.category;
         }
 
-        if (price?.lte) {
-            Object.assign(priceStage, {
-                $match: { price: { $lte: parseFloat(price.lte) } },
-            });
+        if (filterQueryBody.price?.gte) {
+            matchConditions.price = {
+                ...matchConditions.price,
+                $gte: parseFloat(filterQueryBody.price.gte),
+            };
         }
 
-        return priceStage;
+        if (filterQueryBody.price?.lte) {
+            matchConditions.price = {
+                ...matchConditions.price,
+                $lte: parseFloat(filterQueryBody.price.lte),
+            };
+        }
+
+        if (filterQueryBody._id) {
+            matchConditions._id = filterQueryBody._id;
+        }
+
+        return { $match: matchConditions };
     }
 
-    private addRatingFilterStages(filterQueryBody: FilterQueryBody) {
-        const ratings = filterQueryBody.ratings;
-        const ratingsStage: Record<never, never> = {};
-
-        Object.assign(ratingsStage, {
-            $lookup: {
-                from: 'reviews',
-                localField: '_id',
-                foreignField: 'product',
-                as: 'reviews',
+    public buildLookupAndRatingStages(
+        filterQueryBody?: FilterQuery<ProductsFilterQuerySchemaType>
+    ): PipelineStage[] {
+        const stages: PipelineStage[] = [
+            {
+                $lookup: {
+                    from: 'reviews',
+                    localField: '_id',
+                    foreignField: 'product',
+                    as: 'reviews',
+                },
             },
-            $addFields: {
-                averageRating: {
-                    $cond: {
-                        if: { $gt: [{ $size: '$reviews' }, 0] },
-                        then: { $avg: '$reviews.rating' },
-                        else: 0,
+            {
+                $addFields: {
+                    averageRating: {
+                        $cond: {
+                            if: { $gt: [{ $size: '$reviews' }, 0] },
+                            then: { $avg: '$reviews.rating' },
+                            else: 0,
+                        },
                     },
                 },
             },
-        });
+        ];
 
-        if (ratings?.gte) {
-            Object.assign(ratingsStage, {
-                $match: { averageRating: { $gte: parseFloat(ratings.gte) } },
+        if (filterQueryBody?.ratings?.gte) {
+            stages.push({
+                $match: {
+                    averageRating: {
+                        $gte: parseFloat(filterQueryBody.ratings.gte),
+                    },
+                },
             });
         }
-        return ratingsStage;
+
+        return stages;
     }
 
-    private addPaginationStages(filterQueryBody: FilterQueryBody) {
+    public buildPaginationStages(
+        filterQueryBody: FilterQuery<ProductsFilterQuerySchemaType>
+    ): PipelineStage[] {
         const { page = 1 } = filterQueryBody;
         const currentPage = Number(page);
         const skip = this.resPerPage * (currentPage - 1);
-        return { $skip: skip, $limit: this.resPerPage };
+        return [{ $skip: skip }, { $limit: this.resPerPage }];
     }
 }
 

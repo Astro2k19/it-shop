@@ -52,35 +52,8 @@ const ProductModel = new mongoose.Schema<Product>(
                 },
             ],
         },
-        reviews: {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: 'Review',
-        },
     },
     { timestamps: true }
 );
-
-// ProductModel.post('save', async (product) => {
-//     const existingReview = await ReviewModel.findOne({ product: product._id });
-//     if (!existingReview) {
-//         const review = await ReviewModel.create({
-//             product: product._id,
-//             user: product.user,
-//         });
-//         // product.reviews = review._id;
-//         await product.save();
-//     }
-// });
-//
-// ProductModel.post('insertMany', (products: HydratedDocument<Product>[]) => {
-//     products.forEach(async (product) => {
-//         const review = await ReviewModel.create({
-//             product: product._id,
-//             user: product.user,
-//         });
-//         // product.reviews = review._id;
-//         await product.save();
-//     });
-// });
 
 export default mongoose.model('Product', ProductModel);
