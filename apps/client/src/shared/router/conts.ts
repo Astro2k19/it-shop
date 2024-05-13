@@ -30,7 +30,6 @@ export const getAllReviewsRoute = () => `/admin/reviews`;
 export const getForbiddenRoute = () => '/forbidden';
 export const getNotFoundRoute = () => '*';
 export const Routes = {
-    HOME: 'HOME',
     PRODUCT_DETAILS: 'PRODUCT_DETAILS',
     LOGIN: 'LOGIN',
     REGISTER: 'REGISTER',

@@ -33,7 +33,11 @@ export default ({ mode }: { mode: string }) => {
                 },
                 {
                     find: '@it-shop/types',
-                    replacement: 'types/src/index.ts',
+                    replacement: 'lib/types/src/index.ts',
+                },
+                {
+                    find: '@it-shop/schemas',
+                    replacement: 'lib/schemas/src/index.ts',
                 },
             ],
         },

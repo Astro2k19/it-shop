@@ -1,4 +1,4 @@
-import { Product, Review } from '@it-shop/types';
+import { Product } from '@it-shop/types';
 import { Loader } from '@/shared/ui';
 import { Rating } from 'react-simple-star-rating';
 import { useEffect, useState } from 'react';
@@ -25,7 +25,7 @@ export const ProductDetails = ({
         return <Loader />;
     }
 
-    const reviews = productDetails.reviews as Review;
+    const { averageRating, reviews } = productDetails;
     const isInStock = productDetails.stock > 1;
     const productId = productDetails._id.toString();
 
@@ -69,12 +69,12 @@ export const ProductDetails = ({
                 <hr />
                 <div className="d-flex">
                     <Rating
-                        initialValue={reviews.ratings}
+                        initialValue={averageRating}
                         allowFraction={true}
                         size={25}
                     />
                     <span id="no-of-reviews" className="pt-1 ps-2">
-                        ({reviews.numOfReviews} Reviews)
+                        ({reviews.length} Reviews)
                     </span>
                 </div>
                 <hr />

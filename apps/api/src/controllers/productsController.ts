@@ -1,13 +1,14 @@
 import ProductModel from '../model/Product';
 import ErrorHandler from '../shared/utils/ErrorHandler';
 import catchAsyncErrors from '../shared/middlewares/catchAsyncErrors';
-import ApiFilters from '../shared/utils/ApiFilters';
+import ApiProductFilters from '../shared/utils/ApiProductFilters';
 import {
     NewProductSchemaType,
     ProductsFilterQuerySchemaType,
     UpdateProductSchemaType,
 } from '@it-shop/schemas';
 import { Product } from '@it-shop/types';
+import mongoose from 'mongoose';
 
 // GET => /api/v1/products
 export const getAllProducts = catchAsyncErrors<
@@ -16,17 +17,15 @@ export const getAllProducts = catchAsyncErrors<
     undefined,
     ProductsFilterQuerySchemaType
 >(async (req, res) => {
-    const resPerPage = 4;
-    const apiFilters = new ApiFilters(ProductModel, req.query)
-        .search()
-        .filter();
-
-    apiFilters.paginate(resPerPage);
-    const products = await apiFilters.query;
+    const productsApi = new ApiProductFilters(ProductModel);
+    const { products, totalFilteredCount } = await productsApi.applyFilters(
+        req.query
+    );
 
     res.json({
         products,
-        count: products?.length,
+        totalFilteredCount,
+        resPerPage: 4,
     });
 });
 
@@ -43,9 +42,10 @@ export const newProduct = catchAsyncErrors<NewProductSchemaType>(
 
 // GET => /api/v1/products/:id
 export const getProductDetails = catchAsyncErrors(async (req, res, next) => {
-    const product = await ProductModel.findById(req.params.id)
-        .populate('reviews')
-        .lean();
+    const productsApi = new ApiProductFilters(ProductModel);
+    const _id = new mongoose.Types.ObjectId(req.params.id);
+    const product = await productsApi.findById(_id);
+
     if (!product) {
         return next(new ErrorHandler('Product not found', 404));
     }

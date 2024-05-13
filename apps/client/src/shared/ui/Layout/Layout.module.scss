@@ -4,6 +4,10 @@
   height: 100%;
 }
 
-.content {
+.app :global(.container) {
   flex: 1;
+}
+
+.main {
+  padding-top: 3rem;
 }

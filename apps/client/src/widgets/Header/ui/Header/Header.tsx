@@ -1,7 +1,7 @@
 import logo from '@/shared/assets/images/shopit_logo.png';
 import avatar from '@/shared/assets/images/default_avatar.jpg';
 import { NavLink } from 'react-router-dom';
-import { FaSearch } from 'react-icons/fa';
+
 import {
     getDashboardRoute,
     getLoginRoute,
@@ -9,10 +9,9 @@ import {
     getMyOrdersRoute,
     getProfileRoute,
 } from '@/shared/router';
-import { useState } from 'react';
+import { Search } from '../Search/Search';
 
 export const Header = () => {
-    const [search, setSearch] = useState('');
     return (
         <header>
             <nav className="navbar row">
@@ -24,27 +23,7 @@ export const Header = () => {
                     </div>
                 </div>
                 <div className="col-12 col-md-6 mt-2 mt-md-0">
-                    <form action="your_search_action_url_here" method="get">
-                        <div className="input-group">
-                            <input
-                                type="text"
-                                id="search_field"
-                                aria-describedby="search_btn"
-                                className="form-control"
-                                placeholder="Enter Product Name ..."
-                                name="keyword"
-                                value={search}
-                                onChange={(e) => setSearch(e.target.value)}
-                            />
-                            <button
-                                id="search_btn"
-                                className="btn"
-                                type="submit"
-                            >
-                                <FaSearch />
-                            </button>
-                        </div>
-                    </form>
+                    <Search />
                 </div>
                 <div className="col-12 col-md-3 mt-4 mt-md-0 text-center">
                     <NavLink to="/cart" style={{ textDecoration: 'none' }}>

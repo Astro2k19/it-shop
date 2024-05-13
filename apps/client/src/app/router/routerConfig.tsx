@@ -106,11 +106,6 @@ export const adminRouterConfig: Record<
 
 export const routerConfig: Record<keyof typeof AppRoutes, ProtectedRouteType> =
     {
-        [AppRoutes.HOME]: {
-            path: getMainRoute(),
-            element: <Home />,
-            index: true,
-        },
         [AppRoutes.PRODUCT_DETAILS]: {
             path: getProductDetailsRoute(':id'),
             element: <ProductPage />,

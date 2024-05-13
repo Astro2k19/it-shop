@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { productCategories } from '../../types/src';
+import { productCategories } from '@it-shop/types';
 
 export const newProductSchema = z.object({
     name: z.string(),
@@ -18,16 +18,20 @@ export const newProductSchema = z.object({
 
 export const updateProductSchema = newProductSchema.partial();
 
-export const productsFilterQuerySchema = z.object({
-    name: z.string().optional(),
-    description: z.string().optional(),
-    price: z.string().optional(),
-    category: z.string().optional(),
-    stock: z.string().optional(),
-    seller: z.string().optional(),
-    page: z.string().optional(),
-    keyword: z.string().optional(),
-});
+export const productsFilterQuerySchema = z
+    .object({
+        page: z.string(),
+        keyword: z.string(),
+        category: z.string(),
+        price: z.object({
+            gte: z.string(),
+            lte: z.string(),
+        }),
+        ratings: z.object({
+            gte: z.string(),
+        }),
+    })
+    .deepPartial();
 
 export type NewProductSchemaType = z.infer<typeof newProductSchema>;
 export type UpdateProductSchemaType = z.infer<typeof updateProductSchema>;
