@@ -12,6 +12,7 @@ type ProductsFilterResult = ProductFilterQueryString & {
 
 export const useProductFilters = (): ProductsFilterResult => {
     const [searchParams, setSearchParams] = useSearchParams();
+
     const page = searchParams.get('page') || '1';
     const keyword = searchParams.get('keyword') || undefined;
     const category = searchParams.get('category') || undefined;

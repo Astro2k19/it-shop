@@ -3,7 +3,7 @@ import { ProductsFilterQuerySchemaType } from '@it-shop/schemas';
 
 export interface ResponseGetProducts {
     products: Product[];
-    totalFilteredCount: number;
+    totalCount: number;
     resPerPage: number;
 }
 
