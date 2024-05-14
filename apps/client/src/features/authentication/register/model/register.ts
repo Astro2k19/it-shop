@@ -1,10 +1,10 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { sessionApi } from '@/entities/session/api/sessionApi';
-import { RegisterSchema } from '@it-shop/types';
+import { RegisterSchemaType } from '@it-shop/schemas';
 
 export const registerThunk = createAsyncThunk(
     'authentication/register',
-    async (arg: RegisterSchema, { dispatch }) => {
+    async (arg: RegisterSchemaType, { dispatch }) => {
         try {
             await dispatch(
                 sessionApi.endpoints.register.initiate(arg)

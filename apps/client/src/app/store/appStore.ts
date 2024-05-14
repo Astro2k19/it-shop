@@ -2,7 +2,7 @@ import { configureStore } from '@reduxjs/toolkit';
 import { setupListeners } from '@reduxjs/toolkit/query';
 import { rootReducer } from './rootReducer';
 import { baseApi } from '@/shared/api/baseApi';
-import { invalidateAccessTokenEvent } from '@/features/authentication';
+import { invalidateAccessTokenEvent } from '@/features/authentication/invalidateAccessToken';
 
 const createReduxStore = () => {
     const store = configureStore({

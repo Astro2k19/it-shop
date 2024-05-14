@@ -32,6 +32,8 @@ import { RouteObject } from 'react-router-dom';
 import { UserRoles } from '@it-shop/types';
 import { ProductPage } from '@/pages/product/ui/Page/Page';
 import { NotFoundPage } from '@/pages/notFound';
+import { Login } from '@/pages/login';
+import { Register } from '@/pages/register/ui/Page/Page';
 
 export type ProtectedRouteType = RouteObject & {
     requiredRoles?: UserRoles[];
@@ -112,11 +114,11 @@ export const routerConfig: Record<keyof typeof AppRoutes, ProtectedRouteType> =
         },
         [AppRoutes.LOGIN]: {
             path: getLoginRoute(),
-            element: <div></div>,
+            element: <Login />,
         },
         [AppRoutes.REGISTER]: {
             path: getRegisterRoute(),
-            element: <div></div>,
+            element: <Register />,
         },
         [AppRoutes.PASSWORD_FORGOT]: {
             path: getPasswordForgotRoute(),
