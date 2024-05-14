@@ -1,11 +1,12 @@
 import catchAsyncErrors from '../shared/middlewares/catchAsyncErrors';
 import OrderModel from '../model/Order';
-import { Order, NewOrderSchema } from '@it-shop/types';
+import { Order } from '@it-shop/types';
 import ErrorHandler from '../shared/utils/ErrorHandler';
 import Product from '../model/Product';
+import { NewOrderSchemaType, OrderUpdateSchema } from '@it-shop/schemas';
 
 // POST => /api/v1/admin/orders/new
-export const newOrder = catchAsyncErrors<NewOrderSchema, Order>(
+export const newOrder = catchAsyncErrors<NewOrderSchemaType, Order>(
     async (req, res) => {
         const {
             shippingInfo,
@@ -72,7 +73,7 @@ export const getAllOrders = catchAsyncErrors<undefined, Order[]>(
 );
 
 // PUT => /api/v1/admin/orders/:id
-export const updateOrder = catchAsyncErrors<Pick<Order, 'orderStatus'>>(
+export const updateOrder = catchAsyncErrors<OrderUpdateSchema>(
     async (req, res, next) => {
         const order = await OrderModel.findById(req.params.id);
 

@@ -1,11 +1,11 @@
 import { baseApi } from '@/shared/api/baseApi';
-import { LoginSchema, RegisterSchema } from '@it-shop/types';
-import { SessionResponse } from '@/entities/Session/api/types';
-import { userApi } from '@/entities/User/@x/session';
+import { LoginSchemaType, RegisterSchemaType } from '@it-shop/schemas';
+import { SessionResponse } from '@/entities/session/api/types';
+import { userApi } from '@/entities/user/@x/session';
 
 export const sessionApi = baseApi.injectEndpoints({
     endpoints: (build) => ({
-        login: build.mutation<SessionResponse, LoginSchema>({
+        login: build.mutation<SessionResponse, LoginSchemaType>({
             query: (body) => ({
                 method: 'POST',
                 url: '/login',
@@ -20,7 +20,7 @@ export const sessionApi = baseApi.injectEndpoints({
                 }
             },
         }),
-        register: build.mutation<SessionResponse, RegisterSchema>({
+        register: build.mutation<SessionResponse, RegisterSchemaType>({
             query: (body) => ({
                 method: 'POST',
                 url: '/register',

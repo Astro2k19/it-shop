@@ -1,4 +1,4 @@
-import { isAuthorized, useRefresh } from '@/entities/Session';
+import { isAuthorized, useRefresh } from '@/entities/session';
 import { useAppSelector } from '@/shared/model';
 import { Outlet } from 'react-router-dom';
 

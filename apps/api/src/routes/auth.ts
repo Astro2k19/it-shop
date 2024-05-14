@@ -13,30 +13,43 @@ import {
     updateUserDetails,
     updateUserProfile,
 } from '../controllers/authController';
-import schemaValidator from '../shared/middlewares/schemaValidator';
+import { validateData } from '../shared/middlewares/schemaValidator';
 import authMiddleware from '../shared/middlewares/authMiddleware';
 import roleMiddleware from '../shared/middlewares/roleMiddleware';
+import {
+    forgotPasswordSchema,
+    loginSchema,
+    registerSchema,
+    resetPasswordSchema,
+    updatePasswordSchema,
+    updateUserDetailsSchema,
+    updateUserProfileSchema,
+} from '@it-shop/schemas';
 
 const router = express.Router();
 
-router.route('/register').post(schemaValidator('/auth/register'), registerUser);
-router.route('/login').post(schemaValidator('/auth/login'), loginUser);
+router.route('/register').post(validateData(registerSchema), registerUser);
+router.route('/login').post(validateData(loginSchema), loginUser);
 router.route('/logout').post(authMiddleware, logoutUser);
 
 router
     .route('/password/forgot')
-    .post(schemaValidator('/password/forgot'), forgotPassword);
+    .post(validateData(forgotPasswordSchema), forgotPassword);
 router
     .route('/password/reset/:token')
-    .put(schemaValidator('/password/reset'), resetPassword);
+    .put(validateData(resetPasswordSchema), resetPassword);
 router
     .route('/password/update')
-    .put(schemaValidator('/password/update'), authMiddleware, updatePassword);
+    .put(validateData(updatePasswordSchema), authMiddleware, updatePassword);
 
 router.route('/me').get(authMiddleware, getUserProfile);
 router
     .route('/me/update')
-    .put(schemaValidator('/me/update'), authMiddleware, updateUserProfile);
+    .put(
+        validateData(updateUserProfileSchema),
+        authMiddleware,
+        updateUserProfile
+    );
 
 router
     .route('/admin/users')
@@ -45,7 +58,7 @@ router
     .route('/admin/users/:id')
     .get(authMiddleware, roleMiddleware(['Admin']), getUserDetails)
     .put(
-        schemaValidator('/admin/users/:id'),
+        validateData(updateUserDetailsSchema),
         authMiddleware,
         roleMiddleware(['Admin']),
         updateUserDetails

@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import { Navigate, Outlet } from 'react-router-dom';
 import { useAppSelector } from '@/shared/model';
-import { getRoles } from '@/entities/Session';
+import { getRoles } from '@/entities/session';
 import { UserRoles } from '@it-shop/types';
 import { getForbiddenRoute } from '@/shared/router';
 

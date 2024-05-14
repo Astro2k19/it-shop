@@ -4,7 +4,7 @@ import {
 } from '@reduxjs/toolkit';
 import { invalidateAccessToken } from '@/shared/api';
 import { baseQuery } from '@/shared/api/baseQuery';
-import { sessionApi } from '@/entities/Session';
+import { sessionApi } from '@/entities/session';
 import { mutex } from '@/shared/api';
 
 export const invalidateAccessTokenEvent = createListenerMiddleware();

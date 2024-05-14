@@ -6,19 +6,18 @@ import TokenService from '../services/TokenService';
 import MailService from '../services/MailService';
 import PasswordService from '../services/PasswordService';
 
+import { User, UserSchema } from '@it-shop/types';
 import {
-    LoginSchema,
-    PasswordForgotSchema,
-    PasswordResetSchema,
-    PasswordUpdateSchema,
-    RegisterSchema,
-    UpdateUserProfileSchema,
-    User,
-    UserSchema,
-} from '@it-shop/types';
+    ForgotPasswordSchemaType,
+    LoginSchemaType,
+    RegisterSchemaType,
+    ResetPasswordSchemaType,
+    UpdatePasswordSchemaType,
+    UpdateUserProfileSchemaType,
+} from '@it-shop/schemas';
 
 // POST => /api/v1/register
-export const registerUser = catchAsyncErrors<RegisterSchema>(
+export const registerUser = catchAsyncErrors<RegisterSchemaType>(
     async (req, res) => {
         const { name, email, password } = req.body;
 
@@ -38,7 +37,7 @@ export const registerUser = catchAsyncErrors<RegisterSchema>(
 );
 
 // POST => /api/v1/login
-export const loginUser = catchAsyncErrors<LoginSchema>(
+export const loginUser = catchAsyncErrors<LoginSchemaType>(
     async (req, res, next) => {
         const { email, password } = req.body;
         const user = await UserModel.findOne({ email }).select('+password');
@@ -62,26 +61,28 @@ export const loginUser = catchAsyncErrors<LoginSchema>(
 );
 
 // POST => /api/v1/refresh
-export const refresh = catchAsyncErrors<LoginSchema>(async (req, res, next) => {
-    const { email, password } = req.body;
-    const user = await UserModel.findOne({ email }).select('+password');
+export const refresh = catchAsyncErrors<LoginSchemaType>(
+    async (req, res, next) => {
+        const { email, password } = req.body;
+        const user = await UserModel.findOne({ email }).select('+password');
 
-    if (!user) {
-        return next(new ErrorHandler('Invalid email & password', 401));
+        if (!user) {
+            return next(new ErrorHandler('Invalid email & password', 401));
+        }
+
+        const isPassEqual = await user.comparePasswords(password);
+        if (!isPassEqual) {
+            return next(new ErrorHandler('Invalid email & password', 401));
+        }
+
+        const tokenService = await TokenService.getInstance();
+        const { accessToken, refreshToken } = await tokenService.getJwtTokens(
+            user.id
+        );
+        await tokenService.saveRefreshToken(user._id, refreshToken);
+        tokenService.sendTokens(res, accessToken, refreshToken);
     }
-
-    const isPassEqual = await user.comparePasswords(password);
-    if (!isPassEqual) {
-        return next(new ErrorHandler('Invalid email & password', 401));
-    }
-
-    const tokenService = await TokenService.getInstance();
-    const { accessToken, refreshToken } = await tokenService.getJwtTokens(
-        user.id
-    );
-    await tokenService.saveRefreshToken(user._id, refreshToken);
-    tokenService.sendTokens(res, accessToken, refreshToken);
-});
+);
 
 // POST => /api/v1/logout
 
@@ -98,7 +99,7 @@ export const logoutUser = catchAsyncErrors(async (req, res) => {
 });
 
 // POST => /api/v1/password/forgot
-export const forgotPassword = catchAsyncErrors<PasswordForgotSchema>(
+export const forgotPassword = catchAsyncErrors<ForgotPasswordSchemaType>(
     async (req, res, next) => {
         const { email } = req.body;
         const user = await UserModel.findOne({ email });
@@ -138,7 +139,7 @@ export const forgotPassword = catchAsyncErrors<PasswordForgotSchema>(
 );
 
 // POST => /api/v1/password/reset
-export const resetPassword = catchAsyncErrors<PasswordResetSchema>(
+export const resetPassword = catchAsyncErrors<ResetPasswordSchemaType>(
     async (req, res, next) => {
         const resetPasswordToken = PasswordService.hashToken(req.params.token);
         const user = await UserModel.findOne({
@@ -182,7 +183,7 @@ export const getUserProfile = catchAsyncErrors<undefined, UserSchema>(
 );
 
 // PUT => /api/v1/password/update
-export const updatePassword = catchAsyncErrors<PasswordUpdateSchema>(
+export const updatePassword = catchAsyncErrors<UpdatePasswordSchemaType>(
     async (req, res, next) => {
         const user = await UserModel.findById(req.user._id).select('+password');
         const isPasswordMatched = await user.comparePasswords(
@@ -207,7 +208,7 @@ export const updatePassword = catchAsyncErrors<PasswordUpdateSchema>(
 
 // PUT => /api/v1/me/update
 export const updateUserProfile = catchAsyncErrors<
-    UpdateUserProfileSchema,
+    UpdateUserProfileSchemaType,
     User
 >(async (req, res) => {
     const updatedUser = await UserModel.findByIdAndUpdate(

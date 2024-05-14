@@ -1,16 +1,21 @@
 import { NavLink } from 'react-router-dom';
-import { Product, Review } from '@it-shop/types';
+import { Product } from '@it-shop/types';
 import { formatPrice } from '../../lib/formatPrice';
 import { getProductDetailsRoute } from '@/shared/router';
 import { Rating } from 'react-simple-star-rating';
 import cx from 'classnames';
 import styles from './ProductCard.module.scss';
-import classNames from 'classnames';
-export const ProductCard = ({ _id, name, price, images, reviews }: Product) => {
+
+export const ProductCard = ({
+    _id,
+    name,
+    price,
+    images,
+    averageRating,
+}: Product) => {
     const productId = _id.toString();
-    const review = reviews as Review;
     return (
-        <div className="col-sm-12 col-md-6 col-lg-3 my-3" key={productId}>
+        <div className="col-sm-12 col-md-6 col-lg-4 my-3">
             <div className={cx('card p-3 round ed', styles.card)}>
                 <img
                     className={cx(
@@ -34,20 +39,19 @@ export const ProductCard = ({ _id, name, price, images, reviews }: Product) => {
                     </h5>
                     <div className={cx(styles.ratings, 'mt-auto d-flex')}>
                         <Rating
-                            initialValue={review.ratings}
+                            initialValue={averageRating}
                             allowFraction={true}
                             size={25}
                         />
                         <span
-                            className={classNames(
+                            className={cx(
                                 {
-                                    [styles['no-reviews']]:
-                                        review.numOfReviews === 0,
+                                    [styles['no-reviews']]: averageRating === 0,
                                 },
                                 'pt-2 ps-2'
                             )}
                         >
-                            ({review.numOfReviews})
+                            ({averageRating})
                         </span>
                     </div>
                     <p className={cx('card-text', 'mt-2', styles['card-text'])}>

@@ -3,7 +3,8 @@
     "baseUrl": "./",
     "paths": {
       "@/*": ["./src/*"],
-      "@it-shop/types": ["../../types/src/index.ts"],
+      "@it-shop/types": ["../../lib/types/src/index.ts"],
+      "@it-shop/schemas": ["../../lib/schemas/src/index.ts"],
     },
     "jsx": "react-jsx",
     "allowJs": false,

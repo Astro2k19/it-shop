@@ -19,6 +19,8 @@ declare global {
             SMTP_PASS: string;
             SMTP_FROM_NAME: string;
             SMTP_FROM_EMAIL: string;
+
+            PRODUCTS_RESULTS_PER_PAGE: string;
         }
     }
 
@@ -29,7 +31,7 @@ declare global {
     }
 
     interface ParsedQs {
-        [key: string]: undefined | string | string[] | ParsedQs | ParsedQs[];
+        [key: string]: undefined | string;
     }
 
     interface ParamsDictionary {

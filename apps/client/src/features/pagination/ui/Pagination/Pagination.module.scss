@@ -1,0 +1,15 @@
+:global(.pagination) {
+  .active .page-link {
+    background-color: #fa9c23;
+    border-color: #fa9c23;
+    color: white;
+  }
+
+  .page-link {
+    color: #fa9c23;
+  }
+
+  :not(.active) .page-link:hover {
+    color: #fa9c23;
+  }
+}

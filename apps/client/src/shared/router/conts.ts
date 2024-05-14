@@ -28,8 +28,8 @@ export const getAllUsersRoute = () => `/admin/users`;
 export const getUpdateUserRoute = (id: string) => `/admin/users/${id}`;
 export const getAllReviewsRoute = () => `/admin/reviews`;
 export const getForbiddenRoute = () => '/forbidden';
+export const getNotFoundRoute = () => '*';
 export const Routes = {
-    HOME: 'HOME',
     PRODUCT_DETAILS: 'PRODUCT_DETAILS',
     LOGIN: 'LOGIN',
     REGISTER: 'REGISTER',
@@ -44,6 +44,7 @@ export const Routes = {
     PAYMENT_METHOD: 'PAYMENT_METHOD',
     MY_ORDERS: 'MY_ORDERS',
     INVOICE: 'INVOICE',
+    NOT_FOUND: 'NOT_FOUND',
 } as const;
 export const AdminRoutes = {
     DASHBOARD: 'DASHBOARD',

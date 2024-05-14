@@ -9,15 +9,16 @@ import {
     newOrder,
     updateOrder,
 } from '../controllers/orderController';
-import schemaValidator from '../shared/middlewares/schemaValidator';
+import { validateData } from '../shared/middlewares/schemaValidator';
 import roleMiddleware from '../shared/middlewares/roleMiddleware';
+import { newOrderSchema, updateOrderSchema } from '@it-shop/schemas';
 
 const router = express.Router();
 router.post(
     '/admin/orders/new',
     authMiddleware,
     roleMiddleware(['Admin']),
-    schemaValidator('/orders/new'),
+    validateData(newOrderSchema),
     newOrder
 );
 router.get('/me/orders', authMiddleware, getMyOrders);
@@ -34,7 +35,7 @@ router
         '/admin/orders/:id',
         authMiddleware,
         roleMiddleware(['Admin']),
-        schemaValidator('/orders/update'),
+        validateData(updateOrderSchema),
         updateOrder
     )
     .delete(

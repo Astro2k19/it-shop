@@ -1,4 +1,4 @@
-import { Home } from '@/pages/Home';
+import { Home } from '@/pages/home';
 import {
     AdminRoutes,
     AppRoutes,
@@ -12,6 +12,7 @@ import {
     getMainRoute,
     getMyOrdersRoute,
     getNewProductRoute,
+    getNotFoundRoute,
     getPasswordForgotRoute,
     getPasswordResetRoute,
     getPaymentMethodRoute,
@@ -29,6 +30,8 @@ import {
 } from '@/shared/router';
 import { RouteObject } from 'react-router-dom';
 import { UserRoles } from '@it-shop/types';
+import { ProductPage } from '@/pages/product/ui/Page/Page';
+import { NotFoundPage } from '@/pages/notFound';
 
 export type ProtectedRouteType = RouteObject & {
     requiredRoles?: UserRoles[];
@@ -103,14 +106,9 @@ export const adminRouterConfig: Record<
 
 export const routerConfig: Record<keyof typeof AppRoutes, ProtectedRouteType> =
     {
-        [AppRoutes.HOME]: {
-            path: getMainRoute(),
-            element: <Home />,
-            index: true,
-        },
         [AppRoutes.PRODUCT_DETAILS]: {
             path: getProductDetailsRoute(':id'),
-            element: <div></div>,
+            element: <ProductPage />,
         },
         [AppRoutes.LOGIN]: {
             path: getLoginRoute(),
@@ -172,6 +170,10 @@ export const routerConfig: Record<keyof typeof AppRoutes, ProtectedRouteType> =
             path: getInvoiceRoute(':id'),
             element: <div></div>,
             isProtected: true,
+        },
+        [AppRoutes.NOT_FOUND]: {
+            path: getNotFoundRoute(),
+            element: <NotFoundPage />,
         },
         ...adminRouterConfig,
     };
