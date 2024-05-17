@@ -2,7 +2,7 @@ import catchAsyncErrors from './catchAsyncErrors';
 import ErrorHandler from '../../shared/utils/ErrorHandler';
 import { JwtPayload } from 'jsonwebtoken';
 import User from '../../model/User';
-import TokenService from '../../services/TokenService';
+import { tokenService } from '../../controllers/authController';
 
 export default catchAsyncErrors(async (req, res, next) => {
     if (!req.headers.authorization) {
@@ -18,12 +18,9 @@ export default catchAsyncErrors(async (req, res, next) => {
         );
     }
 
-    const tokenService = await TokenService.getInstance();
     const decoded = (await tokenService.verifyAccessToken(
         bearerToken
     )) as JwtPayload;
-    const user = await User.findById(decoded.id);
-
-    req.user = user;
+    req.user = await User.findById(decoded.id);
     next();
 });

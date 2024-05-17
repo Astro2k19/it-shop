@@ -7,6 +7,7 @@ export const PersistentLogin = () => {
     const { isLoading } = useRefresh(null, {
         skip: isAuth,
     });
+    console.log('refresh');
 
     return isLoading ? <div>Loading</div> : <Outlet />;
 };

@@ -6,7 +6,11 @@ import { Link } from 'react-router-dom';
 import { loginThunk } from '../../model/login';
 import { useAppDispatch } from '@/shared/model';
 
-export const LoginForm = () => {
+type LoginFormProps = {
+    onComplete?: () => void;
+};
+
+export const LoginForm = ({ onComplete }: LoginFormProps) => {
     const {
         setError,
         formState: { errors },
@@ -18,9 +22,10 @@ export const LoginForm = () => {
     const dispatch = useAppDispatch();
 
     const onSubmit: SubmitHandler<LoginSchemaType> = async (data) => {
-        await dispatch(loginThunk(data)).then((data) => {
-            console.log(data);
-        });
+        await dispatch(loginThunk(data))
+            .unwrap()
+            .then(() => onComplete?.())
+            .catch((error) => console.log(error));
     };
 
     return (

@@ -3,10 +3,12 @@ import {
     TypedStartListening,
 } from '@reduxjs/toolkit';
 import { invalidateAccessToken } from '@/shared/api';
-import { baseQuery } from '@/shared/api/baseQuery';
+// import { baseQuery } from '@/shared/api/baseQuery';
 import { sessionApi } from '@/entities/session';
-import { mutex } from '@/shared/api';
-
+import { Mutex } from 'async-mutex';
+// import { baseQuery } from '@/shared/api/baseApi';
+// import { mutex } from '@/shared/api';
+const mutex = new Mutex();
 export const invalidateAccessTokenEvent = createListenerMiddleware();
 
 // @see https://redux-toolkit.js.org/api/createListenerMiddleware#typescript-usage
@@ -27,9 +29,10 @@ startInvalidateAccessTokenListening({
                     sessionApi.endpoints.refresh.initiate(null)
                 );
                 if ('data' in refreshResult) {
-                    const queryValue = await baseQuery(args, api, extraOptions);
+                    const queryValue = {};
                     Object.assign(result, queryValue);
                 } else {
+                    console.log('logout');
                     api.dispatch(sessionApi.endpoints.logout.initiate(null));
                 }
             } finally {
@@ -39,7 +42,7 @@ startInvalidateAccessTokenListening({
         } else {
             // wait until the mutex is available without locking it
             await mutex.waitForUnlock();
-            const queryValue = await baseQuery(args, api, extraOptions);
+            const queryValue = {};
             Object.assign(result, queryValue);
         }
     },

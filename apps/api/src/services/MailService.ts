@@ -7,8 +7,8 @@ interface SendEmailOptions {
     message: string;
 }
 
-class MailService {
-    private transporter: Transporter<SMTPTransport.SentMessageInfo>;
+export class MailService {
+    private readonly transporter: Transporter<SMTPTransport.SentMessageInfo>;
 
     constructor() {
         this.transporter = nodemailer.createTransport({
@@ -36,5 +36,3 @@ class MailService {
         await this.transporter.sendMail(message);
     }
 }
-
-export default new MailService();

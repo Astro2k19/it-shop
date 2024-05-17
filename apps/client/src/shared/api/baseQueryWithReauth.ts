@@ -1,17 +1,27 @@
-import { QueryReturnValue } from '@reduxjs/toolkit/dist/query/baseQueryTypes';
+import { StatusCodes } from 'http-status-codes';
 import {
     BaseQueryApi,
     FetchArgs,
+    fetchBaseQuery,
     FetchBaseQueryError,
     FetchBaseQueryMeta,
 } from '@reduxjs/toolkit/query/react';
-import { baseQuery } from './baseQuery';
-import { invalidateAccessToken } from './invalidateAccessTokenEvent';
-import { Mutex } from 'async-mutex';
-import { StatusCodes } from 'http-status-codes';
+import { QueryReturnValue } from '@reduxjs/toolkit/dist/query/baseQueryTypes';
+import { invalidateAccessTokenThunk } from '@/features/authentication/invalidateAccessToken/model/thunk';
 
 const AUTH_ERROR_CODES = new Set([StatusCodes.UNAUTHORIZED]);
-export const mutex = new Mutex();
+
+export const baseQuery = fetchBaseQuery({
+    baseUrl: `${process.env.API_URL}/api/v1/`,
+    prepareHeaders: (headers, { getState }) => {
+        const { session } = getState() as RootState;
+        if (session.accessToken) {
+            headers.set('authorization', `Bearer ${session.accessToken}`);
+        }
+        return headers;
+    },
+    credentials: 'include',
+});
 
 export const baseQueryWithReauth = async (
     args: string | FetchArgs,
@@ -20,15 +30,14 @@ export const baseQueryWithReauth = async (
 ): Promise<
     QueryReturnValue<unknown, FetchBaseQueryError, FetchBaseQueryMeta>
 > => {
-    await mutex.waitForUnlock();
-    const result = await baseQuery(args, api, extraOptions);
+    let result = await baseQuery(args, api, extraOptions);
 
     if (
         typeof result.error?.status === 'number' &&
         AUTH_ERROR_CODES.has(result.error.status)
     ) {
-        api.dispatch(
-            invalidateAccessToken({ args, api, extraOptions, result })
+        result = await api.dispatch(
+            invalidateAccessTokenThunk({ args, api, extraOptions })
         );
     }
 

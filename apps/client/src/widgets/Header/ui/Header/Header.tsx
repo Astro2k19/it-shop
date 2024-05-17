@@ -10,8 +10,11 @@ import {
     getProfileRoute,
 } from '@/shared/router';
 import { Search } from '../Search/Search';
+import { useAppSelector } from '@/shared/model';
+import { isAuthorized } from '@/entities/session';
 
 export const Header = () => {
+    const isAuth = useAppSelector(isAuthorized);
     return (
         <header>
             <nav className="navbar row">
@@ -81,14 +84,15 @@ export const Header = () => {
                             </NavLink>
                         </div>
                     </div>
-
-                    <NavLink
-                        to={getLoginRoute()}
-                        className="btn ms-4"
-                        id="login_btn"
-                    >
-                        Login
-                    </NavLink>
+                    {!isAuth && (
+                        <NavLink
+                            to={getLoginRoute()}
+                            className="btn ms-4"
+                            id="login_btn"
+                        >
+                            Login
+                        </NavLink>
+                    )}
                 </div>
             </nav>
         </header>

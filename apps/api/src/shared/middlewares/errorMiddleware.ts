@@ -39,6 +39,8 @@ export default (
         'statusCode' in err ? err.statusCode : StatusCodes.INTERNAL_SERVER_ERROR
     );
 
+    console.log(err, 'err');
+
     if (err instanceof MongooseError.CastError) {
         error = new ErrorHandler(
             `Resource not found. Invalid: ${err.path}`,

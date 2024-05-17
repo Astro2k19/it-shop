@@ -4,7 +4,11 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useAppDispatch } from '@/shared/model';
 import { registerThunk } from '../model/register';
 
-export const RegisterForm = () => {
+type RegisterFormProps = {
+    onComplete?: () => void;
+};
+
+export const RegisterForm = ({ onComplete }: RegisterFormProps) => {
     const {
         setError,
         formState: { errors },
@@ -16,9 +20,10 @@ export const RegisterForm = () => {
     const dispatch = useAppDispatch();
 
     const onSubmit: SubmitHandler<RegisterSchemaType> = async (data) => {
-        await dispatch(registerThunk(data)).then((data) => {
-            console.log(data);
-        });
+        await dispatch(registerThunk(data))
+            .unwrap()
+            .then(() => onComplete?.())
+            .catch((error) => console.log(error));
     };
 
     return (

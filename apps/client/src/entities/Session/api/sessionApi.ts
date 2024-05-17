@@ -1,6 +1,6 @@
-import { baseApi } from '@/shared/api/baseApi';
+import { baseApi } from '@/shared/api';
 import { LoginSchemaType, RegisterSchemaType } from '@it-shop/schemas';
-import { SessionResponse } from '@/entities/session/api/types';
+import { SessionResponse } from './types';
 import { userApi } from '@/entities/user/@x/session';
 
 export const sessionApi = baseApi.injectEndpoints({
@@ -14,7 +14,7 @@ export const sessionApi = baseApi.injectEndpoints({
             onQueryStarted: async (_, { queryFulfilled, dispatch }) => {
                 try {
                     await queryFulfilled;
-                    dispatch(userApi.endpoints.me.initiate());
+                    // dispatch(userApi.endpoints.me.initiate());
                 } catch (e) {
                     console.log(e);
                 }
@@ -29,7 +29,7 @@ export const sessionApi = baseApi.injectEndpoints({
             onQueryStarted: async (_, { queryFulfilled, dispatch }) => {
                 try {
                     await queryFulfilled;
-                    dispatch(userApi.endpoints.me.initiate());
+                    // dispatch(userApi.endpoints.me.initiate());
                 } catch (e) {
                     console.log(e);
                 }
@@ -43,7 +43,7 @@ export const sessionApi = baseApi.injectEndpoints({
             onQueryStarted: async (_, { queryFulfilled, dispatch }) => {
                 try {
                     await queryFulfilled;
-                    dispatch(userApi.endpoints.me.initiate());
+                    // dispatch(userApi.endpoints.me.initiate());
                 } catch (e) {
                     console.log(e);
                 }

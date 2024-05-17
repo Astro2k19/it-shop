@@ -38,6 +38,7 @@ import { Register } from '@/pages/register/ui/Page/Page';
 export type ProtectedRouteType = RouteObject & {
     requiredRoles?: UserRoles[];
     isProtected?: boolean;
+    isForGuest?: boolean;
 };
 
 export const adminRouterConfig: Record<
@@ -47,8 +48,6 @@ export const adminRouterConfig: Record<
     [AppRoutes.DASHBOARD]: {
         path: getMainRoute(),
         element: <Home />,
-        isProtected: true,
-        requiredRoles: ['Admin'],
     },
     [AppRoutes.PRODUCTS]: {
         path: getAllProductsRoute(),
@@ -113,10 +112,12 @@ export const routerConfig: Record<keyof typeof AppRoutes, ProtectedRouteType> =
             element: <ProductPage />,
         },
         [AppRoutes.LOGIN]: {
+            isForGuest: true,
             path: getLoginRoute(),
             element: <Login />,
         },
         [AppRoutes.REGISTER]: {
+            isForGuest: true,
             path: getRegisterRoute(),
             element: <Register />,
         },

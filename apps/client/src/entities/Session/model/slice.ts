@@ -1,7 +1,8 @@
-import { createSlice, isAnyOf } from '@reduxjs/toolkit';
+import { createSlice, isAnyOf, PayloadAction } from '@reduxjs/toolkit';
 import { User } from '@it-shop/types';
 import { sessionApi } from '../api/sessionApi';
 import { userApi } from '@/entities/user/@x/session';
+import { SessionResponse } from '@/entities/session/api/types';
 
 export interface SessionSliceState {
     accessToken?: string;
@@ -16,7 +17,15 @@ const initialState: SessionSliceState = {
 export const sessionSlice = createSlice({
     name: 'session',
     initialState,
-    reducers: {},
+    reducers: {
+        setToken: (state, { payload }: PayloadAction<SessionResponse>) => {
+            state.isAuthorized = true;
+            state.accessToken = payload.accessToken;
+        },
+        setUser: (state, { payload }: PayloadAction<User>) => {
+            state.user = payload;
+        },
+    },
     extraReducers: (builder) => {
         builder.addMatcher(
             isAnyOf(

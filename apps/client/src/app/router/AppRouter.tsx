@@ -10,6 +10,7 @@ import { baseLayoutWithProductsFilter } from '@/app/layouts/baseLayoutWithProduc
 import { getMainRoute } from '@/shared/router';
 import { Home } from '@/pages/home';
 import { UserRoles } from '@it-shop/types';
+import { GuestRoute } from '@/app/router/GuestRoute';
 
 const getProtectedRoute = (
     element: RouteObject,
@@ -46,7 +47,19 @@ export const AppRouter = () => {
             return getProtectedRoute(element, value.requiredRoles);
         }
 
-        return element;
+        if (value.isForGuest) {
+            return {
+                element: <GuestRoute />,
+                children: [element],
+            };
+        }
+
+        console.log(element.path);
+
+        return {
+            element: <PersistentLogin />,
+            children: [element],
+        };
     };
 
     return createBrowserRouter([
