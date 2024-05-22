@@ -1,7 +1,7 @@
-import { baseApi } from '@/shared/api';
+import { baseApi, SESSION_TAG } from '@/shared/api';
 import { LoginSchemaType, RegisterSchemaType } from '@it-shop/schemas';
 import { SessionResponse } from './types';
-import { userApi } from '@/entities/user/@x/session';
+import { userActions, userApi } from '@/entities/user/@x/session';
 
 export const sessionApi = baseApi.injectEndpoints({
     endpoints: (build) => ({
@@ -11,14 +11,15 @@ export const sessionApi = baseApi.injectEndpoints({
                 url: '/login',
                 body,
             }),
-            onQueryStarted: async (_, { queryFulfilled, dispatch }) => {
-                try {
-                    await queryFulfilled;
-                    // dispatch(userApi.endpoints.me.initiate());
-                } catch (e) {
-                    console.log(e);
-                }
-            },
+            invalidatesTags: [SESSION_TAG],
+            // onQueryStarted: async (_, { queryFulfilled, dispatch }) => {
+            //     try {
+            //         await queryFulfilled;
+            //         await dispatch(userApi.endpoints.me.initiate());
+            //     } catch (e) {
+            //         console.log(e);
+            //     }
+            // },
         }),
         register: build.mutation<SessionResponse, RegisterSchemaType>({
             query: (body) => ({
@@ -26,36 +27,31 @@ export const sessionApi = baseApi.injectEndpoints({
                 url: '/register',
                 body,
             }),
-            onQueryStarted: async (_, { queryFulfilled, dispatch }) => {
-                try {
-                    await queryFulfilled;
-                    // dispatch(userApi.endpoints.me.initiate());
-                } catch (e) {
-                    console.log(e);
-                }
-            },
+            invalidatesTags: [SESSION_TAG],
         }),
-        refresh: build.query<SessionResponse, null>({
+        refresh: build.mutation<SessionResponse, undefined>({
             query: () => ({
-                method: 'GET',
+                method: 'POST',
                 url: '/refresh',
             }),
-            onQueryStarted: async (_, { queryFulfilled, dispatch }) => {
-                try {
-                    await queryFulfilled;
-                    // dispatch(userApi.endpoints.me.initiate());
-                } catch (e) {
-                    console.log(e);
-                }
-            },
+            invalidatesTags: [SESSION_TAG],
         }),
         logout: build.mutation({
             query: () => ({
                 method: 'POST',
                 url: '/logout',
             }),
+            onQueryStarted: async (_, { queryFulfilled, dispatch }) => {
+                try {
+                    await queryFulfilled;
+                    dispatch(userActions.clearUser());
+                } catch (e) {
+                    console.log(e);
+                }
+            },
         }),
     }),
 });
 
-export const useRefresh = sessionApi.useRefreshQuery;
+export const useRefresh = sessionApi.useRefreshMutation;
+export const useLogout = sessionApi.useLogoutMutation;

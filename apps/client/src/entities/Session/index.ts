@@ -1,3 +1,4 @@
 export { sessionActions, sessionSlice } from './model/slice';
-export { isAuthorized, getRoles } from './model/selectors';
-export { sessionApi, useRefresh } from './api/sessionApi';
+export * from './model/selectors';
+export { sessionApi, useRefresh, useLogout } from './api/sessionApi';
+export { type SessionResponse } from './api/types';

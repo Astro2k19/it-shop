@@ -17,16 +17,11 @@ const getProtectedRoute = (
     requiredRoles?: UserRoles[]
 ) => {
     return {
-        element: <PersistentLogin />,
+        element: <RoleGuard requiredRoles={requiredRoles} />,
         children: [
             {
-                element: <RoleGuard requiredRoles={requiredRoles} />,
-                children: [
-                    {
-                        element: <ProtectedRoute />,
-                        children: [element],
-                    },
-                ],
+                element: <ProtectedRoute />,
+                children: [element],
             },
         ],
     };
@@ -54,26 +49,31 @@ export const AppRouter = () => {
             };
         }
 
-        console.log(element.path);
-
-        return {
-            element: <PersistentLogin />,
-            children: [element],
-        };
+        return element;
     };
 
     return createBrowserRouter([
         {
             element: baseLayout,
-            children: Object.entries(routerConfig).map(renderRoute),
+            children: [
+                {
+                    element: <PersistentLogin />,
+                    children: Object.entries(routerConfig).map(renderRoute),
+                },
+            ],
         },
         {
             element: baseLayoutWithProductsFilter,
             children: [
                 {
-                    path: getMainRoute(),
-                    element: <Home />,
-                    index: true,
+                    element: <PersistentLogin />,
+                    children: [
+                        {
+                            path: getMainRoute(),
+                            element: <Home />,
+                            index: true,
+                        },
+                    ],
                 },
             ],
         },

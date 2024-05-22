@@ -1,32 +1,42 @@
 import { createSlice, isAnyOf, PayloadAction } from '@reduxjs/toolkit';
-import { User } from '@it-shop/types';
 import { sessionApi } from '../api/sessionApi';
-import { userApi } from '@/entities/user/@x/session';
-import { SessionResponse } from '@/entities/session/api/types';
+import { SessionResponse } from '../api/types';
 
-export interface SessionSliceState {
+export type SessionSliceState = {
     accessToken?: string;
-    user?: User;
     isAuthorized: boolean;
-}
+    isLoading: boolean;
+};
 
 const initialState: SessionSliceState = {
     isAuthorized: false,
+    isLoading: false,
 };
 
 export const sessionSlice = createSlice({
     name: 'session',
     initialState,
     reducers: {
-        setToken: (state, { payload }: PayloadAction<SessionResponse>) => {
+        setSession: (state, { payload }: PayloadAction<SessionResponse>) => {
             state.isAuthorized = true;
             state.accessToken = payload.accessToken;
         },
-        setUser: (state, { payload }: PayloadAction<User>) => {
-            state.user = payload;
+        clearSession: (state) => {
+            state.isAuthorized = false;
+            state.accessToken = undefined;
         },
     },
     extraReducers: (builder) => {
+        builder.addMatcher(
+            isAnyOf(
+                sessionApi.endpoints.login.matchPending,
+                sessionApi.endpoints.register.matchPending,
+                sessionApi.endpoints.refresh.matchPending
+            ),
+            (state) => {
+                state.isLoading = true;
+            }
+        );
         builder.addMatcher(
             isAnyOf(
                 sessionApi.endpoints.login.matchFulfilled,
@@ -36,20 +46,22 @@ export const sessionSlice = createSlice({
             (state, { payload }) => {
                 state.isAuthorized = true;
                 state.accessToken = payload.accessToken;
+                state.isLoading = false;
             }
         );
         builder.addMatcher(
-            userApi.endpoints.me.matchFulfilled,
-            (state, { payload }) => {
-                if (state.isAuthorized) {
-                    state.user = payload;
-                }
+            isAnyOf(
+                sessionApi.endpoints.login.matchRejected,
+                sessionApi.endpoints.register.matchRejected,
+                sessionApi.endpoints.refresh.matchRejected
+            ),
+            (state) => {
+                state.isLoading = false;
             }
         );
         builder.addMatcher(
             sessionApi.endpoints.logout.matchFulfilled,
             (state) => {
-                state.user = undefined;
                 state.isAuthorized = false;
                 state.accessToken = undefined;
             }

@@ -59,6 +59,7 @@ export class UserService {
     }
 
     async refresh(refreshToken?: string) {
+        console.log('refresh controller', refreshToken);
         if (!refreshToken) {
             throw new ErrorHandler(`Login first to access this resource`, 401);
         }

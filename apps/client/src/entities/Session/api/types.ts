@@ -1,3 +1,3 @@
-export interface SessionResponse {
+export type SessionResponse = {
     accessToken: string;
-}
+};

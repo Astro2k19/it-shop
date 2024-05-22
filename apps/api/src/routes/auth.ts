@@ -44,7 +44,7 @@ router
     .put(validateData(updatePasswordSchema), authMiddleware, updatePassword);
 
 router.route('/me').get(authMiddleware, getUserProfile);
-router.route('/refresh').get(refresh);
+router.route('/refresh').post(refresh);
 router
     .route('/me/update')
     .put(

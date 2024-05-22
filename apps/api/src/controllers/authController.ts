@@ -62,7 +62,7 @@ export const loginUser = catchAsyncErrors<LoginSchemaType>(async (req, res) => {
     });
 });
 
-// GET => /api/v1/refresh
+// POST => /api/v1/refresh
 export const refresh = catchAsyncErrors(async (req, res, next) => {
     try {
         const accessToken = await userService.refresh(req.cookies.refreshToken);
