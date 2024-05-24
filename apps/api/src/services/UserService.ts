@@ -17,7 +17,8 @@ export class UserService {
     }
 
     async register(email: string, name: string, password: string) {
-        const user = UserModel.findOne({ email });
+        const user = await UserModel.findOne({ email });
+        console.log(user, 'user register');
         if (user) {
             throw new ErrorHandler('Email is already taken', 409);
         }
@@ -27,7 +28,7 @@ export class UserService {
             password,
         });
         const { accessToken, refreshToken } =
-            await this.tokenService.getJwtTokens(userId);
+            this.tokenService.getJwtTokens(userId);
         await this.tokenService.saveRefreshToken(userId, refreshToken);
         return { accessToken, refreshToken };
     }
@@ -44,8 +45,9 @@ export class UserService {
             throw new ErrorHandler('Invalid email & password', 401);
         }
 
-        const { accessToken, refreshToken } =
-            await this.tokenService.getJwtTokens(user._id);
+        const { accessToken, refreshToken } = this.tokenService.getJwtTokens(
+            user._id
+        );
         await this.tokenService.saveRefreshToken(user._id, refreshToken);
         return { accessToken, refreshToken };
     }
@@ -55,7 +57,7 @@ export class UserService {
             throw new ErrorHandler('Login first to access this resource', 401);
         }
         await this.tokenService.removeToken(refreshToken);
-        await this.tokenService.destroyJwtToken(userId);
+        // await this.tokenService.destroyJwtToken(userId);
     }
 
     async refresh(refreshToken?: string) {
@@ -65,9 +67,9 @@ export class UserService {
         }
 
         const tokenFromDb = await this.tokenService.findToken(refreshToken);
-        const decoded = await this.tokenService.verifyRefreshToken(
-            refreshToken
-        );
+        console.log(tokenFromDb, 'tokenFromDb');
+        const decoded = this.tokenService.verifyRefreshToken(refreshToken);
+        console.log(decoded, 'decoded');
 
         if (!tokenFromDb || !decoded) {
             throw new ErrorHandler(`Login first to access this resource`, 401);
@@ -133,8 +135,9 @@ export class UserService {
         user.resetPasswordExpire = undefined;
         await user.save();
 
-        const { accessToken, refreshToken } =
-            await this.tokenService.getJwtTokens(user._id);
+        const { accessToken, refreshToken } = this.tokenService.getJwtTokens(
+            user._id
+        );
         await this.tokenService.saveRefreshToken(user._id, refreshToken);
         return { accessToken, refreshToken };
     }
@@ -151,7 +154,7 @@ export class UserService {
             throw new ErrorHandler('Old password is invalid', 400);
         }
 
-        await this.tokenService.destroyJwtToken(user._id);
+        // await this.tokenService.destroyJwtToken(user._id);
 
         user.password = newPassword;
         user.save();
@@ -164,8 +167,7 @@ export class UserService {
     }
 
     async getUsers() {
-        const users = await UserModel.find();
-        return users;
+        return await UserModel.find();
     }
 
     async getUserById(id: mongoose.Types.ObjectId | string) {

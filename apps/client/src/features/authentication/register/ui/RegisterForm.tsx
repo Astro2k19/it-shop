@@ -1,8 +1,9 @@
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { registerSchema, RegisterSchemaType } from '@it-shop/schemas';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useAppDispatch } from '@/shared/model';
+import { useAppDispatch, useAppSelector } from '@/shared/model';
 import { registerThunk } from '../model/register';
+import { getIsLoadingSession } from '@/entities/session';
 
 type RegisterFormProps = {
     onComplete?: () => void;
@@ -18,6 +19,7 @@ export const RegisterForm = ({ onComplete }: RegisterFormProps) => {
         resolver: zodResolver(registerSchema),
     });
     const dispatch = useAppDispatch();
+    const isSessionLoading = useAppSelector(getIsLoadingSession);
 
     const onSubmit: SubmitHandler<RegisterSchemaType> = async (data) => {
         await dispatch(registerThunk(data))
@@ -73,6 +75,7 @@ export const RegisterForm = ({ onComplete }: RegisterFormProps) => {
                 id="register_button"
                 type="submit"
                 className="btn w-100 py-2"
+                disabled={isSessionLoading}
             >
                 REGISTER
             </button>

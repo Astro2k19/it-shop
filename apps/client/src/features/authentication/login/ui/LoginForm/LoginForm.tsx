@@ -4,7 +4,9 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { getPasswordForgotRoute, getRegisterRoute } from '@/shared/router';
 import { Link } from 'react-router-dom';
 import { loginThunk } from '../../model/login';
-import { useAppDispatch } from '@/shared/model';
+import { useAppDispatch, useAppSelector } from '@/shared/model';
+import { getIsLoadingSession } from '@/entities/session';
+import classNames from 'classnames';
 
 type LoginFormProps = {
     onComplete?: () => void;
@@ -20,6 +22,7 @@ export const LoginForm = ({ onComplete }: LoginFormProps) => {
         resolver: zodResolver(loginSchema),
     });
     const dispatch = useAppDispatch();
+    const isSessionLoading = useAppSelector(getIsLoadingSession);
 
     const onSubmit: SubmitHandler<LoginSchemaType> = async (data) => {
         await dispatch(loginThunk(data))
@@ -60,7 +63,17 @@ export const LoginForm = ({ onComplete }: LoginFormProps) => {
             <Link to={getPasswordForgotRoute()} className="float-end mb-4">
                 Forgot Password?
             </Link>
-            <button id="login_button" type="submit" className="btn w-100 py-2">
+            <button
+                id="login_button"
+                type="submit"
+                className={classNames([
+                    'btn w-100 py-2',
+                    {
+                        disabled: isSessionLoading,
+                    },
+                ])}
+                disabled={isSessionLoading}
+            >
                 LOGIN
             </button>
             <div className="my-3">

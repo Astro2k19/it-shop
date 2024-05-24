@@ -25,18 +25,11 @@ export const sessionSlice = createSlice({
             state.isAuthorized = false;
             state.accessToken = undefined;
         },
+        setLoading: (state, { payload }: PayloadAction<boolean>) => {
+            state.isLoading = payload;
+        },
     },
     extraReducers: (builder) => {
-        builder.addMatcher(
-            isAnyOf(
-                sessionApi.endpoints.login.matchPending,
-                sessionApi.endpoints.register.matchPending,
-                sessionApi.endpoints.refresh.matchPending
-            ),
-            (state) => {
-                state.isLoading = true;
-            }
-        );
         builder.addMatcher(
             isAnyOf(
                 sessionApi.endpoints.login.matchFulfilled,
@@ -46,17 +39,6 @@ export const sessionSlice = createSlice({
             (state, { payload }) => {
                 state.isAuthorized = true;
                 state.accessToken = payload.accessToken;
-                state.isLoading = false;
-            }
-        );
-        builder.addMatcher(
-            isAnyOf(
-                sessionApi.endpoints.login.matchRejected,
-                sessionApi.endpoints.register.matchRejected,
-                sessionApi.endpoints.refresh.matchRejected
-            ),
-            (state) => {
-                state.isLoading = false;
             }
         );
         builder.addMatcher(

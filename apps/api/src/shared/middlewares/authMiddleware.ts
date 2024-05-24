@@ -18,9 +18,7 @@ export default catchAsyncErrors(async (req, res, next) => {
         );
     }
 
-    const decoded = (await tokenService.verifyAccessToken(
-        bearerToken
-    )) as JwtPayload;
+    const decoded = tokenService.verifyAccessToken(bearerToken) as JwtPayload;
     req.user = await User.findById(decoded.id);
     next();
 });

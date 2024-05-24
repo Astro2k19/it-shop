@@ -8,5 +8,3 @@ export const userApi = baseApi.injectEndpoints({
         }),
     }),
 });
-
-export const useGetMe = userApi.useMeQuery;

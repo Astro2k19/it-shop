@@ -1,44 +1,29 @@
-import ms from 'ms';
 import TokenModel from '../model/Token';
 import { Types } from 'mongoose';
-import JWTRedis from 'jwt-redis';
+import jwt from 'jsonwebtoken';
 
 class TokenService {
-    private readonly jwt: JWTRedis;
-
-    constructor(jwt: JWTRedis) {
-        this.jwt = jwt;
-    }
-
-    async getJwtTokens(id: Types.ObjectId) {
-        const accessToken = await this.getJwtAccessToken(id);
-        const refreshToken = await this.getJwtRefreshToken(id);
+    getJwtTokens(id: Types.ObjectId) {
+        const accessToken = this.getJwtAccessToken(id);
+        const refreshToken = this.getJwtRefreshToken(id);
         return {
             accessToken,
             refreshToken,
         };
     }
 
-    async getJwtRefreshToken(id: Types.ObjectId) {
-        const hexID = id.toHexString();
-        return this.jwt.sign(
-            { id, jti: hexID },
-            process.env.SECRET_REFRESH_TOKEN,
-            {
-                expiresIn: ms(process.env.REFRESH_TOKEN_EXPIRE),
-            }
-        );
+    getJwtRefreshToken(id: Types.ObjectId) {
+        // const hexID = id.toHexString();
+        return jwt.sign({ id }, process.env.SECRET_REFRESH_TOKEN, {
+            expiresIn: process.env.REFRESH_TOKEN_EXPIRE,
+        });
     }
 
-    async getJwtAccessToken(id: Types.ObjectId) {
-        const hexID = id.toHexString();
-        return this.jwt.sign(
-            { id, jti: hexID },
-            process.env.SECRET_ACCESS_TOKEN,
-            {
-                expiresIn: ms(process.env.ACCESS_TOKEN_EXPIRE),
-            }
-        );
+    getJwtAccessToken(id: Types.ObjectId) {
+        // const hexID = id.toHexString();
+        return jwt.sign({ id }, process.env.SECRET_ACCESS_TOKEN, {
+            expiresIn: process.env.ACCESS_TOKEN_EXPIRE,
+        });
     }
 
     async saveRefreshToken(userId: Types.ObjectId, token: string) {
@@ -52,16 +37,16 @@ class TokenService {
         await TokenModel.create({ user: userId, refreshToken: token });
     }
 
-    async destroyJwtToken(id: Types.ObjectId) {
-        await this.jwt.destroy(id.toHexString());
+    // async destroyJwtToken(id: Types.ObjectId) {
+    //     await jwt.destroy(id.toHexString());
+    // }
+
+    verifyAccessToken(token: string) {
+        return jwt.verify(token, process.env.SECRET_ACCESS_TOKEN);
     }
 
-    async verifyAccessToken(token: string) {
-        return this.jwt.verify(token, process.env.SECRET_ACCESS_TOKEN);
-    }
-
-    async verifyRefreshToken(token: string) {
-        return this.jwt.verify(token, process.env.SECRET_REFRESH_TOKEN);
+    verifyRefreshToken(token: string) {
+        return jwt.verify(token, process.env.SECRET_REFRESH_TOKEN);
     }
 
     async removeToken(refreshToken: string) {

@@ -27,18 +27,22 @@ import {
     getUpdateUserRoute,
     getUploadAvatarRoute,
     getUploadProductImagesRoute,
+    GuestRoutes,
+    ProtectedRoutes,
+    PublicRoutes,
 } from '@/shared/router';
 import { RouteObject } from 'react-router-dom';
 import { UserRoles } from '@it-shop/types';
-import { ProductPage } from '@/pages/product/ui/Page/Page';
 import { NotFoundPage } from '@/pages/notFound';
 import { Login } from '@/pages/login';
-import { Register } from '@/pages/register/ui/Page/Page';
+import { Register } from '@/pages/register';
+import { ProductPage } from '@/pages/product';
 
 export type ProtectedRouteType = RouteObject & {
     requiredRoles?: UserRoles[];
     isProtected?: boolean;
     isForGuest?: boolean;
+    sessionLoader?: boolean;
 };
 
 export const adminRouterConfig: Record<
@@ -104,79 +108,105 @@ export const adminRouterConfig: Record<
         requiredRoles: ['Admin'],
     },
 };
+export const protectedRouterConfig: Record<
+    keyof typeof ProtectedRoutes,
+    ProtectedRouteType
+> = {
+    [AppRoutes.PASSWORD_FORGOT]: {
+        path: getPasswordForgotRoute(),
+        element: <div></div>,
+    },
+    [AppRoutes.PASSWORD_RESET]: {
+        path: getPasswordResetRoute(':token'),
+        element: <div></div>,
+    },
+    [AppRoutes.PROFILE]: {
+        path: getProfileRoute(),
+        element: <div></div>,
+        isProtected: true,
+    },
+    [AppRoutes.UPDATE_PROFILE]: {
+        path: getUpdateProfileRoute(),
+        element: <div></div>,
+        isProtected: true,
+    },
+    [AppRoutes.UPLOAD_AVATAR]: {
+        path: getUploadAvatarRoute(),
+        element: <div></div>,
+        isProtected: true,
+    },
+    [AppRoutes.UPDATE_PASSWORD]: {
+        path: getUpdatePasswordRoute(),
+        element: <div></div>,
+        isProtected: true,
+    },
+    [AppRoutes.SHIPPING]: {
+        path: getShippingRoute(),
+        element: <div></div>,
+        isProtected: true,
+    },
+    [AppRoutes.CONFIRM_ORDER]: {
+        path: getConfirmOrderRoute(),
+        element: <div></div>,
+        isProtected: true,
+    },
+    [AppRoutes.PAYMENT_METHOD]: {
+        path: getPaymentMethodRoute(),
+        element: <div></div>,
+        isProtected: true,
+    },
+    [AppRoutes.MY_ORDERS]: {
+        path: getMyOrdersRoute(),
+        element: <div></div>,
+        isProtected: true,
+    },
+    [AppRoutes.INVOICE]: {
+        path: getInvoiceRoute(':id'),
+        element: <div></div>,
+        isProtected: true,
+    },
+    ...adminRouterConfig,
+};
 
-export const routerConfig: Record<keyof typeof AppRoutes, ProtectedRouteType> =
-    {
-        [AppRoutes.PRODUCT_DETAILS]: {
-            path: getProductDetailsRoute(':id'),
-            element: <ProductPage />,
-        },
-        [AppRoutes.LOGIN]: {
-            isForGuest: true,
-            path: getLoginRoute(),
-            element: <Login />,
-        },
-        [AppRoutes.REGISTER]: {
-            isForGuest: true,
-            path: getRegisterRoute(),
-            element: <Register />,
-        },
-        [AppRoutes.PASSWORD_FORGOT]: {
-            path: getPasswordForgotRoute(),
-            element: <div></div>,
-        },
-        [AppRoutes.PASSWORD_RESET]: {
-            path: getPasswordResetRoute(':token'),
-            element: <div></div>,
-        },
-        [AppRoutes.PROFILE]: {
-            path: getProfileRoute(),
-            element: <div></div>,
-            isProtected: true,
-        },
-        [AppRoutes.UPDATE_PROFILE]: {
-            path: getUpdateProfileRoute(),
-            element: <div></div>,
-            isProtected: true,
-        },
-        [AppRoutes.UPLOAD_AVATAR]: {
-            path: getUploadAvatarRoute(),
-            element: <div></div>,
-            isProtected: true,
-        },
-        [AppRoutes.UPDATE_PASSWORD]: {
-            path: getUpdatePasswordRoute(),
-            element: <div></div>,
-            isProtected: true,
-        },
-        [AppRoutes.SHIPPING]: {
-            path: getShippingRoute(),
-            element: <div></div>,
-            isProtected: true,
-        },
-        [AppRoutes.CONFIRM_ORDER]: {
-            path: getConfirmOrderRoute(),
-            element: <div></div>,
-            isProtected: true,
-        },
-        [AppRoutes.PAYMENT_METHOD]: {
-            path: getPaymentMethodRoute(),
-            element: <div></div>,
-            isProtected: true,
-        },
-        [AppRoutes.MY_ORDERS]: {
-            path: getMyOrdersRoute(),
-            element: <div></div>,
-            isProtected: true,
-        },
-        [AppRoutes.INVOICE]: {
-            path: getInvoiceRoute(':id'),
-            element: <div></div>,
-            isProtected: true,
-        },
-        [AppRoutes.NOT_FOUND]: {
-            path: getNotFoundRoute(),
-            element: <NotFoundPage />,
-        },
-        ...adminRouterConfig,
-    };
+export const guestRouterConfig: Record<
+    keyof typeof GuestRoutes,
+    ProtectedRouteType
+> = {
+    [AppRoutes.LOGIN]: {
+        path: getLoginRoute(),
+        element: <Login />,
+        isForGuest: true,
+    },
+    [AppRoutes.REGISTER]: {
+        path: getRegisterRoute(),
+        element: <Register />,
+        isForGuest: true,
+    },
+};
+
+export const publicRouterConfig: Record<
+    keyof typeof PublicRoutes,
+    ProtectedRouteType
+> = {
+    [AppRoutes.HOME]: {
+        path: getMainRoute(),
+        element: <Home />,
+    },
+    [AppRoutes.NOT_FOUND]: {
+        path: getNotFoundRoute(),
+        element: <NotFoundPage />,
+    },
+    [AppRoutes.PRODUCT_DETAILS]: {
+        path: getProductDetailsRoute(':id'),
+        element: <ProductPage />,
+    },
+};
+
+export const appRouterConfig: Record<
+    keyof typeof AppRoutes,
+    ProtectedRouteType
+> = {
+    ...protectedRouterConfig,
+    ...guestRouterConfig,
+    ...publicRouterConfig,
+};

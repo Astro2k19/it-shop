@@ -14,17 +14,8 @@ import {
 import { UserService } from '../services/UserService';
 import { CookieService } from '../services/CookieService';
 import ms from 'ms';
-import { RedisService } from '../services/RedisService';
-import JWTRedis from 'jwt-redis';
-import { RedisClientType } from 'redis';
-
-export let tokenService: TokenService;
-export let userService: UserService;
-(async () => {
-    const redisClient = await RedisService.init();
-    tokenService = new TokenService(new JWTRedis(<RedisClientType>redisClient));
-    userService = new UserService(tokenService, new MailService());
-})();
+export const tokenService = new TokenService();
+export const userService = new UserService(tokenService, new MailService());
 
 const cookieService = new CookieService({
     httpOnly: true,

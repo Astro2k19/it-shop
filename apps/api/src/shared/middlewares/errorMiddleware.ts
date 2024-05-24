@@ -38,7 +38,6 @@ export default (
         err.message || 'Internal Server Error',
         'statusCode' in err ? err.statusCode : StatusCodes.INTERNAL_SERVER_ERROR
     );
-
     console.log(err, 'err');
 
     if (err instanceof MongooseError.CastError) {

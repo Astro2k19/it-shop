@@ -1,7 +1,7 @@
 import { baseApi, SESSION_TAG } from '@/shared/api';
 import { LoginSchemaType, RegisterSchemaType } from '@it-shop/schemas';
 import { SessionResponse } from './types';
-import { userActions, userApi } from '@/entities/user/@x/session';
+import { userActions } from '@/entities/user/@x/session';
 
 export const sessionApi = baseApi.injectEndpoints({
     endpoints: (build) => ({
@@ -12,14 +12,6 @@ export const sessionApi = baseApi.injectEndpoints({
                 body,
             }),
             invalidatesTags: [SESSION_TAG],
-            // onQueryStarted: async (_, { queryFulfilled, dispatch }) => {
-            //     try {
-            //         await queryFulfilled;
-            //         await dispatch(userApi.endpoints.me.initiate());
-            //     } catch (e) {
-            //         console.log(e);
-            //     }
-            // },
         }),
         register: build.mutation<SessionResponse, RegisterSchemaType>({
             query: (body) => ({
@@ -55,3 +47,5 @@ export const sessionApi = baseApi.injectEndpoints({
 
 export const useRefresh = sessionApi.useRefreshMutation;
 export const useLogout = sessionApi.useLogoutMutation;
+export const useLogin = sessionApi.useLoginMutation;
+export const useRegister = sessionApi.useRegisterMutation;

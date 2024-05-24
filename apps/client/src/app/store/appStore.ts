@@ -2,7 +2,7 @@ import { configureStore, Dispatch } from '@reduxjs/toolkit';
 import { setupListeners } from '@reduxjs/toolkit/query';
 import { rootReducer } from './rootReducer';
 import { baseApi } from '@/shared/api/baseApi';
-import { sessionActions } from '@/entities/session';
+import { sessionActions, sessionMiddleware } from '@/entities/session';
 import { userActions } from '@/entities/user';
 import { AsyncThunkConfig } from '@reduxjs/toolkit/src/createAsyncThunk';
 
@@ -15,7 +15,7 @@ const createReduxStore = () => {
                 thunk: {
                     extraArgument: { sessionActions, userActions },
                 },
-            }).concat(baseApi.middleware),
+            }).concat(baseApi.middleware, sessionMiddleware),
     });
 
     // optional, but required for refetchOnFocus/refetchOnReconnect behaviors
@@ -26,6 +26,7 @@ const createReduxStore = () => {
 export const store = createReduxStore();
 export type RootState = ReturnType<typeof store.getState>;
 export type AppDispatch = typeof store.dispatch;
+
 export type StoreExtraOptions = AsyncThunkConfig & {
     extra: {
         sessionActions: typeof sessionActions;

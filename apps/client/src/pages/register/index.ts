@@ -1,1 +1,1 @@
-export { Login } from './ui/Page/Page';
+export { Register } from './ui/Page/Page';

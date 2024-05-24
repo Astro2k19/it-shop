@@ -27,6 +27,7 @@ export const baseQueryWithReauth = async (
         typeof result.error?.status === 'number' &&
         AUTH_ERROR_CODES.has(result.error.status)
     ) {
+        console.log(result.error?.status, 'baseQueryWithReauth');
         const response = await api.dispatch(
             refreshAccessTokenThunk({ args, api, extraOptions, result })
         );

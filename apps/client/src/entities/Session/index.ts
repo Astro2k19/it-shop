@@ -1,4 +1,11 @@
+export { sessionMiddleware } from './api/listener';
 export { sessionActions, sessionSlice } from './model/slice';
 export * from './model/selectors';
-export { sessionApi, useRefresh, useLogout } from './api/sessionApi';
+export {
+    sessionApi,
+    useRefresh,
+    useLogout,
+    useRegister,
+    useLogin,
+} from './api/sessionApi';
 export { type SessionResponse } from './api/types';
