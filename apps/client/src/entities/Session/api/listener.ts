@@ -1,7 +1,8 @@
 import { isAnyOf, ListenerMiddleware } from '@reduxjs/toolkit';
 import { sessionApi } from './sessionApi';
 import { sessionActions } from '../model/slice';
-import { userApi } from '@/entities/user';
+import { userActions, userApi } from '@/entities/user';
+import { SESSION_TAG } from '@/shared/api';
 
 export const sessionMiddleware: ListenerMiddleware =
     (store) => (next) => async (action) => {
@@ -24,8 +25,12 @@ export const sessionMiddleware: ListenerMiddleware =
                 sessionApi.endpoints.refresh.matchFulfilled
             )(action)
         ) {
+            console.log(
+                'sessionApi.endpoints.login.matchFulfilled before HERE'
+            );
             await store.dispatch(userApi.endpoints.me.initiate());
             store.dispatch(sessionActions.setLoading(false));
+            store.dispatch(sessionActions.setInited(true));
         }
 
         if (
@@ -36,6 +41,7 @@ export const sessionMiddleware: ListenerMiddleware =
             )(action)
         ) {
             store.dispatch(sessionActions.setLoading(false));
+            store.dispatch(sessionActions.setInited(true));
         }
 
         return result;

@@ -6,17 +6,22 @@ export type SessionSliceState = {
     accessToken?: string;
     isAuthorized: boolean;
     isLoading: boolean;
+    isInited?: boolean;
 };
 
 const initialState: SessionSliceState = {
     isAuthorized: false,
     isLoading: false,
+    isInited: false,
 };
 
 export const sessionSlice = createSlice({
     name: 'session',
     initialState,
     reducers: {
+        setInited: (state, { payload }: PayloadAction<boolean>) => {
+            state.isInited = payload;
+        },
         setSession: (state, { payload }: PayloadAction<SessionResponse>) => {
             state.isAuthorized = true;
             state.accessToken = payload.accessToken;

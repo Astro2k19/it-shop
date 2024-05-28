@@ -1,17 +1,23 @@
 import { useAppSelector } from '@/shared/model';
-import { getIsLoadingSession } from '@/entities/session';
-import { ReactNode } from 'react';
+import { getIsInited, getIsLoadingSession } from '@/entities/session';
+import { Outlet } from 'react-router-dom';
 
 type PageProps = {
-    children?: ReactNode;
     sessionLoader?: boolean;
 };
-export const Page = ({ children, sessionLoader }: PageProps) => {
+export const Page = ({ sessionLoader }: PageProps) => {
     const isSessionLoading = useAppSelector(getIsLoadingSession);
-
-    if (sessionLoader && isSessionLoading) {
-        return <div>loading</div>;
+    const isInited = useAppSelector(getIsInited);
+    console.log('------');
+    console.log('Page');
+    console.log('------');
+    if (sessionLoader && isSessionLoading && !isInited) {
+        return <div>Page loading</div>;
     }
 
-    return <div className={'page'}>{children}</div>;
+    return (
+        <div className={'page'}>
+            <Outlet />
+        </div>
+    );
 };

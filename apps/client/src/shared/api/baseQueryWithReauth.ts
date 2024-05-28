@@ -21,17 +21,25 @@ export const baseQueryWithReauth = async (
     QueryReturnValue<unknown, FetchBaseQueryError, FetchBaseQueryMeta>
 > => {
     await mutex.waitForUnlock();
-    let result = await baseQuery(args, api, extraOptions);
+    let result: QueryReturnValue<
+        unknown,
+        FetchBaseQueryError,
+        FetchBaseQueryMeta
+    > = await baseQuery(args, api, extraOptions);
 
     if (
         typeof result.error?.status === 'number' &&
         AUTH_ERROR_CODES.has(result.error.status)
     ) {
-        console.log(result.error?.status, 'baseQueryWithReauth');
-        const response = await api.dispatch(
+        const dispatch = api.dispatch as AppDispatch;
+        const response = await dispatch(
             refreshAccessTokenThunk({ args, api, extraOptions, result })
         );
-        result = response.payload;
+        result = response.payload as QueryReturnValue<
+            unknown,
+            FetchBaseQueryError,
+            FetchBaseQueryMeta
+        >;
     }
 
     return result;

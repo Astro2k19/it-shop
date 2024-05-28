@@ -1,22 +1,15 @@
-import {
-    getIsAuthorized,
-    getIsLoadingSession,
-    useRefresh,
-} from '@/entities/session';
+import { getIsAuthorized, getIsInited, useRefresh } from '@/entities/session';
 import { useAppSelector } from '@/shared/model';
 import { Outlet } from 'react-router-dom';
-import { useEffect } from 'react';
+import { skipToken } from '@reduxjs/toolkit/query';
 
 export const PersistentLogin = () => {
-    const isAuth = useAppSelector(getIsAuthorized);
-    const isLoadingSession = useAppSelector(getIsLoadingSession);
-    const [refresh] = useRefresh();
+    const isAuthorized = useAppSelector(getIsAuthorized);
+    const isInited = useAppSelector(getIsInited);
+    useRefresh(isAuthorized || isInited ? skipToken : undefined);
+    console.log('------');
     console.log('PersistentLogin');
-    useEffect(() => {
-        if (!isAuth) {
-            refresh(undefined);
-        }
-    }, [isAuth, refresh]);
+    console.log('------');
 
     return <Outlet />;
 };

@@ -42,11 +42,19 @@ class TokenService {
     // }
 
     verifyAccessToken(token: string) {
-        return jwt.verify(token, process.env.SECRET_ACCESS_TOKEN);
+        try {
+            return jwt.verify(token, process.env.SECRET_ACCESS_TOKEN);
+        } catch {
+            return null;
+        }
     }
 
     verifyRefreshToken(token: string) {
-        return jwt.verify(token, process.env.SECRET_REFRESH_TOKEN);
+        try {
+            return jwt.verify(token, process.env.SECRET_REFRESH_TOKEN);
+        } catch {
+            return null;
+        }
     }
 
     async removeToken(refreshToken: string) {

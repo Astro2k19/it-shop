@@ -1,4 +1,3 @@
-import { Home } from '@/pages/home';
 import {
     AdminRoutes,
     AppRoutes,
@@ -7,9 +6,10 @@ import {
     getAllReviewsRoute,
     getAllUsersRoute,
     getConfirmOrderRoute,
+    getDashboardRoute,
+    getForbiddenRoute,
     getInvoiceRoute,
     getLoginRoute,
-    getMainRoute,
     getMyOrdersRoute,
     getNewProductRoute,
     getNotFoundRoute,
@@ -37,6 +37,7 @@ import { NotFoundPage } from '@/pages/notFound';
 import { Login } from '@/pages/login';
 import { Register } from '@/pages/register';
 import { ProductPage } from '@/pages/product';
+import { Forbidden } from '@/pages/forbidden';
 
 export type ProtectedRouteType = RouteObject & {
     requiredRoles?: UserRoles[];
@@ -50,8 +51,10 @@ export const adminRouterConfig: Record<
     ProtectedRouteType
 > = {
     [AppRoutes.DASHBOARD]: {
-        path: getMainRoute(),
-        element: <Home />,
+        path: getDashboardRoute(),
+        isProtected: true,
+        requiredRoles: ['Admin'],
+        element: <div></div>,
     },
     [AppRoutes.PRODUCTS]: {
         path: getAllProductsRoute(),
@@ -185,13 +188,9 @@ export const guestRouterConfig: Record<
 };
 
 export const publicRouterConfig: Record<
-    keyof typeof PublicRoutes,
+    keyof Omit<typeof PublicRoutes, 'HOME'>,
     ProtectedRouteType
 > = {
-    [AppRoutes.HOME]: {
-        path: getMainRoute(),
-        element: <Home />,
-    },
     [AppRoutes.NOT_FOUND]: {
         path: getNotFoundRoute(),
         element: <NotFoundPage />,
@@ -200,10 +199,14 @@ export const publicRouterConfig: Record<
         path: getProductDetailsRoute(':id'),
         element: <ProductPage />,
     },
+    [AppRoutes.FORBIDDEN]: {
+        path: getForbiddenRoute(),
+        element: <Forbidden />,
+    },
 };
 
 export const appRouterConfig: Record<
-    keyof typeof AppRoutes,
+    keyof Omit<typeof AppRoutes, 'HOME'>,
     ProtectedRouteType
 > = {
     ...protectedRouterConfig,

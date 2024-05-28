@@ -21,12 +21,11 @@ export const sessionApi = baseApi.injectEndpoints({
             }),
             invalidatesTags: [SESSION_TAG],
         }),
-        refresh: build.mutation<SessionResponse, undefined>({
+        refresh: build.query<SessionResponse, void>({
             query: () => ({
                 method: 'POST',
                 url: '/refresh',
             }),
-            invalidatesTags: [SESSION_TAG],
         }),
         logout: build.mutation({
             query: () => ({
@@ -45,7 +44,7 @@ export const sessionApi = baseApi.injectEndpoints({
     }),
 });
 
-export const useRefresh = sessionApi.useRefreshMutation;
+export const useRefresh = sessionApi.useRefreshQuery;
 export const useLogout = sessionApi.useLogoutMutation;
 export const useLogin = sessionApi.useLoginMutation;
 export const useRegister = sessionApi.useRegisterMutation;
