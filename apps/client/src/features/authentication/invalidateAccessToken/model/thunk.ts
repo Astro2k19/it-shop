@@ -10,15 +10,15 @@ import { SessionResponse } from '@/entities/session';
 import { baseQuery, mutex } from '@/shared/api';
 import { User } from '@it-shop/types';
 
-interface InvalidateAccessTokenArgs {
+type InvalidateAccessTokenArgs = {
     args: string | FetchArgs;
     api: BaseQueryApi;
     extraOptions: Record<string, unknown>;
     result: QueryReturnValue<unknown, FetchBaseQueryError, FetchBaseQueryMeta>;
-}
+};
 
 export const refreshAccessTokenThunk = createAsyncThunk<
-    QueryReturnValue<unknown>,
+    QueryReturnValue<unknown, FetchBaseQueryError, FetchBaseQueryMeta>,
     InvalidateAccessTokenArgs,
     StoreExtraOptions
 >(
@@ -39,6 +39,7 @@ export const refreshAccessTokenThunk = createAsyncThunk<
                 )) as QueryReturnValue<SessionResponse>;
 
                 if (refreshResult.data) {
+                    // not inited actions because it's set up in middleware if there's any error
                     dispatch(
                         extra.sessionActions.setSession(refreshResult.data)
                     );

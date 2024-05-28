@@ -19,6 +19,12 @@ export default catchAsyncErrors(async (req, res, next) => {
     }
 
     const decoded = tokenService.verifyAccessToken(bearerToken) as JwtPayload;
+    if (!decoded) {
+        return next(
+            new ErrorHandler('Login first to access this resource', 401)
+        );
+    }
+
     req.user = await User.findById(decoded.id);
     next();
 });

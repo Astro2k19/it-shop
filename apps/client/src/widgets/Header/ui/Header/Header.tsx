@@ -1,12 +1,11 @@
 import logo from '@/shared/assets/images/shopit_logo.png';
 import { NavLink } from 'react-router-dom';
-
 import { getLoginRoute, getMainRoute } from '@/shared/router';
 import { Search } from '../Search/Search';
 import { useAppSelector } from '@/shared/model';
 import { getIsAuthorized, getIsLoadingSession } from '@/entities/session';
 import { getUserData } from '@/entities/user';
-import { AvatarDropdown } from '@/widgets/Header/ui/AvatarDropdown/AvatarDropdown';
+import { AvatarDropdown } from '../AvatarDropdown/AvatarDropdown';
 
 export const Header = () => {
     const isAuth = useAppSelector(getIsAuthorized);
@@ -14,6 +13,7 @@ export const Header = () => {
     const isLoadingSession = useAppSelector(getIsLoadingSession);
 
     console.log('isLoadingSession Header', isLoadingSession);
+    console.log('userData Header', userData);
 
     return (
         <header>

@@ -2,7 +2,11 @@ import { configureStore, Dispatch } from '@reduxjs/toolkit';
 import { setupListeners } from '@reduxjs/toolkit/query';
 import { rootReducer } from './rootReducer';
 import { baseApi } from '@/shared/api/baseApi';
-import { sessionActions, sessionMiddleware } from '@/entities/session';
+import {
+    sessionActions,
+    sessionApi,
+    sessionMiddleware,
+} from '@/entities/session';
 import { userActions } from '@/entities/user';
 import { AsyncThunkConfig } from '@reduxjs/toolkit/src/createAsyncThunk';
 
@@ -13,7 +17,7 @@ const createReduxStore = () => {
             getDefaultMiddleware({
                 serializableCheck: false,
                 thunk: {
-                    extraArgument: { sessionActions, userActions },
+                    extraArgument: { sessionActions, userActions, sessionApi },
                 },
             }).concat(baseApi.middleware, sessionMiddleware),
     });

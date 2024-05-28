@@ -20,12 +20,12 @@ export const AvatarDropdown = (props: AvatarDropdownProps) => {
     const { userData } = props;
     const [logout] = useLogout();
     const isAdmin = useAppSelector(isUserAdmin);
-    const navigate = useNavigate();
+    // const navigate = useNavigate();
 
     const onLogout = useCallback(async () => {
         await logout(null);
         // navigate(getMainRoute());
-    }, [logout, navigate]);
+    }, [logout]);
 
     const dropdownOptions: DropdownItem[] = [
         ...(isAdmin

@@ -14,7 +14,6 @@ export const RoleGuard = ({ requiredRoles }: RoleGuardProps) => {
         if (!requiredRoles) {
             return true;
         }
-
         return requiredRoles.some((role) => userRoles?.includes(role));
     }, [requiredRoles, userRoles]);
 

@@ -33,6 +33,7 @@ export const PublicRoutes = {
     HOME: 'HOME',
     NOT_FOUND: 'NOT_FOUND',
     PRODUCT_DETAILS: 'PRODUCT_DETAILS',
+    FORBIDDEN: 'FORBIDDEN',
 } as const;
 
 export const AdminRoutes = {
