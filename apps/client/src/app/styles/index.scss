@@ -160,11 +160,6 @@ footer {
   margin: 0;
 }
 
-.form-control:disabled,
-.form-control[readonly] {
-  background-color: white;
-}
-
 /* Login & Register */
 
 .wrapper {
@@ -388,6 +383,10 @@ footer {
 
 .star:first-child {
   padding-left: 0;
+}
+
+.red {
+  color: #dc3545;
 }
 
 .orange {

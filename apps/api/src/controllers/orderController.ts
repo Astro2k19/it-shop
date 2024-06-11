@@ -1,9 +1,9 @@
 import catchAsyncErrors from '../shared/middlewares/catchAsyncErrors';
 import OrderModel from '../model/Order';
 import { Order } from '@it-shop/types';
-import ErrorHandler from '../shared/utils/ErrorHandler';
 import Product from '../model/Product';
 import { NewOrderSchemaType, OrderUpdateSchema } from '@it-shop/schemas';
+import { ApiError } from '@it-shop/schemas';
 
 // POST => /api/v1/admin/orders/new
 export const newOrder = catchAsyncErrors<NewOrderSchemaType, Order>(
@@ -53,10 +53,7 @@ export const getOrderDetails = catchAsyncErrors<undefined, Order>(
 
         if (!order) {
             return next(
-                new ErrorHandler(
-                    `Order not found with ${req.params.id} id`,
-                    404
-                )
+                new ApiError(`Order not found with ${req.params.id} id`, 404)
             );
         }
 
@@ -79,17 +76,12 @@ export const updateOrder = catchAsyncErrors<OrderUpdateSchema>(
 
         if (!order) {
             return next(
-                new ErrorHandler(
-                    `Order not found with ${req.params.id} id`,
-                    404
-                )
+                new ApiError(`Order not found with ${req.params.id} id`, 404)
             );
         }
 
         if (order.orderStatus === 'Delivered') {
-            return next(
-                new ErrorHandler(`Order has already been delivered`, 403)
-            );
+            return next(new ApiError(`Order has already been delivered`, 403));
         }
 
         for (const item of order.orderItems) {
@@ -97,7 +89,7 @@ export const updateOrder = catchAsyncErrors<OrderUpdateSchema>(
 
             if (!product) {
                 return next(
-                    new ErrorHandler(
+                    new ApiError(
                         `Product not found with ${item.product} id`,
                         404
                     )
@@ -125,7 +117,7 @@ export const deleteOrder = catchAsyncErrors(async (req, res, next) => {
 
     if (!order) {
         return next(
-            new ErrorHandler(`Order not found with ${req.params.id} id`, 404)
+            new ApiError(`Order not found with ${req.params.id} id`, 404)
         );
     }
 

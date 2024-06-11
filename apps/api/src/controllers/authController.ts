@@ -1,5 +1,5 @@
 import catchAsyncErrors from '../shared/middlewares/catchAsyncErrors';
-import TokenService from '../services/TokenService';
+import { JwtTokenService } from '../services/JwtTokenService';
 import { MailService } from '../services/MailService';
 
 import { User, UserSchema } from '@it-shop/types';
@@ -14,8 +14,14 @@ import {
 import { UserService } from '../services/UserService';
 import { CookieService } from '../services/CookieService';
 import ms from 'ms';
-export const tokenService = new TokenService();
-export const userService = new UserService(tokenService, new MailService());
+import { JwtTokenRepository } from '../services/JwtTokenRepository';
+import TokenModel from '../model/Token';
+export const jwtTokenService = new JwtTokenService();
+export const userService = new UserService(
+    jwtTokenService,
+    new JwtTokenRepository(TokenModel),
+    new MailService()
+);
 
 const cookieService = new CookieService({
     httpOnly: true,

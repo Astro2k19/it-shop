@@ -1,6 +1,7 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { sessionApi } from '@/entities/session/api/sessionApi';
 import { LoginSchemaType } from '@it-shop/schemas';
+import { isFetchBaseQueryError } from '@/shared/api';
 
 export const loginThunk = createAsyncThunk(
     'authentication/login',
@@ -8,7 +9,9 @@ export const loginThunk = createAsyncThunk(
         try {
             await dispatch(sessionApi.endpoints.login.initiate(arg)).unwrap();
         } catch (e) {
-            rejectWithValue(e);
+            if (isFetchBaseQueryError(e)) {
+                return rejectWithValue(e.data.message);
+            }
         }
     }
 );

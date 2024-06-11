@@ -1,84 +1,35 @@
-import { SubmitHandler, useForm } from 'react-hook-form';
+import { SubmitHandler } from 'react-hook-form';
 import { registerSchema, RegisterSchemaType } from '@it-shop/schemas';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useAppDispatch, useAppSelector } from '@/shared/model';
+import { useAppDispatch } from '@/shared/model';
 import { registerThunk } from '../model/register';
-import { getIsLoadingSession } from '@/entities/session';
+import { toast } from 'react-hot-toast';
+import { Form } from '@/shared/ui';
 
 type RegisterFormProps = {
     onComplete?: () => void;
 };
 
 export const RegisterForm = ({ onComplete }: RegisterFormProps) => {
-    const {
-        setError,
-        formState: { errors },
-        handleSubmit,
-        register,
-    } = useForm<RegisterSchemaType>({
-        resolver: zodResolver(registerSchema),
-    });
     const dispatch = useAppDispatch();
-    const isSessionLoading = useAppSelector(getIsLoadingSession);
-
     const onSubmit: SubmitHandler<RegisterSchemaType> = async (data) => {
         await dispatch(registerThunk(data))
             .unwrap()
             .then(() => onComplete?.())
-            .catch((error) => console.log(error));
+            .catch((message: string) => {
+                toast.error(message);
+            });
     };
 
     return (
-        <form
-            className="shadow rounded bg-body"
-            method="post"
-            onSubmit={handleSubmit(onSubmit)}
-        >
-            <h2 className="mb-4">Register</h2>
-
-            <div className="mb-3">
-                <label htmlFor="name" className="form-label">
-                    Name
-                </label>
-                <input
-                    type="text"
-                    id="name"
-                    className="form-control"
-                    {...register('name')}
-                />
-            </div>
-
-            <div className="mb-3">
-                <label htmlFor="email" className="form-label">
-                    Email
-                </label>
-                <input
-                    type="email"
-                    id="email"
-                    className="form-control"
-                    {...register('email')}
-                />
-            </div>
-
-            <div className="mb-3">
-                <label htmlFor="password" className="form-label">
-                    Password
-                </label>
-                <input
-                    type="password"
-                    id="password"
-                    className="form-control"
-                    {...register('password')}
-                />
-            </div>
-            <button
-                id="register_button"
-                type="submit"
-                className="btn w-100 py-2"
-                disabled={isSessionLoading}
-            >
-                REGISTER
-            </button>
-        </form>
+        <Form title={'Register'} schema={registerSchema} onSubmit={onSubmit}>
+            <Form.Input name={'name'} label={'Name'} type={'text'} />
+            <Form.Input name={'email'} label={'Email'} type={'email'} />
+            <Form.Input
+                name={'password'}
+                label={'Password'}
+                type={'password'}
+            />
+            <Form.Button>Register</Form.Button>
+        </Form>
     );
 };

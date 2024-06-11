@@ -2,7 +2,8 @@ import { Request, Response, NextFunction } from 'express';
 import { z, ZodError, ZodRawShape, ZodTypeAny } from 'zod';
 
 import { StatusCodes } from 'http-status-codes';
-import ErrorHandler from '../utils/ErrorHandler';
+
+import { ApiError } from '@it-shop/schemas';
 
 export function validateData<T extends ZodRawShape, K extends ZodTypeAny>(
     schema: z.ZodObject<T, any> | z.ZodEffects<K>,
@@ -17,7 +18,7 @@ export function validateData<T extends ZodRawShape, K extends ZodTypeAny>(
                 next(error);
             } else {
                 next(
-                    new ErrorHandler(
+                    new ApiError(
                         'Internal Server Error',
                         StatusCodes.INTERNAL_SERVER_ERROR
                     )

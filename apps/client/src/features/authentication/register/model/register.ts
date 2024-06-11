@@ -1,6 +1,7 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { sessionApi } from '@/entities/session/api/sessionApi';
 import { RegisterSchemaType } from '@it-shop/schemas';
+import { isFetchBaseQueryError } from '@/shared/api';
 
 export const registerThunk = createAsyncThunk(
     'authentication/register',
@@ -10,7 +11,9 @@ export const registerThunk = createAsyncThunk(
                 sessionApi.endpoints.register.initiate(arg)
             ).unwrap();
         } catch (e) {
-            rejectWithValue(e);
+            if (isFetchBaseQueryError(e)) {
+                return rejectWithValue(e.data.message);
+            }
         }
     }
 );

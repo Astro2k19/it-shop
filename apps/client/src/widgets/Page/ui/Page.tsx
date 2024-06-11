@@ -11,7 +11,11 @@ export const Page = ({ sessionLoader }: PageProps) => {
     console.log('------');
     console.log('Page');
     console.log('------');
-    if (sessionLoader && isSessionLoading && !isInited) {
+
+    if (
+        (sessionLoader && isSessionLoading && !isInited) ||
+        (!isInited && sessionLoader)
+    ) {
         return <div>Page loading</div>;
     }
 

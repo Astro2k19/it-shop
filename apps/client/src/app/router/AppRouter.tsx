@@ -42,19 +42,19 @@ export const AppRouter = () => {
     ];
 
     const baseRoutesWithFilters = [
-        getPageWrapper(
-            {
-                element: <PersistentLogin />,
-                children: [
+        {
+            element: <PersistentLogin />,
+            children: [
+                getPageWrapper(
                     {
                         path: getMainRoute(),
                         element: <Home />,
                         index: true,
                     },
-                ],
-            },
-            true
-        ),
+                    true
+                ),
+            ],
+        },
     ];
 
     return createBrowserRouter([

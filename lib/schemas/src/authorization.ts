@@ -31,10 +31,10 @@ export const loginSchema = z.object({
         .string({
             required_error: 'Please enter your email',
         })
-        .trim()
         .email({
             message: 'Email is not valid',
-        }),
+        })
+        .trim(),
     password: z
         .string({
             required_error: 'Please enter your password',

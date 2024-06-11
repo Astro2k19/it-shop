@@ -1,8 +1,6 @@
 import type { Request, Response, NextFunction } from 'express';
 import { Error as MongooseError } from 'mongoose';
-import type { ApiError } from '@it-shop/types';
 import { MongoServerError } from 'mongodb';
-import ErrorHandler from '../../shared/utils/ErrorHandler';
 import {
     JsonWebTokenError,
     NotBeforeError,
@@ -11,6 +9,7 @@ import {
 } from 'jwt-redis';
 import { ZodError } from 'zod';
 import { StatusCodes } from 'http-status-codes';
+import { ApiError } from '@it-shop/schemas';
 
 type VerifyErrors =
     | JsonWebTokenError
@@ -34,14 +33,14 @@ export default (
     res: Response,
     _: NextFunction
 ) => {
-    let error = new ErrorHandler(
+    let error = new ApiError(
         err.message || 'Internal Server Error',
         'statusCode' in err ? err.statusCode : StatusCodes.INTERNAL_SERVER_ERROR
     );
     console.log(err, 'err');
 
     if (err instanceof MongooseError.CastError) {
-        error = new ErrorHandler(
+        error = new ApiError(
             `Resource not found. Invalid: ${err.path}`,
             StatusCodes.NOT_FOUND
         );
@@ -51,7 +50,7 @@ export default (
         const errors = Object.values(err.errors)
             .map((errValue) => errValue.message)
             .join(', ');
-        error = new ErrorHandler(errors, StatusCodes.BAD_REQUEST);
+        error = new ApiError(errors, StatusCodes.BAD_REQUEST);
     }
 
     if (err instanceof ZodError) {
@@ -61,12 +60,12 @@ export default (
                     `${issue.path.join('.')} is ${issue.message.toLowerCase()}`
             )
             .join(', ');
-        error = new ErrorHandler(errors, StatusCodes.BAD_REQUEST);
+        error = new ApiError(errors, StatusCodes.BAD_REQUEST);
     }
 
     if ('code' in err && err.code === MongoServerErrorList.DuplicateKey) {
         const [duplicatedField] = Object.keys(err.keyValue);
-        error = new ErrorHandler(
+        error = new ApiError(
             `Duplicate ${duplicatedField} entered`,
             StatusCodes.BAD_REQUEST
         );
@@ -74,7 +73,7 @@ export default (
 
     if (err instanceof TokenExpiredError) {
         const message = `JSON Web Token is expired. Try again!`;
-        error = new ErrorHandler(message, StatusCodes.UNAUTHORIZED);
+        error = new ApiError(message, StatusCodes.UNAUTHORIZED);
     }
 
     if (
@@ -82,7 +81,7 @@ export default (
         err instanceof TokenDestroyedError
     ) {
         const message = 'JSON Web Token is invalid. Try again!';
-        error = new ErrorHandler(message, StatusCodes.BAD_REQUEST);
+        error = new ApiError(message, StatusCodes.BAD_REQUEST);
     }
 
     if (process.env.NODE_ENV === 'development') {

@@ -1,18 +1,25 @@
 import UserModel from '../model/User';
-import ErrorHandler from '../shared/utils/ErrorHandler';
-import TokenService from './TokenService';
+import { JwtTokenService } from './JwtTokenService';
 import mongoose from 'mongoose';
 import PasswordService from './PasswordService';
 import { getResetPasswordTemplate } from '../shared/utils/getResetPasswordTemplate';
 import { MailService } from './MailService';
 import { User } from '@it-shop/types';
+import { JwtTokenRepository } from './JwtTokenRepository';
+import { ApiError } from '@it-shop/schemas';
 
 export class UserService {
-    private readonly tokenService: TokenService;
+    private readonly tokenService: JwtTokenService;
+    private readonly tokenRepository: JwtTokenRepository;
     private readonly mailService: MailService;
 
-    constructor(tokenService: TokenService, mailService: MailService) {
+    constructor(
+        tokenService: JwtTokenService,
+        tokenRepository: JwtTokenRepository,
+        mailService: MailService
+    ) {
         this.tokenService = tokenService;
+        this.tokenRepository = tokenRepository;
         this.mailService = mailService;
     }
 
@@ -20,7 +27,7 @@ export class UserService {
         const user = await UserModel.findOne({ email });
         console.log(user, 'user register');
         if (user) {
-            throw new ErrorHandler('Email is already taken', 409);
+            throw new ApiError('Email is already taken', 409);
         }
         const { _id: userId } = await UserModel.create({
             name,
@@ -29,7 +36,7 @@ export class UserService {
         });
         const { accessToken, refreshToken } =
             this.tokenService.getJwtTokens(userId);
-        await this.tokenService.saveRefreshToken(userId, refreshToken);
+        await this.tokenRepository.saveRefreshToken(userId, refreshToken);
         return { accessToken, refreshToken };
     }
 
@@ -37,42 +44,42 @@ export class UserService {
         const user = await UserModel.findOne({ email }).select('+password');
 
         if (!user) {
-            throw new ErrorHandler('Invalid email & password', 401);
+            throw new ApiError('Invalid email & password', 401);
         }
 
         const isPassEqual = await user.comparePasswords(password);
         if (!isPassEqual) {
-            throw new ErrorHandler('Invalid email & password', 401);
+            throw new ApiError('Invalid email & password', 401);
         }
 
         const { accessToken, refreshToken } = this.tokenService.getJwtTokens(
             user._id
         );
-        await this.tokenService.saveRefreshToken(user._id, refreshToken);
+        await this.tokenRepository.saveRefreshToken(user._id, refreshToken);
         return { accessToken, refreshToken };
     }
 
     async logout(userId: mongoose.Types.ObjectId, refreshToken?: string) {
         if (!refreshToken) {
-            throw new ErrorHandler('Login first to access this resource', 401);
+            throw new ApiError('Login first to access this resource', 401);
         }
-        await this.tokenService.removeToken(refreshToken);
+        await this.tokenRepository.removeToken(refreshToken);
         // await this.tokenService.destroyJwtToken(userId);
     }
 
     async refresh(refreshToken?: string) {
         console.log('refresh controller', refreshToken);
         if (!refreshToken) {
-            throw new ErrorHandler(`Login first to access this resource`, 401);
+            throw new ApiError(`Login first to access this resource`, 401);
         }
 
-        const tokenFromDb = await this.tokenService.findToken(refreshToken);
+        const tokenFromDb = await this.tokenRepository.findToken(refreshToken);
         console.log(tokenFromDb, 'tokenFromDb');
         const decoded = this.tokenService.verifyRefreshToken(refreshToken);
         console.log(decoded, 'decoded');
 
         if (!tokenFromDb || !decoded) {
-            throw new ErrorHandler(`Login first to access this resource`, 401);
+            throw new ApiError(`Login first to access this resource`, 401);
         }
 
         return this.tokenService.getJwtAccessToken(tokenFromDb.user);
@@ -82,7 +89,7 @@ export class UserService {
         const user = await UserModel.findOne({ email });
 
         if (!user) {
-            throw new ErrorHandler('Not found user with such email', 404);
+            throw new ApiError('Not found user with such email', 404);
         }
 
         const { resetToken, hashedRestToken, resetPasswordExpire } =
@@ -105,7 +112,7 @@ export class UserService {
             const error = e as Error;
             user.resetPasswordToken = undefined;
             user.resetPasswordExpire = undefined;
-            throw new ErrorHandler(error.message, 500);
+            throw new ApiError(error.message, 500);
         }
     }
 
@@ -121,13 +128,13 @@ export class UserService {
         });
 
         if (!user) {
-            throw new ErrorHandler(
+            throw new ApiError(
                 'Reset password token is inactive or has been expired',
                 400
             );
         }
         if (password !== comparedPassword) {
-            throw new ErrorHandler('Passwords do not match', 400);
+            throw new ApiError('Passwords do not match', 400);
         }
 
         user.password = password;
@@ -138,7 +145,7 @@ export class UserService {
         const { accessToken, refreshToken } = this.tokenService.getJwtTokens(
             user._id
         );
-        await this.tokenService.saveRefreshToken(user._id, refreshToken);
+        await this.tokenRepository.saveRefreshToken(user._id, refreshToken);
         return { accessToken, refreshToken };
     }
 
@@ -151,7 +158,7 @@ export class UserService {
         const isPasswordMatched = await user.comparePasswords(oldPassword);
 
         if (!isPasswordMatched) {
-            throw new ErrorHandler('Old password is invalid', 400);
+            throw new ApiError('Old password is invalid', 400);
         }
 
         // await this.tokenService.destroyJwtToken(user._id);
@@ -173,7 +180,7 @@ export class UserService {
     async getUserById(id: mongoose.Types.ObjectId | string) {
         const user = await UserModel.findById(id);
         if (!user) {
-            throw new ErrorHandler(`User not found with ${id} id`, 404);
+            throw new ApiError(`User not found with ${id} id`, 404);
         }
         return user;
     }
@@ -181,7 +188,7 @@ export class UserService {
     async removeUserById(id: mongoose.Types.ObjectId | string) {
         const user = await UserModel.findById(id);
         if (!user) {
-            throw new ErrorHandler(`User not found with ${id} id`, 404);
+            throw new ApiError(`User not found with ${id} id`, 404);
         }
         await user.deleteOne();
     }
