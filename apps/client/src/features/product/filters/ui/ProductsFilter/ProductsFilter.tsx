@@ -19,6 +19,7 @@ export const ProductsFilter = () => {
 
                 setProductsFilter({
                     [target.name]: target.value,
+                    page: '1',
                 });
             },
         [removeProductsFilter, setProductsFilter]

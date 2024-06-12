@@ -1,6 +1,7 @@
 import { UserRoles } from '@it-shop/types';
 import { RequestHandler } from 'express';
-import ErrorHandler from '../../shared/utils/ErrorHandler';
+
+import { ApiError } from '@it-shop/schemas';
 
 export default (roles: UserRoles[]): RequestHandler => {
     return (req, res, next) => {
@@ -10,7 +11,7 @@ export default (roles: UserRoles[]): RequestHandler => {
 
         if (!isRouteAllowed) {
             return next(
-                new ErrorHandler(
+                new ApiError(
                     'Access to the resource is denied, it seems that you do not have sufficient access rights',
                     403
                 )

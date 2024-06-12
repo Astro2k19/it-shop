@@ -7,6 +7,6 @@ export const baseLayoutWithProductsFilter = (
     <Layout
         headerSlot={<Header />}
         footerSlot={<Footer />}
-        sidebarSlot={<ProductsFilter />}
+        // sidebarSlot={<ProductsFilter />}
     />
 );

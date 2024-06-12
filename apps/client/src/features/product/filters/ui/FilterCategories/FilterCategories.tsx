@@ -10,7 +10,7 @@ export const FilterCategories = ({ handleCheckbox }: FilterCategoriesProps) => {
         <>
             <h5 className="mb-3">Category</h5>
             {productCategories.map((categoryItem) => (
-                <div className="form-check">
+                <div className="form-check" key={categoryItem}>
                     <input
                         className="form-check-input"
                         type="checkbox"

@@ -13,7 +13,7 @@ export const FilterRatings = ({ handleCheckbox }: FilterRatingsProps) => {
         <>
             <h5 className="mb-3">Ratings</h5>
             {rating.map((ratingNumber) => (
-                <div className="form-check">
+                <div className="form-check" key={ratingNumber}>
                     <input
                         className="form-check-input"
                         type="checkbox"

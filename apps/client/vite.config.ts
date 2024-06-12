@@ -2,6 +2,7 @@
 import { defineConfig, loadEnv } from 'vite';
 import react from '@vitejs/plugin-react';
 import { nxViteTsPaths } from '@nx/vite/plugins/nx-tsconfig-paths.plugin';
+import circleDependency from 'vite-plugin-circular-dependency';
 
 export default ({ mode }: { mode: string }) => {
     const env = loadEnv(mode, process.cwd(), '');
@@ -24,7 +25,7 @@ export default ({ mode }: { mode: string }) => {
             host: 'localhost',
         },
 
-        plugins: [react(), nxViteTsPaths()],
+        plugins: [react(), nxViteTsPaths(), circleDependency()],
         resolve: {
             alias: [
                 {

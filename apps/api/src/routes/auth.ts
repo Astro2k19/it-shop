@@ -7,6 +7,7 @@ import {
     getUserProfile,
     loginUser,
     logoutUser,
+    refresh,
     registerUser,
     resetPassword,
     updatePassword,
@@ -43,6 +44,7 @@ router
     .put(validateData(updatePasswordSchema), authMiddleware, updatePassword);
 
 router.route('/me').get(authMiddleware, getUserProfile);
+router.route('/refresh').post(refresh);
 router
     .route('/me/update')
     .put(

@@ -1,9 +1,9 @@
 import catchAsyncErrors from '../shared/middlewares/catchAsyncErrors';
-import ErrorHandler from '../shared/utils/ErrorHandler';
 import Product from '../model/Product';
 import { Review } from '@it-shop/types';
 import { NewReviewSchemaType } from '@it-shop/schemas';
 import ReviewModel from '../model/Review';
+import { ApiError } from '@it-shop/schemas';
 
 // PUT => /api/v1/reviews
 export const createProductReview = catchAsyncErrors<NewReviewSchemaType>(
@@ -12,7 +12,7 @@ export const createProductReview = catchAsyncErrors<NewReviewSchemaType>(
         const product = await Product.findById(productId).lean();
 
         if (!product) {
-            return next(new ErrorHandler(`Product not found`, 404));
+            return next(new ApiError(`Product not found`, 404));
         }
 
         const review = await ReviewModel.findOne({
@@ -46,7 +46,7 @@ export const getProductReviews = catchAsyncErrors(async (req, res, next) => {
     const review = await ReviewModel.findOne({ product: productId });
 
     if (!review) {
-        return next(new ErrorHandler(`Product not found`, 404));
+        return next(new ApiError(`Product not found`, 404));
     }
 
     res.json(review);
@@ -61,7 +61,7 @@ export const deleteProductReviews = catchAsyncErrors(async (req, res, next) => {
     });
 
     if (!review) {
-        return next(new ErrorHandler(`Product not found`, 404));
+        return next(new ApiError(`Product not found`, 404));
     }
 
     await review.deleteOne();

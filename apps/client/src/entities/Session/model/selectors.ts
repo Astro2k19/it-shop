@@ -1,3 +1,5 @@
-export const isAuthorized = (state: RootState) => state.session.isAuthorized;
+export const getIsAuthorized = (state: RootState) => state.session.isAuthorized;
+export const getIsLoadingSession = (state: RootState) =>
+    state.session.isLoading;
 
-export const getRoles = (state: RootState) => state.session?.user?.roles;
+export const getIsInited = (state: RootState) => state.session.isInited;

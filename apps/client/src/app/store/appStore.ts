@@ -1,17 +1,25 @@
-import { configureStore } from '@reduxjs/toolkit';
+import { configureStore, Dispatch } from '@reduxjs/toolkit';
 import { setupListeners } from '@reduxjs/toolkit/query';
 import { rootReducer } from './rootReducer';
 import { baseApi } from '@/shared/api/baseApi';
-import { invalidateAccessTokenEvent } from '@/features/authentication';
+import {
+    sessionActions,
+    sessionApi,
+    sessionMiddleware,
+} from '@/entities/session';
+import { userActions } from '@/entities/user';
+import { AsyncThunkConfig } from '@reduxjs/toolkit/src/createAsyncThunk';
 
 const createReduxStore = () => {
     const store = configureStore({
         reducer: rootReducer,
         middleware: (getDefaultMiddleware) =>
-            getDefaultMiddleware().concat(
-                baseApi.middleware,
-                invalidateAccessTokenEvent.middleware
-            ),
+            getDefaultMiddleware({
+                serializableCheck: false,
+                thunk: {
+                    extraArgument: { sessionActions, userActions, sessionApi },
+                },
+            }).concat(baseApi.middleware, sessionMiddleware),
     });
 
     // optional, but required for refetchOnFocus/refetchOnReconnect behaviors
@@ -20,6 +28,16 @@ const createReduxStore = () => {
     return store;
 };
 export const store = createReduxStore();
-
 export type RootState = ReturnType<typeof store.getState>;
 export type AppDispatch = typeof store.dispatch;
+
+export type StoreExtraOptions = AsyncThunkConfig & {
+    extra: {
+        sessionActions: typeof sessionActions;
+        userActions: typeof userActions;
+    };
+};
+
+export interface ThunkApiConfig {
+    dispatch: Dispatch;
+}

@@ -1,22 +1,39 @@
-import { createSlice, isAnyOf } from '@reduxjs/toolkit';
-import { User } from '@it-shop/types';
+import { createSlice, isAnyOf, PayloadAction } from '@reduxjs/toolkit';
 import { sessionApi } from '../api/sessionApi';
-import { userApi } from '@/entities/user/@x/session';
+import { SessionResponse } from '../api/types';
 
-export interface SessionSliceState {
+export type SessionSliceState = {
     accessToken?: string;
-    user?: User;
     isAuthorized: boolean;
-}
+    isLoading: boolean;
+    isInited?: boolean;
+};
 
 const initialState: SessionSliceState = {
     isAuthorized: false,
+    isLoading: false,
+    isInited: false,
 };
 
 export const sessionSlice = createSlice({
     name: 'session',
     initialState,
-    reducers: {},
+    reducers: {
+        setInited: (state, { payload }: PayloadAction<boolean>) => {
+            state.isInited = payload;
+        },
+        setSession: (state, { payload }: PayloadAction<SessionResponse>) => {
+            state.isAuthorized = true;
+            state.accessToken = payload.accessToken;
+        },
+        clearSession: (state) => {
+            state.isAuthorized = false;
+            state.accessToken = undefined;
+        },
+        setLoading: (state, { payload }: PayloadAction<boolean>) => {
+            state.isLoading = payload;
+        },
+    },
     extraReducers: (builder) => {
         builder.addMatcher(
             isAnyOf(
@@ -30,17 +47,8 @@ export const sessionSlice = createSlice({
             }
         );
         builder.addMatcher(
-            userApi.endpoints.me.matchFulfilled,
-            (state, { payload }) => {
-                if (state.isAuthorized) {
-                    state.user = payload;
-                }
-            }
-        );
-        builder.addMatcher(
             sessionApi.endpoints.logout.matchFulfilled,
             (state) => {
-                state.user = undefined;
                 state.isAuthorized = false;
                 state.accessToken = undefined;
             }

@@ -1,10 +1,6 @@
 import catchAsyncErrors from '../shared/middlewares/catchAsyncErrors';
-import UserModel from '../model/User';
-import ErrorHandler from '../shared/utils/ErrorHandler';
-import { getResetPasswordTemplate } from '../shared/utils/getResetPasswordTemplate';
-import TokenService from '../services/TokenService';
-import MailService from '../services/MailService';
-import PasswordService from '../services/PasswordService';
+import { JwtTokenService } from '../services/JwtTokenService';
+import { MailService } from '../services/MailService';
 
 import { User, UserSchema } from '@it-shop/types';
 import {
@@ -15,83 +11,73 @@ import {
     UpdatePasswordSchemaType,
     UpdateUserProfileSchemaType,
 } from '@it-shop/schemas';
+import { UserService } from '../services/UserService';
+import { CookieService } from '../services/CookieService';
+import ms from 'ms';
+import { JwtTokenRepository } from '../services/JwtTokenRepository';
+import TokenModel from '../model/Token';
+export const jwtTokenService = new JwtTokenService();
+export const userService = new UserService(
+    jwtTokenService,
+    new JwtTokenRepository(TokenModel),
+    new MailService()
+);
+
+const cookieService = new CookieService({
+    httpOnly: true,
+    secure: true,
+    maxAge: ms(process.env.REFRESH_TOKEN_EXPIRE),
+    sameSite: 'none',
+});
 
 // POST => /api/v1/register
 export const registerUser = catchAsyncErrors<RegisterSchemaType>(
     async (req, res) => {
-        const { name, email, password } = req.body;
-
-        const { _id: userId } = await UserModel.create({
-            name,
+        const { email, name, password } = req.body;
+        const { refreshToken, accessToken } = await userService.register(
             email,
-            password,
-        });
-
-        const tokenService = await TokenService.getInstance();
-        const { accessToken, refreshToken } = await tokenService.getJwtTokens(
-            userId
+            name,
+            password
         );
-        await tokenService.saveRefreshToken(userId, refreshToken);
-        tokenService.sendTokens(res, accessToken, refreshToken);
+        cookieService.set(res, 'refreshToken', refreshToken);
+        res.status(201).json({
+            accessToken,
+        });
     }
 );
 
 // POST => /api/v1/login
-export const loginUser = catchAsyncErrors<LoginSchemaType>(
-    async (req, res, next) => {
-        const { email, password } = req.body;
-        const user = await UserModel.findOne({ email }).select('+password');
-
-        if (!user) {
-            return next(new ErrorHandler('Invalid email & password', 401));
-        }
-
-        const isPassEqual = await user.comparePasswords(password);
-        if (!isPassEqual) {
-            return next(new ErrorHandler('Invalid email & password', 401));
-        }
-
-        const tokenService = await TokenService.getInstance();
-        const { accessToken, refreshToken } = await tokenService.getJwtTokens(
-            user._id
-        );
-        await tokenService.saveRefreshToken(user._id, refreshToken);
-        tokenService.sendTokens(res, accessToken, refreshToken);
-    }
-);
+export const loginUser = catchAsyncErrors<LoginSchemaType>(async (req, res) => {
+    const { email, password } = req.body;
+    const { accessToken, refreshToken } = await userService.login(
+        email,
+        password
+    );
+    cookieService.set(res, 'refreshToken', refreshToken);
+    res.status(201).json({
+        accessToken,
+    });
+});
 
 // POST => /api/v1/refresh
-export const refresh = catchAsyncErrors<LoginSchemaType>(
-    async (req, res, next) => {
-        const { email, password } = req.body;
-        const user = await UserModel.findOne({ email }).select('+password');
-
-        if (!user) {
-            return next(new ErrorHandler('Invalid email & password', 401));
-        }
-
-        const isPassEqual = await user.comparePasswords(password);
-        if (!isPassEqual) {
-            return next(new ErrorHandler('Invalid email & password', 401));
-        }
-
-        const tokenService = await TokenService.getInstance();
-        const { accessToken, refreshToken } = await tokenService.getJwtTokens(
-            user.id
-        );
-        await tokenService.saveRefreshToken(user._id, refreshToken);
-        tokenService.sendTokens(res, accessToken, refreshToken);
+export const refresh = catchAsyncErrors(async (req, res, next) => {
+    try {
+        const accessToken = await userService.refresh(req.cookies.refreshToken);
+        res.json({
+            accessToken,
+        });
+    } catch (e) {
+        next(e);
     }
-);
+});
 
 // POST => /api/v1/logout
 
 export const logoutUser = catchAsyncErrors(async (req, res) => {
     const { refreshToken } = req.cookies;
 
-    const tokenService = await TokenService.getInstance();
-    await tokenService.clearRefreshToken(res, refreshToken);
-    await tokenService.destroyJwtToken(req.user._id);
+    await userService.logout(req.user._id, refreshToken);
+    cookieService.clear(res, 'refreshToken');
 
     res.status(200).json({
         message: 'logout',
@@ -100,77 +86,27 @@ export const logoutUser = catchAsyncErrors(async (req, res) => {
 
 // POST => /api/v1/password/forgot
 export const forgotPassword = catchAsyncErrors<ForgotPasswordSchemaType>(
-    async (req, res, next) => {
+    async (req, res) => {
         const { email } = req.body;
-        const user = await UserModel.findOne({ email });
-
-        if (!user) {
-            return next(
-                new ErrorHandler('Not found user with such email', 404)
-            );
-        }
-
-        const { resetToken, hashedRestToken, resetPasswordExpire } =
-            PasswordService.getResetPasswordToken();
-
-        user.resetPasswordToken = hashedRestToken;
-        user.resetPasswordExpire = resetPasswordExpire;
-        await user.save();
-
-        const resetLink = `${process.env.CLIENT_URL}/api/v1/password/reset/${resetToken}`;
-        const message = getResetPasswordTemplate(user.name, resetLink);
-
-        try {
-            await MailService.sendEmail({
-                to: user.email,
-                subject: 'ItShop password recovery',
-                message,
-            });
-            res.json({
-                message: 'A reset link has been sent to your email address',
-            });
-        } catch (e) {
-            const error = e as Error;
-            user.resetPasswordToken = undefined;
-            user.resetPasswordExpire = undefined;
-            next(new ErrorHandler(error.message, 500));
-        }
+        await userService.forgotPassword(email);
+        res.json({
+            message: 'A reset link has been sent to your email address',
+        });
     }
 );
 
 // POST => /api/v1/password/reset
 export const resetPassword = catchAsyncErrors<ResetPasswordSchemaType>(
-    async (req, res, next) => {
-        const resetPasswordToken = PasswordService.hashToken(req.params.token);
-        const user = await UserModel.findOne({
-            resetPasswordToken,
-            resetPasswordExpire: { $gt: Date.now() },
-        });
-
-        if (!user) {
-            return next(
-                new ErrorHandler(
-                    'Reset password token is inactive or has been expired',
-                    400
-                )
-            );
-        }
-
-        if (req.body.password !== req.body.comparedPassword) {
-            return next(new ErrorHandler('Passwords do not match', 400));
-        }
-
-        user.password = req.body.password;
-        user.resetPasswordToken = undefined;
-        user.resetPasswordExpire = undefined;
-        await user.save();
-
-        const tokenService = await TokenService.getInstance();
-        const { accessToken, refreshToken } = await tokenService.getJwtTokens(
-            user._id
+    async (req, res) => {
+        const { refreshToken, accessToken } = await userService.resetPassword(
+            req.body.password,
+            req.body.comparedPassword,
+            req.params.token
         );
-        await tokenService.saveRefreshToken(user._id, refreshToken);
-        tokenService.sendTokens(res, accessToken, refreshToken);
+        cookieService.set(res, 'refreshToken', refreshToken);
+        res.status(201).json({
+            accessToken,
+        });
     }
 );
 
@@ -184,22 +120,12 @@ export const getUserProfile = catchAsyncErrors<undefined, UserSchema>(
 
 // PUT => /api/v1/password/update
 export const updatePassword = catchAsyncErrors<UpdatePasswordSchemaType>(
-    async (req, res, next) => {
-        const user = await UserModel.findById(req.user._id).select('+password');
-        const isPasswordMatched = await user.comparePasswords(
+    async (req, res) => {
+        await userService.updatePassword(
+            req.user._id,
+            req.body.password,
             req.body.oldPassword
         );
-
-        if (!isPasswordMatched) {
-            return next(new ErrorHandler('Old password is invalid', 400));
-        }
-
-        const tokenService = await TokenService.getInstance();
-        await tokenService.destroyJwtToken(user._id);
-
-        user.password = req.body.password;
-        user.save();
-
         res.json({
             success: true,
         });
@@ -211,62 +137,33 @@ export const updateUserProfile = catchAsyncErrors<
     UpdateUserProfileSchemaType,
     User
 >(async (req, res) => {
-    const updatedUser = await UserModel.findByIdAndUpdate(
-        req.user._id,
-        req.body,
-        {
-            new: true,
-        }
-    );
+    const updatedUser = await userService.updateUser(req.user._id, req.body);
+    res.json(updatedUser);
+});
+
+// PUT => /api/v1/admin/users/:id
+export const updateUserDetails = catchAsyncErrors<User>(async (req, res) => {
+    const updatedUser = await userService.updateUser(req.user._id, req.body);
     res.json(updatedUser);
 });
 
 // GET => /api/v1/admin/users
 export const getAllUsers = catchAsyncErrors<undefined, User[]>(
-    async (req, res) => {
-        const users = await UserModel.find();
+    async (_, res) => {
+        const users = await userService.getUsers();
         res.json(users);
     }
 );
 
 // GET => /api/v1/admin/users/:id
-export const getUserDetails = catchAsyncErrors(async (req, res, next) => {
-    const user = await UserModel.findById(req.params.id);
-
-    if (!user) {
-        return next(
-            new ErrorHandler(`User not found with ${req.params.id} id`, 404)
-        );
-    }
-
+export const getUserDetails = catchAsyncErrors(async (req, res) => {
+    const user = await userService.getUserById(req.params.id);
     res.json(user);
 });
 
-// PUT => /api/v1/admin/users/:id
-export const updateUserDetails = catchAsyncErrors(async (req, res) => {
-    const updatedUser = await UserModel.findByIdAndUpdate(
-        req.params.id,
-        req.body,
-        {
-            new: true,
-        }
-    );
-    res.json(updatedUser);
-});
-
 // DELETE => /api/v1/admin/users/:id
-
-export const deleteUser = catchAsyncErrors(async (req, res, next) => {
-    const user = await UserModel.findById(req.params.id);
-
-    if (!user) {
-        return next(
-            new ErrorHandler(`User not found with ${user._id} id`, 404)
-        );
-    }
-
-    await user.deleteOne();
-
+export const deleteUser = catchAsyncErrors(async (req, res) => {
+    await userService.removeUserById(req.params.id);
     res.json({
         success: true,
     });

@@ -1,17 +1,19 @@
 import logo from '@/shared/assets/images/shopit_logo.png';
-import avatar from '@/shared/assets/images/default_avatar.jpg';
 import { NavLink } from 'react-router-dom';
-
-import {
-    getDashboardRoute,
-    getLoginRoute,
-    getMainRoute,
-    getMyOrdersRoute,
-    getProfileRoute,
-} from '@/shared/router';
+import { getLoginRoute, getMainRoute } from '@/shared/router';
 import { Search } from '../Search/Search';
+import { useAppSelector } from '@/shared/model';
+import { getIsLoadingSession } from '@/entities/session';
+import { getUserData } from '@/entities/user';
+import { AvatarDropdown } from '../AvatarDropdown/AvatarDropdown';
 
 export const Header = () => {
+    const userData = useAppSelector(getUserData);
+    const isLoadingSession = useAppSelector(getIsLoadingSession);
+
+    console.log('isLoadingSession Header', isLoadingSession);
+    console.log('userData Header', userData);
+
     return (
         <header>
             <nav className="navbar row">
@@ -34,61 +36,22 @@ export const Header = () => {
                             0
                         </span>
                     </NavLink>
-                    <div className="ms-4 dropdown">
-                        <button
-                            className="btn dropdown-toggle text-white"
-                            type="button"
-                            id="dropDownMenuButton"
-                            data-bs-toggle="dropdown"
-                            aria-expanded="false"
-                        >
-                            <figure className="avatar avatar-nav">
-                                <img
-                                    src={avatar}
-                                    alt="User Avatar"
-                                    className="rounded-circle"
-                                />
-                            </figure>
-                            <span>User</span>
-                        </button>
-                        <div
-                            className="dropdown-menu w-100"
-                            aria-labelledby="dropDownMenuButton"
-                        >
-                            <NavLink
-                                className="dropdown-item"
-                                to={getDashboardRoute()}
-                            >
-                                Dashboard
-                            </NavLink>
-                            <NavLink
-                                className="dropdown-item"
-                                to={getMyOrdersRoute()}
-                            >
-                                Orders
-                            </NavLink>
-                            <NavLink
-                                className="dropdown-item"
-                                to={getProfileRoute()}
-                            >
-                                Profile
-                            </NavLink>
-                            <NavLink
-                                className="dropdown-item text-danger"
-                                to="/"
-                            >
-                                Logout
-                            </NavLink>
-                        </div>
-                    </div>
-
-                    <NavLink
-                        to={getLoginRoute()}
-                        className="btn ms-4"
-                        id="login_btn"
-                    >
-                        Login
-                    </NavLink>
+                    {isLoadingSession ? (
+                        <p className={'text-white'}>Loading session</p>
+                    ) : (
+                        <>
+                            {userData && <AvatarDropdown userData={userData} />}
+                            {!userData && (
+                                <NavLink
+                                    to={getLoginRoute()}
+                                    className="btn ms-4"
+                                    id="login_btn"
+                                >
+                                    Login
+                                </NavLink>
+                            )}
+                        </>
+                    )}
                 </div>
             </nav>
         </header>

@@ -1,68 +1,83 @@
-import { routerConfig } from './routerConfig';
+import { appRouterConfig, ProtectedRouteType } from './routerConfig';
 import { createBrowserRouter, RouteObject } from 'react-router-dom';
 import { ProtectedRoute } from './ProtectedRoute';
 import { RoleGuard } from './RoleGuard';
-import { ErrorBoundary } from '@/pages/errorBoundary';
 import { baseLayout } from '@/app/layouts/baseLayout';
 import { PersistentLogin } from './PersistentLogin';
-import { ProtectedRouteType } from './routerConfig';
-import { baseLayoutWithProductsFilter } from '@/app/layouts/baseLayoutWithProductsFilter';
+import { baseLayoutWithProductsFilter } from '../layouts/baseLayoutWithProductsFilter';
 import { getMainRoute } from '@/shared/router';
 import { Home } from '@/pages/home';
 import { UserRoles } from '@it-shop/types';
+import { GuestRoute } from './GuestRoute';
+import { Page } from '@/widgets/Page';
 
 const getProtectedRoute = (
     element: RouteObject,
     requiredRoles?: UserRoles[]
 ) => {
     return {
-        element: <PersistentLogin />,
+        element: <ProtectedRoute />,
         children: [
             {
                 element: <RoleGuard requiredRoles={requiredRoles} />,
-                children: [
-                    {
-                        element: <ProtectedRoute />,
-                        children: [element],
-                    },
-                ],
+                children: [element],
             },
         ],
     };
 };
 
-export const AppRouter = () => {
-    const renderRoute = ([_, value]: [
-        key: string,
-        value: ProtectedRouteType
-    ]) => {
-        const element: RouteObject = {
-            path: value.path,
-            element: value.element,
-            errorElement: <ErrorBoundary />,
-        };
-
-        if (value.isProtected) {
-            return getProtectedRoute(element, value.requiredRoles);
-        }
-
-        return element;
+const getPageWrapper = (route: RouteObject, sessionLoader = true) => {
+    return {
+        element: <Page sessionLoader={sessionLoader} />,
+        children: [route],
     };
+};
+
+export const AppRouter = () => {
+    const baseRoutes = [
+        {
+            element: <PersistentLogin />,
+            children: Object.entries(appRouterConfig).map(renderRoute),
+        },
+    ];
+
+    const baseRoutesWithFilters = [
+        {
+            element: <PersistentLogin />,
+            children: [
+                getPageWrapper(
+                    {
+                        path: getMainRoute(),
+                        element: <Home />,
+                        index: true,
+                    },
+                    true
+                ),
+            ],
+        },
+    ];
 
     return createBrowserRouter([
         {
             element: baseLayout,
-            children: Object.entries(routerConfig).map(renderRoute),
+            children: baseRoutes,
         },
         {
             element: baseLayoutWithProductsFilter,
-            children: [
-                {
-                    path: getMainRoute(),
-                    element: <Home />,
-                    index: true,
-                },
-            ],
+            children: baseRoutesWithFilters,
         },
     ]);
+};
+
+const renderRoute = ([_, route]: [key: string, value: ProtectedRouteType]) => {
+    if (route.isProtected) {
+        route = getProtectedRoute(route, route.requiredRoles);
+    } else if (route.isForGuest) {
+        route = {
+            element: <GuestRoute />,
+            children: [route],
+        };
+    }
+
+    return getPageWrapper(route, route.sessionLoader);
 };

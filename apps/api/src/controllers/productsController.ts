@@ -1,5 +1,4 @@
 import ProductModel from '../model/Product';
-import ErrorHandler from '../shared/utils/ErrorHandler';
 import catchAsyncErrors from '../shared/middlewares/catchAsyncErrors';
 import ApiProductFilters from '../shared/utils/ApiProductFilters';
 import {
@@ -9,6 +8,7 @@ import {
 } from '@it-shop/schemas';
 import { Product } from '@it-shop/types';
 import mongoose from 'mongoose';
+import { ApiError } from '@it-shop/schemas';
 
 // GET => /api/v1/products
 export const getAllProducts = catchAsyncErrors<
@@ -47,7 +47,7 @@ export const getProductDetails = catchAsyncErrors(async (req, res, next) => {
     const product = await productsApi.findById(_id);
 
     if (!product) {
-        return next(new ErrorHandler('Product not found', 404));
+        return next(new ApiError('Product not found', 404));
     }
     res.json(product);
 });
@@ -57,7 +57,7 @@ export const updateProduct = catchAsyncErrors<UpdateProductSchemaType, Product>(
     async (req, res, next) => {
         let product = await ProductModel.findById(req.params.id);
         if (!product) {
-            return next(new ErrorHandler('Product not found', 404));
+            return next(new ApiError('Product not found', 404));
         }
         product = await ProductModel.findByIdAndUpdate(
             req.params.id,
@@ -75,7 +75,7 @@ export const updateProduct = catchAsyncErrors<UpdateProductSchemaType, Product>(
 export const deleteProduct = catchAsyncErrors(async (req, res, next) => {
     const product = await ProductModel.findById(req.params.id);
     if (!product) {
-        return next(new ErrorHandler('Product not found', 404));
+        return next(new ApiError('Product not found', 404));
     }
     await product.deleteOne();
     res.json({

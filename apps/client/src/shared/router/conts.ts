@@ -29,23 +29,13 @@ export const getUpdateUserRoute = (id: string) => `/admin/users/${id}`;
 export const getAllReviewsRoute = () => `/admin/reviews`;
 export const getForbiddenRoute = () => '/forbidden';
 export const getNotFoundRoute = () => '*';
-export const Routes = {
-    PRODUCT_DETAILS: 'PRODUCT_DETAILS',
-    LOGIN: 'LOGIN',
-    REGISTER: 'REGISTER',
-    PASSWORD_FORGOT: 'PASSWORD_FORGOT',
-    PASSWORD_RESET: 'PASSWORD_RESET',
-    PROFILE: 'PROFILE',
-    UPDATE_PROFILE: 'UPDATE_PROFILE',
-    UPLOAD_AVATAR: 'UPLOAD_AVATAR',
-    UPDATE_PASSWORD: 'UPDATE_PASSWORD',
-    SHIPPING: 'SHIPPING',
-    CONFIRM_ORDER: 'CONFIRM_ORDER',
-    PAYMENT_METHOD: 'PAYMENT_METHOD',
-    MY_ORDERS: 'MY_ORDERS',
-    INVOICE: 'INVOICE',
+export const PublicRoutes = {
+    HOME: 'HOME',
     NOT_FOUND: 'NOT_FOUND',
+    PRODUCT_DETAILS: 'PRODUCT_DETAILS',
+    FORBIDDEN: 'FORBIDDEN',
 } as const;
+
 export const AdminRoutes = {
     DASHBOARD: 'DASHBOARD',
     PRODUCTS: 'PRODUCTS',
@@ -58,4 +48,28 @@ export const AdminRoutes = {
     UPDATE_USER: 'UPDATE_USER',
     REVIEWS: 'REVIEWS',
 } as const;
-export const AppRoutes = { ...Routes, ...AdminRoutes } as const;
+
+export const ProtectedRoutes = {
+    PASSWORD_FORGOT: 'PASSWORD_FORGOT',
+    PASSWORD_RESET: 'PASSWORD_RESET',
+    PROFILE: 'PROFILE',
+    UPDATE_PROFILE: 'UPDATE_PROFILE',
+    UPLOAD_AVATAR: 'UPLOAD_AVATAR',
+    UPDATE_PASSWORD: 'UPDATE_PASSWORD',
+    SHIPPING: 'SHIPPING',
+    CONFIRM_ORDER: 'CONFIRM_ORDER',
+    PAYMENT_METHOD: 'PAYMENT_METHOD',
+    MY_ORDERS: 'MY_ORDERS',
+    INVOICE: 'INVOICE',
+    ...AdminRoutes,
+} as const;
+
+export const GuestRoutes = {
+    LOGIN: 'LOGIN',
+    REGISTER: 'REGISTER',
+} as const;
+export const AppRoutes = {
+    ...PublicRoutes,
+    ...GuestRoutes,
+    ...ProtectedRoutes,
+} as const;
