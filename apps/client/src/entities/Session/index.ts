@@ -1,4 +1,4 @@
-export { sessionMiddleware } from './api/listener';
+export { sessionMiddleware } from './middleware/sessionMiddleware';
 export { sessionActions, sessionSlice } from './model/slice';
 export * from './model/selectors';
 export {

@@ -33,6 +33,7 @@ export const sessionApi = baseApi.injectEndpoints({
                 url: '/logout',
             }),
             onQueryStarted: async (_, { queryFulfilled, dispatch }) => {
+                console.log('logout: build.mutation');
                 try {
                     await queryFulfilled;
                     dispatch(userActions.clearUser());

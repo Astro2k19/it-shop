@@ -3,12 +3,11 @@ import { NavLink } from 'react-router-dom';
 import { getLoginRoute, getMainRoute } from '@/shared/router';
 import { Search } from '../Search/Search';
 import { useAppSelector } from '@/shared/model';
-import { getIsAuthorized, getIsLoadingSession } from '@/entities/session';
+import { getIsLoadingSession } from '@/entities/session';
 import { getUserData } from '@/entities/user';
 import { AvatarDropdown } from '../AvatarDropdown/AvatarDropdown';
 
 export const Header = () => {
-    const isAuth = useAppSelector(getIsAuthorized);
     const userData = useAppSelector(getUserData);
     const isLoadingSession = useAppSelector(getIsLoadingSession);
 

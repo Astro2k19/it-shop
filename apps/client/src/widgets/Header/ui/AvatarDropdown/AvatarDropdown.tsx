@@ -1,6 +1,5 @@
 import {
     getDashboardRoute,
-    getMainRoute,
     getMyOrdersRoute,
     getProfileRoute,
 } from '@/shared/router';
@@ -11,7 +10,6 @@ import { useLogout } from '@/entities/session';
 import avatar from '@/shared/assets/images/default_avatar.jpg';
 import { useAppSelector } from '@/shared/model';
 import { isUserAdmin } from '@/entities/user';
-import { useNavigate } from 'react-router-dom';
 
 type AvatarDropdownProps = {
     userData: User;
@@ -20,11 +18,9 @@ export const AvatarDropdown = (props: AvatarDropdownProps) => {
     const { userData } = props;
     const [logout] = useLogout();
     const isAdmin = useAppSelector(isUserAdmin);
-    // const navigate = useNavigate();
 
     const onLogout = useCallback(async () => {
         await logout(null);
-        // navigate(getMainRoute());
     }, [logout]);
 
     const dropdownOptions: DropdownItem[] = [
