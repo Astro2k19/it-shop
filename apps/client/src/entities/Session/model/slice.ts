@@ -1,4 +1,4 @@
-import { createSlice, isAnyOf, PayloadAction } from '@reduxjs/toolkit';
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { sessionApi } from '../api/sessionApi';
 import { SessionResponse } from '../api/types';
 
@@ -35,17 +35,6 @@ export const sessionSlice = createSlice({
         },
     },
     extraReducers: (builder) => {
-        builder.addMatcher(
-            isAnyOf(
-                sessionApi.endpoints.login.matchFulfilled,
-                sessionApi.endpoints.register.matchFulfilled,
-                sessionApi.endpoints.refresh.matchFulfilled
-            ),
-            (state, { payload }) => {
-                state.isAuthorized = true;
-                state.accessToken = payload.accessToken;
-            }
-        );
         builder.addMatcher(
             sessionApi.endpoints.logout.matchFulfilled,
             (state) => {

@@ -1,4 +1,8 @@
-import { appRouterConfig, ProtectedRouteType } from './routerConfig';
+import {
+    appRouterConfig,
+    profileRouterConfig,
+    ProtectedRouteType,
+} from './routerConfig';
 import { createBrowserRouter, RouteObject } from 'react-router-dom';
 import { ProtectedRoute } from './ProtectedRoute';
 import { RoleGuard } from './RoleGuard';
@@ -9,7 +13,7 @@ import { getMainRoute } from '@/shared/router';
 import { Home } from '@/pages/home';
 import { UserRoles } from '@it-shop/types';
 import { GuestRoute } from './GuestRoute';
-import { Page } from '@/widgets/Page';
+import { baseLayoutWithProfileMenu } from '../layouts/baseLayoutWithProfileMenu';
 
 const getProtectedRoute = (
     element: RouteObject,
@@ -26,45 +30,35 @@ const getProtectedRoute = (
     };
 };
 
-const getPageWrapper = (route: RouteObject, sessionLoader = true) => {
-    return {
-        element: <Page sessionLoader={sessionLoader} />,
-        children: [route],
-    };
-};
-
 export const AppRouter = () => {
-    const baseRoutes = [
-        {
-            element: <PersistentLogin />,
-            children: Object.entries(appRouterConfig).map(renderRoute),
-        },
-    ];
-
+    const baseRoutes = Object.entries(appRouterConfig).map(renderRoute);
     const baseRoutesWithFilters = [
         {
-            element: <PersistentLogin />,
-            children: [
-                getPageWrapper(
-                    {
-                        path: getMainRoute(),
-                        element: <Home />,
-                        index: true,
-                    },
-                    true
-                ),
-            ],
+            path: getMainRoute(),
+            element: <Home />,
+            index: true,
         },
     ];
+    const baseRoutesWithProfileMenu =
+        Object.entries(profileRouterConfig).map(renderRoute);
 
     return createBrowserRouter([
         {
-            element: baseLayout,
-            children: baseRoutes,
-        },
-        {
-            element: baseLayoutWithProductsFilter,
-            children: baseRoutesWithFilters,
+            element: <PersistentLogin />,
+            children: [
+                {
+                    element: baseLayout,
+                    children: baseRoutes,
+                },
+                {
+                    element: baseLayoutWithProductsFilter,
+                    children: baseRoutesWithFilters,
+                },
+                {
+                    element: baseLayoutWithProfileMenu,
+                    children: baseRoutesWithProfileMenu,
+                },
+            ],
         },
     ]);
 };
@@ -78,6 +72,5 @@ const renderRoute = ([_, route]: [key: string, value: ProtectedRouteType]) => {
             children: [route],
         };
     }
-
-    return getPageWrapper(route, route.sessionLoader);
+    return route;
 };

@@ -49,19 +49,23 @@ export const AdminRoutes = {
     REVIEWS: 'REVIEWS',
 } as const;
 
-export const ProtectedRoutes = {
-    PASSWORD_FORGOT: 'PASSWORD_FORGOT',
-    PASSWORD_RESET: 'PASSWORD_RESET',
+export const ProfileRoutes = {
     PROFILE: 'PROFILE',
     UPDATE_PROFILE: 'UPDATE_PROFILE',
     UPLOAD_AVATAR: 'UPLOAD_AVATAR',
     UPDATE_PASSWORD: 'UPDATE_PASSWORD',
+} as const;
+
+export const ProtectedRoutes = {
+    PASSWORD_FORGOT: 'PASSWORD_FORGOT',
+    PASSWORD_RESET: 'PASSWORD_RESET',
     SHIPPING: 'SHIPPING',
     CONFIRM_ORDER: 'CONFIRM_ORDER',
     PAYMENT_METHOD: 'PAYMENT_METHOD',
     MY_ORDERS: 'MY_ORDERS',
     INVOICE: 'INVOICE',
     ...AdminRoutes,
+    ...ProfileRoutes,
 } as const;
 
 export const GuestRoutes = {

@@ -11,7 +11,7 @@ export const ProtectedRoute = () => {
         return (
             <Navigate
                 to={getLoginRoute()}
-                state={{ returnUrl: location.state }}
+                state={{ returnUrl: location.pathname }}
             />
         );
     }

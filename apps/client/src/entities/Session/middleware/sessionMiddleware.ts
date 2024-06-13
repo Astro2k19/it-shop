@@ -22,6 +22,11 @@ export const sessionMiddleware: ListenerMiddleware =
         }
 
         if (fulfilledMatchers(action)) {
+            store.dispatch(
+                sessionActions.setSession({
+                    accessToken: action.payload.accessToken,
+                })
+            );
             await store.dispatch(userApi.endpoints.me.initiate());
             store.dispatch(sessionActions.setLoading(false));
             store.dispatch(sessionActions.setInited(true));
