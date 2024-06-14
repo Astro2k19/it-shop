@@ -218,3 +218,10 @@ export const appRouterConfig: ConfigRouteRecord<
     ...guestRouterConfig,
     ...publicRouterConfig,
 };
+
+export const globalRouterConfig = [
+    ...Object.values(adminRouterConfig),
+    ...Object.values(publicRouterConfig),
+    ...Object.values(profileRouterConfig),
+    ...Object.values(guestRouterConfig),
+];

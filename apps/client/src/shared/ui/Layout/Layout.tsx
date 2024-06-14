@@ -4,7 +4,9 @@ import styles from './Layout.module.scss';
 import { Toaster } from 'react-hot-toast';
 import cx from 'classnames';
 import { useAppSelector } from '@/shared/model';
-import { getIsAuthorized, getIsInited } from '@/entities/session';
+import { getIsInited } from '@/entities/session';
+// import { useCurrentRouteAccess } from '@/shared/router';
+import { ProtectedRouteType } from '@/app/router/routerConfig';
 
 type LayoutProps = {
     navbarSlot?: ReactNode;
@@ -12,11 +14,12 @@ type LayoutProps = {
     sidebarSlot?: ReactNode;
     footerSlot?: ReactNode;
     announcementSlot?: ReactNode;
+    routerConfig: ProtectedRouteType[];
 };
 
 export const Layout = (props: LayoutProps) => {
     const isSessionInited = useAppSelector(getIsInited);
-    const isAuth = useAppSelector(getIsAuthorized);
+    // const isRouteAccessible = useCurrentRouteAccess(props.routerConfig);
     return (
         <div className={styles.app}>
             <Toaster position={'top-center'} />
@@ -30,7 +33,7 @@ export const Layout = (props: LayoutProps) => {
                             <div>Page loading</div>
                         ) : (
                             <>
-                                {props.sidebarSlot && isAuth && (
+                                {props.sidebarSlot && true && (
                                     <div
                                         className={cx(
                                             styles.sidebar,
@@ -42,7 +45,10 @@ export const Layout = (props: LayoutProps) => {
                                 )}
                                 <main
                                     className={cx(styles.content, 'col-12', {
-                                        'col-md-9': Boolean(props.sidebarSlot),
+                                        'col-md-9': Boolean(
+                                            props.sidebarSlot &&
+                                                isRouteAccessible
+                                        ),
                                     })}
                                 >
                                     <Outlet />
