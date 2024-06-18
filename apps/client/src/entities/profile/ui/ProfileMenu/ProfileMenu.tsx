@@ -33,11 +33,12 @@ const menuItems = [
 
 export const ProfileMenu = () => {
     return (
-        <nav className="list-group pl-4">
+        <nav className="list-group">
             {menuItems.map((item) => (
                 <NavLink
                     to={item.url}
-                    className={(isActive) =>
+                    aria-current="true"
+                    className={({ isActive }) =>
                         classNames(
                             'fw-bold list-group-item list-group-item-action',
                             { active: isActive }

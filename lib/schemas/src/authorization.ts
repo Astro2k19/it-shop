@@ -85,41 +85,61 @@ export const resetPasswordSchema = z
         }
     });
 
-export const updatePasswordSchema = z.object({
-    password: z
-        .string({
-            required_error: 'Please enter your new password',
-        })
-        .trim()
-        .min(6, {
-            message: 'Your password must be at least 6 characters',
-        }),
-    oldPassword: z
-        .string({
-            required_error: 'Please enter your old password',
-        })
-        .trim(),
-});
+export const updatePasswordSchema = z
+    .object({
+        password: z
+            .string({
+                required_error: 'Please enter your new password',
+            })
+            .trim()
+            .min(6, {
+                message: 'Your password must be at least 6 characters',
+            }),
+        oldPassword: z
+            .string({
+                required_error: 'Please enter your old password',
+            })
+            .trim(),
+    })
+    .superRefine(({ oldPassword, password }, ctx) => {
+        if (oldPassword === password) {
+            ctx.addIssue({
+                code: 'custom',
+                path: ['password'],
+                message: 'The new password cannot match the old one',
+            });
+        }
+    });
 
 export const updateUserProfileSchema = z.object({
     name: z
         .string()
         .trim()
-        .max(50, { message: 'Your name cannot exceed 50 characters' }),
-    email: z.string().trim().email({
-        message: 'Email is not valid',
-    }),
+        .max(50, { message: 'Your name cannot exceed 50 characters' })
+        .optional(),
+    email: z
+        .string()
+        .trim()
+        .email({
+            message: 'Email is not valid',
+        })
+        .optional(),
 });
 
 export const updateUserDetailsSchema = z.object({
     name: z
         .string()
         .trim()
-        .max(50, { message: 'Your name cannot exceed 50 characters' }),
-    email: z.string().trim().email({
-        message: 'Email is not valid',
-    }),
-    roles: z.array(z.enum(roles)),
+        .max(50, { message: 'Your name cannot exceed 50 characters' })
+        .optional(),
+    email: z
+        .string()
+        .trim()
+        .email({
+            message: 'Email is not valid',
+        })
+        .optional(),
+    roles: z.array(z.enum(roles)).optional(),
 });
 
 export type RegisterSchemaType = z.infer<typeof registerSchema>;

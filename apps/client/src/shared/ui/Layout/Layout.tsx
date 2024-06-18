@@ -4,9 +4,8 @@ import styles from './Layout.module.scss';
 import { Toaster } from 'react-hot-toast';
 import cx from 'classnames';
 import { useAppSelector } from '@/shared/model';
-import { getIsInited } from '@/entities/session';
-// import { useCurrentRouteAccess } from '@/shared/router';
-import { ProtectedRouteType } from '@/app/router/routerConfig';
+import { getIsInited, getIsLoadingSession } from '@/entities/session';
+import { useCurrentRouteAccess } from '../../router';
 
 type LayoutProps = {
     navbarSlot?: ReactNode;
@@ -14,12 +13,12 @@ type LayoutProps = {
     sidebarSlot?: ReactNode;
     footerSlot?: ReactNode;
     announcementSlot?: ReactNode;
-    routerConfig: ProtectedRouteType[];
 };
 
 export const Layout = (props: LayoutProps) => {
-    const isSessionInited = useAppSelector(getIsInited);
-    // const isRouteAccessible = useCurrentRouteAccess(props.routerConfig);
+    // const isSessionInited = useAppSelector(getIsInited);
+    const isLoading = useAppSelector(getIsLoadingSession);
+    const isRouteAccessible = useCurrentRouteAccess();
     return (
         <div className={styles.app}>
             <Toaster position={'top-center'} />
@@ -29,11 +28,11 @@ export const Layout = (props: LayoutProps) => {
             <div className={styles.main}>
                 <div className="container">
                     <div className="row">
-                        {!isSessionInited ? (
+                        {isLoading ? (
                             <div>Page loading</div>
                         ) : (
                             <>
-                                {props.sidebarSlot && true && (
+                                {props.sidebarSlot && isRouteAccessible && (
                                     <div
                                         className={cx(
                                             styles.sidebar,

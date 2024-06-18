@@ -42,6 +42,7 @@ import { Forbidden } from '@/pages/forbidden';
 import { Profile } from '@/pages/profile';
 import { UpdateProfile } from '@/pages/updateProfile';
 import { UploadAvatar } from '@/pages/uploadAvatar/ui/Page/Page';
+import { UpdatePassword } from '@/pages/updatePassword';
 
 export type ProtectedRouteType = RouteObject & {
     requiredRoles?: UserRoles[];
@@ -205,7 +206,7 @@ export const profileRouterConfig: ConfigRouteRecord<typeof ProfileRoutes> = {
     },
     [AppRoutes.UPDATE_PASSWORD]: {
         path: getUpdatePasswordRoute(),
-        element: <UpdateProfile />,
+        element: <UpdatePassword />,
         isProtected: true,
     },
 };

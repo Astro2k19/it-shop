@@ -1,5 +1,5 @@
 import { isAnyOf } from '@reduxjs/toolkit';
-import { sessionApi } from '@/entities/session';
+import { sessionApi } from '../api/sessionApi';
 
 export const pendingMatchers = isAnyOf(
     sessionApi.endpoints.login.matchPending,

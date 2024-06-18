@@ -1,2 +1,2 @@
 export * from './conts';
-export * from './config';
+export * from './hooks';
