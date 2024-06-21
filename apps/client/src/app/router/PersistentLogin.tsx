@@ -2,13 +2,12 @@ import { getIsAuthorized, getIsInited, useRefresh } from '@/entities/session';
 import { useAppSelector } from '@/shared/model';
 import { Outlet } from 'react-router-dom';
 import { skipToken } from '@reduxjs/toolkit/query';
-import { useMe } from '@/entities/user/api/userApi';
+import { getIsUserInited } from '@/entities/user';
 
 export const PersistentLogin = () => {
     const isAuthorized = useAppSelector(getIsAuthorized);
-    // const isInited = useAppSelector(getIsInited);
-    // useRefresh(isAuthorized || isInited ? skipToken : undefined);
-    useMe(isAuthorized ? skipToken : undefined);
+    const isInited = useAppSelector(getIsInited);
+    useRefresh(isAuthorized || isInited ? skipToken : undefined);
 
     console.log('------');
     console.log('PersistentLogin');

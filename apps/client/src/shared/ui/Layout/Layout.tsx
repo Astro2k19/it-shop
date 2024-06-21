@@ -6,6 +6,7 @@ import cx from 'classnames';
 import { useAppSelector } from '@/shared/model';
 import { getIsInited, getIsLoadingSession } from '@/entities/session';
 import { useCurrentRouteAccess } from '../../router';
+import { getIsLoadingUser, getIsUserInited } from '@/entities/user';
 
 type LayoutProps = {
     navbarSlot?: ReactNode;
@@ -16,8 +17,10 @@ type LayoutProps = {
 };
 
 export const Layout = (props: LayoutProps) => {
-    // const isSessionInited = useAppSelector(getIsInited);
-    const isLoading = useAppSelector(getIsLoadingSession);
+    const isUserInited = useAppSelector(getIsInited);
+    // const isLoadingSession = useAppSelector(
+    //     (state) => getIsLoadingSession(state) || getIsLoadingUser(state)
+    // );
     const isRouteAccessible = useCurrentRouteAccess();
     return (
         <div className={styles.app}>
@@ -28,7 +31,7 @@ export const Layout = (props: LayoutProps) => {
             <div className={styles.main}>
                 <div className="container">
                     <div className="row">
-                        {isLoading ? (
+                        {!isUserInited ? (
                             <div>Page loading</div>
                         ) : (
                             <>

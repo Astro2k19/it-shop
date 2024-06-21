@@ -1,4 +1,4 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { createSlice, isAnyOf, PayloadAction } from '@reduxjs/toolkit';
 import { sessionApi } from '../api/sessionApi';
 import { SessionResponse } from '../api/types';
 
@@ -35,6 +35,39 @@ export const sessionSlice = createSlice({
         },
     },
     extraReducers: (builder) => {
+        builder.addMatcher(
+            isAnyOf(
+                sessionApi.endpoints.login.matchPending,
+                sessionApi.endpoints.register.matchPending,
+                sessionApi.endpoints.refresh.matchPending
+            ),
+            (state) => {
+                state.isLoading = true;
+            }
+        );
+        builder.addMatcher(
+            isAnyOf(
+                sessionApi.endpoints.login.matchFulfilled,
+                sessionApi.endpoints.register.matchFulfilled,
+                sessionApi.endpoints.refresh.matchFulfilled
+            ),
+            (state, { payload }) => {
+                state.accessToken = payload.accessToken;
+                state.isLoading = false;
+                state.isInited = true;
+            }
+        );
+        builder.addMatcher(
+            isAnyOf(
+                sessionApi.endpoints.login.matchRejected,
+                sessionApi.endpoints.register.matchRejected,
+                sessionApi.endpoints.refresh.matchRejected
+            ),
+            (state) => {
+                state.isLoading = false;
+                state.isInited = true;
+            }
+        );
         builder.addMatcher(
             sessionApi.endpoints.logout.matchFulfilled,
             (state) => {

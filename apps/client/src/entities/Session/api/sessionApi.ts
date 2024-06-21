@@ -1,7 +1,7 @@
-import { baseApi, SESSION_TAG } from '@/shared/api';
+import { baseApi } from '@/shared/api';
 import { LoginSchemaType, RegisterSchemaType } from '@it-shop/schemas';
 import { SessionResponse } from './types';
-import { userActions } from '@/entities/user/@x/session';
+import { userApi } from '@/entities/user';
 
 export const sessionApi = baseApi.injectEndpoints({
     endpoints: (build) => ({
@@ -11,7 +11,10 @@ export const sessionApi = baseApi.injectEndpoints({
                 url: '/login',
                 body,
             }),
-            invalidatesTags: [SESSION_TAG],
+            async onQueryStarted(arg, { dispatch, queryFulfilled }) {
+                await queryFulfilled;
+                dispatch(userApi.endpoints.me.initiate(undefined));
+            },
         }),
         register: build.mutation<SessionResponse, RegisterSchemaType>({
             query: (body) => ({
@@ -19,28 +22,26 @@ export const sessionApi = baseApi.injectEndpoints({
                 url: '/register',
                 body,
             }),
-            invalidatesTags: [SESSION_TAG],
+            async onQueryStarted(arg, { dispatch, queryFulfilled }) {
+                await queryFulfilled;
+                dispatch(userApi.endpoints.me.initiate(undefined));
+            },
         }),
         refresh: build.query<SessionResponse, void>({
             query: () => ({
                 method: 'POST',
                 url: '/refresh',
             }),
+            async onQueryStarted(arg, { dispatch, queryFulfilled }) {
+                await queryFulfilled;
+                dispatch(userApi.endpoints.me.initiate(undefined));
+            },
         }),
         logout: build.mutation({
             query: () => ({
                 method: 'POST',
                 url: '/logout',
             }),
-            onQueryStarted: async (_, { queryFulfilled, dispatch }) => {
-                console.log('logout: build.mutation');
-                try {
-                    await queryFulfilled;
-                    dispatch(userActions.clearUser());
-                } catch (e) {
-                    console.log(e);
-                }
-            },
         }),
     }),
 });

@@ -4,12 +4,15 @@ import { getLoginRoute, getMainRoute } from '@/shared/router';
 import { Search } from '../Search/Search';
 import { useAppSelector } from '@/shared/model';
 import { getIsLoadingSession } from '@/entities/session';
-import { getUserData } from '@/entities/user';
+import { getIsLoadingUser, getUserData } from '@/entities/user';
 import { AvatarDropdown } from '../AvatarDropdown/AvatarDropdown';
+import Skeleton from 'react-loading-skeleton';
 
 export const Header = () => {
     const userData = useAppSelector(getUserData);
-    const isLoadingSession = useAppSelector(getIsLoadingSession);
+    const isLoadingSession = useAppSelector(
+        (state) => getIsLoadingSession(state) || getIsLoadingUser(state)
+    );
 
     console.log('isLoadingSession Header', isLoadingSession);
     console.log('userData Header', userData);
@@ -37,7 +40,10 @@ export const Header = () => {
                         </span>
                     </NavLink>
                     {isLoadingSession ? (
-                        <p className={'text-white'}>Loading session</p>
+                        <>
+                            <Skeleton width={35} height={35} circle={true} />
+                            <Skeleton width={100} height={38} />
+                        </>
                     ) : (
                         <>
                             {userData && <AvatarDropdown userData={userData} />}
