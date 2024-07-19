@@ -1,12 +1,12 @@
 import { Layout } from '@/shared/ui';
 import { Header } from '@/widgets/Header';
 import { Footer } from '@/widgets/Footer';
-import { ProductsFilter } from '@/features/product/filters';
+import { ProfileMenu } from '@/entities/profile';
 
-export const baseLayoutWithProductsFilter = (
+export const baseLayoutWithProfileMenu = (
     <Layout
         headerSlot={<Header />}
         footerSlot={<Footer />}
-        sidebarSlot={<ProductsFilter />}
+        sidebarSlot={<ProfileMenu />}
     />
 );

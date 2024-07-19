@@ -34,7 +34,7 @@ export const Form = <TFieldValues extends FieldValues>({
         <FormProvider {...methods}>
             <h2 className="mb-4">{title}</h2>
             <form
-                className="shadow rounded bg-body"
+                className="shadow rounded bg-body form"
                 onSubmit={methods.handleSubmit(onSubmit)}
                 noValidate={true}
             >

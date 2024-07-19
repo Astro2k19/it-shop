@@ -1,6 +1,7 @@
 import { useFormContext, RegisterOptions } from 'react-hook-form';
+import { InputHTMLAttributes } from 'react';
 
-type InputProps = {
+type InputProps = InputHTMLAttributes<HTMLInputElement> & {
     name: string;
     type?: string;
     label?: string;
@@ -29,12 +30,16 @@ export const Input = ({
 
     return (
         <div className="d-flex flex-column gap-1">
-            {label && <label htmlFor={name}>{label}</label>}
+            {label && (
+                <label className="fw-bolder" htmlFor={name}>
+                    {label}
+                </label>
+            )}
             <input
                 {...props}
                 type={type}
                 id={name}
-                className="form-control"
+                className="form-control fw-bolder"
                 disabled={isSubmitting}
                 {...registration}
             />

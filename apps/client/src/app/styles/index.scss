@@ -30,13 +30,9 @@ body {
   border-radius: 5px;
 }
 
-nav {
+.navbar {
   background-color: #232f3e;
   padding: 1rem 1rem;
-}
-
-.navbar {
-  padding: 0.1rem 1rem;
 }
 
 .dropdown {
@@ -171,11 +167,11 @@ footer {
   font-weight: 700;
 }
 
-.wrapper form {
+.form {
   padding: 2.5rem 3rem;
 }
 
-.wrapper form .btn,
+.form .btn,
 .fetch-btn {
   background-color: #fa9c23;
   border-color: #fa9c23;
@@ -188,7 +184,7 @@ footer {
   color: white;
 }
 
-.wrapper form a {
+.form a {
   font-size: 0.9rem;
   color: grey;
 }

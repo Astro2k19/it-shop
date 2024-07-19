@@ -28,6 +28,7 @@ import {
     getUploadAvatarRoute,
     getUploadProductImagesRoute,
     GuestRoutes,
+    ProfileRoutes,
     ProtectedRoutes,
     PublicRoutes,
 } from '@/shared/router';
@@ -38,18 +39,23 @@ import { Login } from '@/pages/login';
 import { Register } from '@/pages/register';
 import { ProductPage } from '@/pages/product';
 import { Forbidden } from '@/pages/forbidden';
+import { Profile } from '@/pages/profile';
+import { UpdateProfile } from '@/pages/updateProfile';
+import { UploadAvatar } from '@/pages/uploadAvatar/ui/Page/Page';
+import { UpdatePassword } from '@/pages/updatePassword';
 
 export type ProtectedRouteType = RouteObject & {
     requiredRoles?: UserRoles[];
     isProtected?: boolean;
     isForGuest?: boolean;
-    sessionLoader?: boolean;
 };
 
-export const adminRouterConfig: Record<
-    keyof typeof AdminRoutes,
+type ConfigRouteRecord<T, K extends string = never> = Record<
+    keyof Omit<T, K>,
     ProtectedRouteType
-> = {
+>;
+
+export const adminRouterConfig: ConfigRouteRecord<typeof AdminRoutes> = {
     [AppRoutes.DASHBOARD]: {
         path: getDashboardRoute(),
         isProtected: true,
@@ -111,9 +117,9 @@ export const adminRouterConfig: Record<
         requiredRoles: ['Admin'],
     },
 };
-export const protectedRouterConfig: Record<
-    keyof typeof ProtectedRoutes,
-    ProtectedRouteType
+export const protectedRouterConfig: ConfigRouteRecord<
+    typeof ProtectedRoutes,
+    keyof typeof ProfileRoutes
 > = {
     [AppRoutes.PASSWORD_FORGOT]: {
         path: getPasswordForgotRoute(),
@@ -122,26 +128,6 @@ export const protectedRouterConfig: Record<
     [AppRoutes.PASSWORD_RESET]: {
         path: getPasswordResetRoute(':token'),
         element: <div></div>,
-    },
-    [AppRoutes.PROFILE]: {
-        path: getProfileRoute(),
-        element: <div></div>,
-        isProtected: true,
-    },
-    [AppRoutes.UPDATE_PROFILE]: {
-        path: getUpdateProfileRoute(),
-        element: <div></div>,
-        isProtected: true,
-    },
-    [AppRoutes.UPLOAD_AVATAR]: {
-        path: getUploadAvatarRoute(),
-        element: <div></div>,
-        isProtected: true,
-    },
-    [AppRoutes.UPDATE_PASSWORD]: {
-        path: getUpdatePasswordRoute(),
-        element: <div></div>,
-        isProtected: true,
     },
     [AppRoutes.SHIPPING]: {
         path: getShippingRoute(),
@@ -171,10 +157,7 @@ export const protectedRouterConfig: Record<
     ...adminRouterConfig,
 };
 
-export const guestRouterConfig: Record<
-    keyof typeof GuestRoutes,
-    ProtectedRouteType
-> = {
+export const guestRouterConfig: ConfigRouteRecord<typeof GuestRoutes> = {
     [AppRoutes.LOGIN]: {
         path: getLoginRoute(),
         element: <Login />,
@@ -187,9 +170,9 @@ export const guestRouterConfig: Record<
     },
 };
 
-export const publicRouterConfig: Record<
-    keyof Omit<typeof PublicRoutes, 'HOME'>,
-    ProtectedRouteType
+export const publicRouterConfig: ConfigRouteRecord<
+    typeof PublicRoutes,
+    'HOME'
 > = {
     [AppRoutes.NOT_FOUND]: {
         path: getNotFoundRoute(),
@@ -205,11 +188,41 @@ export const publicRouterConfig: Record<
     },
 };
 
-export const appRouterConfig: Record<
-    keyof Omit<typeof AppRoutes, 'HOME'>,
-    ProtectedRouteType
+export const profileRouterConfig: ConfigRouteRecord<typeof ProfileRoutes> = {
+    [AppRoutes.PROFILE]: {
+        path: getProfileRoute(),
+        element: <Profile />,
+        isProtected: true,
+    },
+    [AppRoutes.UPDATE_PROFILE]: {
+        path: getUpdateProfileRoute(),
+        element: <UpdateProfile />,
+        isProtected: true,
+    },
+    [AppRoutes.UPLOAD_AVATAR]: {
+        path: getUploadAvatarRoute(),
+        element: <UploadAvatar />,
+        isProtected: true,
+    },
+    [AppRoutes.UPDATE_PASSWORD]: {
+        path: getUpdatePasswordRoute(),
+        element: <UpdatePassword />,
+        isProtected: true,
+    },
+};
+
+export const appRouterConfig: ConfigRouteRecord<
+    typeof AppRoutes,
+    'HOME' | keyof typeof ProfileRoutes
 > = {
     ...protectedRouterConfig,
     ...guestRouterConfig,
     ...publicRouterConfig,
 };
+
+export const globalRouterConfig = [
+    ...Object.values(adminRouterConfig),
+    ...Object.values(publicRouterConfig),
+    ...Object.values(profileRouterConfig),
+    ...Object.values(guestRouterConfig),
+];

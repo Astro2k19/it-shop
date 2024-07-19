@@ -1,48 +1,63 @@
-import { ReactNode } from 'react';
-import { Outlet, ScrollRestoration } from 'react-router-dom';
+import {ReactNode} from 'react';
+import {Outlet, ScrollRestoration} from 'react-router-dom';
 import styles from './Layout.module.scss';
-import { Toaster } from 'react-hot-toast';
+import {Toaster} from 'react-hot-toast';
 import cx from 'classnames';
-interface LayoutProps {
-    navbarSlot?: ReactNode;
-    headerSlot?: ReactNode;
-    sidebarSlot?: ReactNode;
-    footerSlot?: ReactNode;
-    announcementSlot?: ReactNode;
-}
+import {useAppSelector} from '@/shared/model';
+import {useCurrentRouteAccess} from '../../router';
+import {getIsUserInited} from '@/entities/user';
+
+type LayoutProps = {
+  navbarSlot?: ReactNode;
+  headerSlot?: ReactNode;
+  sidebarSlot?: ReactNode;
+  footerSlot?: ReactNode;
+  announcementSlot?: ReactNode;
+};
 
 export const Layout = (props: LayoutProps) => {
-    return (
-        <div className={styles.app}>
-            <Toaster position={'top-center'} />
-            {props.announcementSlot}
-            {props.navbarSlot}
-            {props.headerSlot}
-            <div className={styles.main}>
-                <div className="container">
-                    <div className="row">
-                        {props.sidebarSlot && (
-                            <div
-                                className={cx(
-                                    styles.sidebar,
-                                    'col-12 col-md-3'
-                                )}
-                            >
-                                {props.sidebarSlot}
-                            </div>
-                        )}
-                        <main
-                            className={cx(styles.content, 'col-12', {
-                                'col-md-9': Boolean(props.sidebarSlot),
-                            })}
-                        >
-                            {<Outlet />}
-                        </main>
-                    </div>
-                </div>
-            </div>
-            {props.footerSlot}
-            <ScrollRestoration />
+  const isUserInited = useAppSelector(getIsUserInited);
+  const isRouteAccessible = useCurrentRouteAccess();
+  return (
+    <div className={styles.app}>
+      <Toaster position={'top-center'}/>
+      {props.announcementSlot}
+      {props.navbarSlot}
+      {props.headerSlot}
+      <div className={styles.main}>
+        <div className="container">
+          <div className="row">
+            {!isUserInited ? (
+              <div>Page loading</div>
+            ) : (
+              <>
+                {props.sidebarSlot && isRouteAccessible && (
+                  <div
+                    className={cx(
+                      styles.sidebar,
+                      'col-12 col-md-3'
+                    )}
+                  >
+                    {props.sidebarSlot}
+                  </div>
+                )}
+                <main
+                  className={cx(styles.content, 'col-12', {
+                    'col-md-9': Boolean(
+                      props.sidebarSlot &&
+                      isRouteAccessible
+                    ),
+                  })}
+                >
+                  <Outlet/>
+                </main>
+              </>
+            )}
+          </div>
         </div>
-    );
+      </div>
+      {props.footerSlot}
+      <ScrollRestoration/>
+    </div>
+  );
 };
