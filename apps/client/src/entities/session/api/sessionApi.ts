@@ -1,7 +1,18 @@
 import { baseApi } from '@/shared/api';
 import { LoginSchemaType, RegisterSchemaType } from '@it-shop/schemas';
 import { SessionResponse } from './types';
-import { userApi } from '@/entities/user';
+import {userActions, userApi} from '@/entities/user';
+import {QueryExtraOptions} from "@reduxjs/toolkit/dist/query/endpointDefinitions";
+
+type OnQueryStartedFn = QueryExtraOptions<string, any, any, any>['onQueryStarted'];
+const onQueryStarted: OnQueryStartedFn = async (arg, { dispatch, queryFulfilled }) => {
+  try {
+    await queryFulfilled;
+    await dispatch(userApi.endpoints.me.initiate(undefined));
+  } catch {
+    dispatch(userActions.setInited(true));
+  }
+}
 
 export const sessionApi = baseApi.injectEndpoints({
     endpoints: (build) => ({
@@ -11,10 +22,7 @@ export const sessionApi = baseApi.injectEndpoints({
                 url: '/login',
                 body,
             }),
-            async onQueryStarted(arg, { dispatch, queryFulfilled }) {
-                await queryFulfilled;
-                dispatch(userApi.endpoints.me.initiate(undefined));
-            },
+          onQueryStarted,
         }),
         register: build.mutation<SessionResponse, RegisterSchemaType>({
             query: (body) => ({
@@ -22,20 +30,14 @@ export const sessionApi = baseApi.injectEndpoints({
                 url: '/register',
                 body,
             }),
-            async onQueryStarted(arg, { dispatch, queryFulfilled }) {
-                await queryFulfilled;
-                dispatch(userApi.endpoints.me.initiate(undefined));
-            },
+          onQueryStarted,
         }),
         refresh: build.query<SessionResponse, void>({
             query: () => ({
                 method: 'POST',
                 url: '/refresh',
             }),
-            async onQueryStarted(arg, { dispatch, queryFulfilled }) {
-                await queryFulfilled;
-                dispatch(userApi.endpoints.me.initiate(undefined));
-            },
+          onQueryStarted,
         }),
         logout: build.mutation({
             query: () => ({

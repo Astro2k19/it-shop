@@ -55,6 +55,7 @@ export const sessionSlice = createSlice({
                 state.accessToken = payload.accessToken;
                 state.isLoading = false;
                 state.isInited = true;
+                state.isAuthorized = true;
             }
         );
         builder.addMatcher(
