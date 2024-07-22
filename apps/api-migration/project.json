@@ -1,0 +1,52 @@
+{
+    "name": "api-migration",
+    "$schema": "../../node_modules/nx/schemas/project-schema.json",
+    "sourceRoot": "apps/api-migration/src",
+    "projectType": "application",
+    "targets": {
+        "build": {
+            "executor": "@nx/webpack:webpack",
+            "outputs": ["{options.outputPath}"],
+            "defaultConfiguration": "production",
+            "options": {
+                "target": "node",
+                "compiler": "tsc",
+                "outputPath": "dist/apps/api-migration",
+                "main": "apps/api-migration/src/main.ts",
+                "tsConfig": "apps/api-migration/tsconfig.app.json",
+                "assets": ["apps/api-migration/src/assets"],
+                "webpackConfig": "apps/api-migration/webpack.config.js"
+            },
+            "configurations": {
+                "development": {},
+                "production": {}
+            }
+        },
+        "serve": {
+            "executor": "@nx/js:node",
+            "defaultConfiguration": "development",
+            "options": {
+                "buildTarget": "api-migration:build"
+            },
+            "configurations": {
+                "development": {
+                    "buildTarget": "api-migration:build:development"
+                },
+                "production": {
+                    "buildTarget": "api-migration:build:production"
+                }
+            }
+        },
+        "lint": {
+            "executor": "@nx/eslint:lint"
+        },
+        "test": {
+            "executor": "@nx/jest:jest",
+            "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
+            "options": {
+                "jestConfig": "apps/api-migration/jest.config.ts"
+            }
+        }
+    },
+    "tags": []
+}

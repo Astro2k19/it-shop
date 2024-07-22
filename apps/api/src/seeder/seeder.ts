@@ -4,8 +4,8 @@ import data from './data';
 
 const seederProducts = async () => {
     try {
-        console.log(process.env.DATABASE_URI, 'process.env.DATABASE_URI');
-        await mongoose.connect(process.env.DATABASE_URI);
+        console.log(process.env.DATABASE_URL, 'process.env.DATABASE_URL');
+        await mongoose.connect(process.env.DATABASE_URL);
         // await ProductModel.deleteMany();
         // await ReviewModel.deleteMany();
         await ProductModel.insertMany(data);
