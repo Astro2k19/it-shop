@@ -25,7 +25,8 @@
             "defaultConfiguration": "development",
             "options": {
                 "buildTarget": "client:build",
-                "proxyConfig": "apps/client/proxy.conf.json"
+                "proxyConfig": "apps/client/proxy.conf.json",
+                "host": true
             },
             "configurations": {
                 "development": {
@@ -72,6 +73,10 @@
             "options": {
                 "buildTarget": "client:build"
             }
+        },
+        "docker-build": {
+            "dependsOn": ["build"],
+            "command": "docker build -f apps/client/Dockerfile . -t client"
         }
     },
     "tags": []

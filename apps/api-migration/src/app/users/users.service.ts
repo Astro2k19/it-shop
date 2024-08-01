@@ -7,9 +7,10 @@ import { PrismaService } from 'nestjs-prisma';
 export class UsersService {
     constructor(private readonly prismaService: PrismaService) {}
     create(createUserDto: CreateUserDto) {
-        return this.prismaService.user.create({
-            data: createUserDto,
-        });
+        // return this.prismaService.user.create({
+        //     data: createUserDto,
+        // });
+      return {}
     }
 
     async findOne(email: string) {

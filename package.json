@@ -4,7 +4,7 @@
     "license": "MIT",
     "scripts": {
         "preinstall": "npx only-allow pnpm",
-        "start:dev": "nx run-many --parallel --target=serve --projects=client,api",
+        "start:dev": "nx run-many --parallel --target=serve --projects=client,api-migration",
         "build:prod": "nx run-many --parallel --target=build --projects=client,api",
         "start:client": "nx serve client",
         "start:api": "nx serve api",

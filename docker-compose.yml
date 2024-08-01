@@ -1,0 +1,54 @@
+services:
+
+  client:
+    container_name: it-shop-client
+    build:
+      context: .
+      dockerfile: ./apps/client/Dockerfile
+    ports:
+      - 4200:4200
+    depends_on:
+      - api
+    develop:
+      watch:
+        - path: ./package.json
+          action: rebuild
+        - path: ./project.json
+          action: rebuild
+        - path: ./apps/client
+          target: /src/apps/client
+          action: sync
+
+  api:
+    container_name: it-shop-api
+    build:
+      context: .
+      dockerfile: ./apps/api-migration/Dockerfile
+    ports:
+      - 3500:3500
+    depends_on:
+      - db
+    develop:
+      watch:
+        - path: ./package.json
+          action: rebuild
+        - path: ./project.json
+          action: rebuild
+        - path: ./apps/api-migration
+          target: /src/apps/api-migration
+          action: sync
+
+  db:
+    container_name: it-shop-db
+    image: mongo:latest
+    ports:
+      - 27017:27017
+    volumes:
+      - mongo:/data/db
+
+volumes:
+  mongo:
+
+
+
+
