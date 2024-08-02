@@ -15,6 +15,6 @@ ENV CYPRESS_INSTALL_BINARY=0
 RUN pnpm i
 
 COPY /apps/client ./apps/client
-COPY /lib ./lib
+COPY /libs ./libs
 EXPOSE 4200
 CMD ["pnpm", "nx", "run", "client:serve"]

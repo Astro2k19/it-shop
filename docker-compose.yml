@@ -1,5 +1,4 @@
 services:
-
   client:
     container_name: it-shop-client
     build:

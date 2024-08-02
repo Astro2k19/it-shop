@@ -11,6 +11,13 @@
         }
     ],
     "compilerOptions": {
+      "baseUrl": "./",
+      "paths": {
+        "@/*": ["./src/*"],
+        "@it-shop/types": ["../../libs/src/types/index.ts"],
+        "@it-shop/schemas": ["../../libs/src/schemas/index.ts"],
+        "@it-shop/dtos": ["../../libs/src/dtos/index.ts"],
+      },
         "esModuleInterop": true
     }
 }

@@ -16,7 +16,7 @@ RUN pnpm i
 
 COPY /apps/api-migration ./apps/api-migration
 COPY /prisma ./prisma
-COPY /lib ./lib
+COPY /libs ./libs
 RUN npx prisma generate
 EXPOSE 3500
 CMD ["pnpm", "nx", "run", "api-migration:serve"]

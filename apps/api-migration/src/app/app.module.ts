@@ -5,6 +5,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { PrismaModule } from 'nestjs-prisma';
 import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
+import { ProductsModule } from './products/products.module';
 
 @Module({
     imports: [
@@ -14,7 +15,6 @@ import { UsersModule } from './users/users.module';
         PrismaModule.forRootAsync({
             isGlobal: true,
             useFactory: async (configService: ConfigService) => {
-              console.log(configService.get('DATABASE_URL'), 'configService.get(\'DATABASE_URL\')');
                 return {
                     prismaOptions: {
                         datasources: {
@@ -29,6 +29,7 @@ import { UsersModule } from './users/users.module';
         }),
         AuthModule,
         UsersModule,
+        ProductsModule,
     ],
     controllers: [AppController],
     providers: [AppService],
