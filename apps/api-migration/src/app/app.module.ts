@@ -15,6 +15,10 @@ import { ProductsModule } from './products/products.module';
         PrismaModule.forRootAsync({
             isGlobal: true,
             useFactory: async (configService: ConfigService) => {
+                console.log(
+                    configService.get('DATABASE_URL'),
+                    "configService.get('DATABASE_URL')"
+                );
                 return {
                     prismaOptions: {
                         datasources: {

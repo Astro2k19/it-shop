@@ -1,5 +1,6 @@
 import {
     IsArray,
+    IsDecimal,
     IsInt,
     IsNotEmpty,
     IsNumber,

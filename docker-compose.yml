@@ -17,6 +17,9 @@ services:
         - path: ./apps/client
           target: /src/apps/client
           action: sync
+        - path: ./libs
+          target: /libs
+          action: sync
 
   api:
     container_name: it-shop-api
@@ -36,14 +39,31 @@ services:
         - path: ./apps/api-migration
           target: /src/apps/api-migration
           action: sync
+        - path: ./libs
+          target: /libs
+          action: sync
 
   db:
     container_name: it-shop-db
-    image: mongo:latest
+    build:
+      context: .
+      dockerfile: ./apps/mongo/Dockerfile
+      args:
+        MONGO_VERSION: 6
+    environment:
+      MONGO_REPLICA_HOST: db
+      MONGO_REPLICA_PORT: 27017
+      # Use "mongo" instead of "mongosh" before v5.0
+      MONGO_COMMAND: 'mongosh'
     ports:
-      - 27017:27017
-    volumes:
-      - mongo:/data/db
+      - '27017:27017'
+    restart: unless-stopped
+    healthcheck:
+      # Use "mongo" instead of "mongosh" before v5.0
+      test: ['CMD', 'mongosh', 'admin', '--port', '27017', '--eval', "db.adminCommand('ping').ok"]
+      interval: 5s
+      timeout: 2s
+      retries: 20
 
 volumes:
   mongo:

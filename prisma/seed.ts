@@ -1,44 +1,95 @@
-// initialize Prisma Client
-import {PrismaClient} from "@prisma/client";
+import bcrypt from 'bcrypt';
+import { Prisma, PrismaClient } from '@prisma/client';
+import { faker } from '@faker-js/faker';
 
 const prisma = new PrismaClient();
 
-async function main() {
-  // create two dummy articles
-  // const post1 = await prisma.article.upsert({
-  //   where: { title: 'Prisma Adds Support for MongoDB' },
-  //   update: {},
-  //   create: {
-  //     title: 'Prisma Adds Support for MongoDB',
-  //     body: 'Support for MongoDB has been one of the most requested features since the initial release of...',
-  //     description:
-  //       "We are excited to share that today's Prisma ORM release adds stable support for MongoDB!",
-  //     published: false,
-  //   },
-  // });
+export const productCategories = [
+    'Electronics',
+    'Cameras',
+    'Laptops',
+    'Accessories',
+    'Headphones',
+    'Food',
+    'Books',
+    'Sports',
+    'Outdoor',
+    'Home',
+] as const;
 
-  // const post2 = await prisma.article.upsert({
-  //   where: { title: "What's new in Prisma? (Q1/22)" },
-  //   update: {},
-  //   create: {
-  //     title: "What's new in Prisma? (Q1/22)",
-  //     body: 'Our engineers have been working hard, issuing new releases with many improvements...',
-  //     description:
-  //       'Learn about everything in the Prisma ecosystem and community from January to March 2022.',
-  //     published: true,
-  //   },
-  // });
-  //
-  // console.log({ post1, post2 });
-}
+const main = async () => {
+    try {
+        await prisma.product.deleteMany();
+        const hashedPassword = await bcrypt.hash('my_secure_password', 10);
+        const userData = {
+            name: faker.person.firstName(),
+            email: faker.internet.email({
+                firstName: 'admin',
+                provider: 'example.gmail',
+            }),
+            password: hashedPassword,
+        };
+        console.log(userData, 'userData');
 
-// execute the main function
-main()
-  .catch((e) => {
-    console.error(e);
-    process.exit(1);
-  })
-  .finally(async () => {
-    // close Prisma Client at the end
-    await prisma.$disconnect();
-  });
+        await prisma.user
+            .delete({ where: { email: userData.email } })
+            .catch(() => {});
+
+        const user = await prisma.user.create({
+            data: userData,
+        });
+
+        const createRandomProduct = () => {
+            return {
+                userId: user.id,
+                name: faker.commerce.product(),
+                price: Number(faker.commerce.price()),
+                description: faker.lorem.paragraph(),
+                images: [
+                    {
+                        public_id: 'shopit/demo/jzqaj98nnhy0hcsilx9y',
+                        url: faker.image.urlLoremFlickr({
+                            category: 'technics',
+                        }),
+                    },
+                    {
+                        public_id: 'shopit/demo/welkq4dgfi5267usmj0n',
+                        url: faker.image.urlLoremFlickr({
+                            category: 'technics',
+                        }),
+                    },
+                    {
+                        public_id: 'shopit/demo/pabtjloyzenmr6z8klcr',
+                        url: faker.image.urlLoremFlickr({
+                            category: 'technics',
+                        }),
+                    },
+                ],
+                category: faker.helpers.arrayElement(productCategories),
+                seller: faker.company.name(),
+                stock: faker.helpers.rangeToNumber({ min: 10, max: 100 }),
+            };
+        };
+
+        const products: Prisma.ProductCreateInput[] = faker.helpers.multiple(
+            createRandomProduct,
+            {
+                count: 50,
+            }
+        );
+
+        for (const product of products) {
+            await prisma.product.create({
+                data: product,
+            });
+        }
+
+        console.log(`Database has been seeded. 🌱`);
+    } catch (error) {
+        throw error;
+    }
+};
+
+main().catch((err) => {
+    console.warn('Error While generating Seed: \n', err);
+});

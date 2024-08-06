@@ -18,7 +18,8 @@
             "@it-shop/dtos": ["/libs/src/dtos/index.ts"],
             "@it-shop/schemas": ["/libs/src/schemas/index.ts"],
             "@it-shop/types": ["/libs/src/types/index.ts"]
-        }
+        },
+      "allowSyntheticDefaultImports": true
     },
     "exclude": ["node_modules", "tmp"]
 }

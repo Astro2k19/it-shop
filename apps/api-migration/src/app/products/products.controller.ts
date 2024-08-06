@@ -1,42 +1,49 @@
 import {
     Body,
     Controller,
+    Delete,
     Get,
     Param,
-    ParseIntPipe,
     Post,
     Query,
+    Req,
 } from '@nestjs/common';
-import { ProductsService } from '@/app/products/products.service';
-import { CreateProductDto, UpdateProductDto } from '@it-shop/dtos';
+import { ProductsService } from './products.service';
+import {
+    CreateProductDto,
+    ProductFilterQueryDto,
+    UpdateProductDto,
+} from '@it-shop/dtos';
 
 @Controller('products')
 export class ProductsController {
     constructor(private productsService: ProductsService) {}
 
     @Get()
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    getMany(@Query() query) {
-        return this.productsService.findMany();
+    getMany(@Query() query: ProductFilterQueryDto) {
+        return this.productsService.findMany(query);
     }
 
     @Post()
-    create(createProductDto: CreateProductDto) {
-        return this.productsService.create(createProductDto);
+    create(@Body() createProductDto: CreateProductDto, @Req() req) {
+        return this.productsService.create(createProductDto, req.user);
     }
-    @Get()
-    getById(@Param('id', ParseIntPipe) id: number) {
+
+    @Get(':id')
+    getById(@Param('id') id: string) {
         return this.productsService.getById(id);
     }
 
+    @Post(':id')
     update(
-        @Param('id', ParseIntPipe) id: number,
+        @Param('id') id: string,
         @Body() updateProductDto: UpdateProductDto
     ) {
         return this.productsService.update(id, updateProductDto);
     }
 
-    deleteById(@Param('id', ParseIntPipe) id: number) {
+    @Delete(':id')
+    deleteById(@Param('id') id: string) {
         return this.productsService.delete(id);
     }
 }

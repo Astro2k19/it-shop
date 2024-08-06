@@ -1,11 +1,9 @@
-import { IsOptional, IsString } from 'class-validator';
+import { IsString } from 'class-validator';
 
 export class UpdateProductImageDto {
-    @IsOptional()
     @IsString()
-    public_id?: string;
+    public_id: string;
 
-    @IsOptional()
     @IsString()
-    url?: string;
+    url: string;
 }
