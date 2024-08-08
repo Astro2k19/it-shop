@@ -19,7 +19,7 @@
             "@it-shop/schemas": ["/libs/src/schemas/index.ts"],
             "@it-shop/types": ["/libs/src/types/index.ts"]
         },
-      "allowSyntheticDefaultImports": true
+        "allowSyntheticDefaultImports": true
     },
     "exclude": ["node_modules", "tmp"]
 }

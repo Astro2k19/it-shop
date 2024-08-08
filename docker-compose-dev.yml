@@ -1,0 +1,59 @@
+services:
+  client:
+    ports:
+      - 4200:4200
+    environment:
+      - API_URL=${API_URL}
+    develop:
+      watch:
+        - path: ./package.json
+          action: rebuild
+        - path: ./project.json
+          action: rebuild
+        - path: ./apps/client
+          target: /src/apps/client
+          action: sync
+        - path: ./libs
+          target: /src/libs
+          action: sync
+
+  api:
+    ports:
+      - 3500:3500
+    environment:
+      - CLIENT_URL=${CLIENT_URL}
+    depends_on:
+      - db
+    develop:
+      watch:
+        - path: ./package.json
+          action: rebuild
+        - path: ./project.json
+          action: rebuild
+        - path: ./apps/api-migration
+          target: /src/apps/api-migration
+          action: sync
+        - path: ./libs
+          target: /src/libs
+          action: sync
+  db:
+    container_name: it-shop-db
+    build:
+      context: .
+      dockerfile: ./apps/mongo/Dockerfile
+      args:
+        MONGO_VERSION: 6
+    environment:
+      MONGO_REPLICA_HOST: db
+      MONGO_REPLICA_PORT: 27017
+      # Use "mongo" instead of "mongosh" before v5.0
+      MONGO_COMMAND: 'mongosh'
+    ports:
+      - '27017:27017'
+    restart: unless-stopped
+  #    healthcheck:
+  #      # Use "mongo" instead of "mongosh" before v5.0
+  #      test: ['CMD', 'mongosh', 'admin', '--port', '27017', '--eval', "db.adminCommand('ping').ok"]
+  #      interval: 5s
+  #      timeout: 2s
+  #      retries: 20

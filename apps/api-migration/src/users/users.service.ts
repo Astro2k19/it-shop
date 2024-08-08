@@ -7,7 +7,10 @@ export class UsersService {
     constructor(private readonly prismaService: PrismaService) {}
     create(createUserDto: CreateUserDto) {
         return this.prismaService.user.create({
-            data: createUserDto,
+            data: {
+                ...createUserDto,
+                roles: ['Admin'],
+            },
         });
     }
 

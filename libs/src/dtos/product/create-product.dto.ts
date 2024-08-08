@@ -33,7 +33,6 @@ export class CreateProductDto {
 
     @IsNotEmpty()
     @IsNumber()
-    @MaxLength(5)
     price: number;
 
     @IsNotEmpty()

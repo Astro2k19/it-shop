@@ -10,16 +10,25 @@ import { Prisma } from '@prisma/client';
 
 @Injectable()
 export class ProductsService {
-    private readonly take = 4;
+    private readonly resPerPage = 4;
     constructor(private readonly prismaService: PrismaService) {}
 
-    findMany(query: ProductFilterQueryDto) {
+    async findMany(query: ProductFilterQueryDto) {
         const filter = transformFilterDtoToPrisma(query);
-        return this.prismaService.product.findMany({
-            skip: this.take * (query.page - 1),
-            take: this.take,
+        const args = {
+            skip: this.resPerPage * (query.page - 1),
+            take: this.resPerPage,
             where: filter,
-        });
+        };
+        const [count, products] = await this.prismaService.$transaction([
+            this.prismaService.product.count(args),
+            this.prismaService.product.findMany(args),
+        ]);
+        return {
+            count,
+            products,
+            resPerPage: this.resPerPage,
+        };
     }
 
     getById(id: string) {

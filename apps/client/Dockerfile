@@ -12,6 +12,7 @@ COPY package.json \
 	pnpm-lock.yaml \
 	./
 ENV CYPRESS_INSTALL_BINARY=0
+ENV API_URL=${API_URL}
 RUN pnpm i
 
 COPY /apps/client ./apps/client

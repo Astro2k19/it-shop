@@ -1,34 +1,40 @@
 import {
+    IsNumber,
     IsOptional,
     IsString,
     ValidateNested,
-    Allow,
-    IsNumber,
+    IsPositive,
+    Min,
 } from 'class-validator';
 import { Transform, Type } from 'class-transformer';
 
 class PriceQueryFilter {
     @IsOptional()
-    @IsString()
-    @Allow()
+    @IsNumber()
+    @IsPositive()
+    @Transform(({ value }) => Number(value))
     gte?: string;
 
     @IsOptional()
-    @IsString()
-    @Allow()
+    @IsNumber()
+    @IsPositive()
+    @Transform(({ value }) => Number(value))
     lte?: string;
 }
 
 class RatingsQueryFilter {
     @IsOptional()
-    @IsString()
-    @Allow()
+    @IsNumber()
+    @IsPositive()
+    @Transform(({ value }) => Number(value))
     gte?: string;
 }
 
 export class ProductFilterQueryDto {
     @IsOptional()
     @IsNumber()
+    @Min(1)
+    @Transform(({ value }) => Number(value))
     page = 1;
 
     @IsOptional()
