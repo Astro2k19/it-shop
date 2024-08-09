@@ -33,10 +33,13 @@ export class RefreshTokenStrategy extends PassportStrategy(
             where: {
                 userId: payload.id,
             },
+            include: {
+                user: true,
+            },
         });
         if (!refreshToken) {
             throw new ForbiddenException('Access Denied');
         }
-        return payload.id;
+        return refreshToken.user;
     }
 }

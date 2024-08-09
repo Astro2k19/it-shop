@@ -20,6 +20,7 @@ export class AccessTokenStrategy extends PassportStrategy(Strategy) {
     }
 
     async validate(payload: Pick<Prisma.UserCreateInput, 'id'>) {
+        console.log('access payload', payload);
         const { password: _password, ...user } =
             await this.prismaService.user.findUnique({
                 where: {

@@ -1,7 +1,7 @@
-import { Body, Controller, Post, Res, UseGuards } from '@nestjs/common';
+import { Body, Controller, Post, Req, Res, UseGuards } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { CreateUserDto, LoginUserDto } from '@it-shop/dtos';
-import { Response } from 'express';
+import { Request, Response } from 'express';
 import { RefreshTokenGuard } from './refresh-token-guard';
 import { ConfigService } from '@nestjs/config';
 import { CookieOptions } from 'express';
@@ -47,17 +47,20 @@ export class AuthController {
 
     @UseGuards(RefreshTokenGuard)
     @Post('refresh')
-    async refreshToken(userId: string) {
-        return this.authService.refreshToken(userId);
+    async refreshToken(@Req() req: Request) {
+        return this.authService.refreshToken(req.user);
     }
 
     @UseGuards(RefreshTokenGuard)
     @Post('logout')
-    async logout(userId: string, @Res({ passthrough: true }) res: Response) {
+    async logout(
+        @Req() req: Request,
+        @Res({ passthrough: true }) res: Response
+    ) {
         res.clearCookie(
             'refreshToken',
             this.configService.get<CookieOptions>('cookieOptions')
         );
-        return this.authService.logout(userId);
+        return this.authService.logout(req.user);
     }
 }

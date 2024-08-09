@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { PrismaModule } from 'nestjs-prisma';
 import configuration from '@/config/configuration';
 import { AuthModule } from '@/auth/auth.module';
@@ -9,6 +9,7 @@ import { UsersModule } from '@/users/users.module';
 import { TokenModule } from '@/token/token.module';
 import { ProductsModule } from '@/products/products.module';
 import { validate } from '@/app/env.validation';
+import { MailModule } from '@/mail/mail.module';
 
 @Module({
     imports: [
@@ -24,6 +25,7 @@ import { validate } from '@/app/env.validation';
         UsersModule,
         ProductsModule,
         TokenModule,
+        MailModule,
     ],
     controllers: [AppController],
     providers: [AppService],

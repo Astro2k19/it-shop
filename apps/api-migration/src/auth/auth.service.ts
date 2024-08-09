@@ -3,6 +3,7 @@ import { UsersService } from '../users/users.service';
 import bcrypt from 'bcrypt';
 import { CreateUserDto, LoginUserDto } from '@it-shop/dtos';
 import { TokenService } from '@/token/token.service';
+import { Prisma } from '@prisma/client';
 
 @Injectable()
 export class AuthService {
@@ -13,19 +14,15 @@ export class AuthService {
 
     async login(loginUserDto: LoginUserDto) {
         const user = await this.usersService.findOneByEmail(loginUserDto.email);
-        if (!user) {
-            throw new BadRequestException('Invalid email & password');
+        if (
+            !user ||
+            !(await bcrypt.compare(loginUserDto.password, user.password))
+        ) {
+            throw new BadRequestException('Invalid email or password');
         }
-        const isMatch = await bcrypt.compare(
-            loginUserDto.password,
-            user.password
-        );
-        if (!isMatch) {
-            throw new BadRequestException('Invalid email & password');
-        }
+
         const tokens = await this.tokenService.getTokens({ id: user.id });
         await this.tokenService.saveRefreshToken(user.id, tokens.refreshToken);
-        console.log(tokens, 'tokens');
         return tokens;
     }
 
@@ -36,26 +33,25 @@ export class AuthService {
         if (existingUser) {
             throw new BadRequestException('Email is already taken');
         }
+
         const hashedPassword = await bcrypt.hash(createUserDto.password, 10);
-        const newUser = await this.usersService.create({
+        const { id } = await this.usersService.create({
             ...createUserDto,
             password: hashedPassword,
         });
-        const tokens = await this.tokenService.getTokens({ id: newUser.id });
-        await this.tokenService.saveRefreshToken(
-            newUser.id,
-            tokens.refreshToken
-        );
+        const tokens = await this.tokenService.getTokens({ id });
+        await this.tokenService.saveRefreshToken(id, tokens.refreshToken);
         return tokens;
     }
 
-    logout(userId: string) {
-        return this.tokenService.removeRefreshToken(userId);
+    async logout(user: Omit<Prisma.UserCreateInput, 'password'>) {
+        return this.tokenService.removeRefreshToken(user.id);
     }
 
-    async refreshToken(userId: string) {
+    //TODO: hashing for refresh token
+    async refreshToken(user: Omit<Prisma.UserCreateInput, 'password'>) {
         const { accessToken } = await this.tokenService.getTokens({
-            id: userId,
+            id: user.id,
         });
         return { accessToken };
     }

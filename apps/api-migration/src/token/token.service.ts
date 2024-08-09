@@ -12,40 +12,44 @@ export class TokenService {
         private configService: ConfigService<EnvironmentVariables>,
         private prismaService: PrismaService
     ) {}
-    saveRefreshToken(userId: string, refreshToken: string) {
+
+    async saveRefreshToken(userId: string, refreshToken: string) {
         return this.prismaService.token.upsert({
-            create: {
-                userId,
-                refreshToken,
-            },
-            update: {
-                refreshToken,
-            },
-            where: {
-                userId,
-            },
+            create: { userId, refreshToken },
+            update: { refreshToken },
+            where: { userId },
         });
     }
 
-    removeRefreshToken(userId: string) {
+    async removeRefreshToken(userId: string) {
         return this.prismaService.token.delete({
-            where: {
-                userId,
-            },
+            where: { userId },
         });
     }
 
     async getTokens(payload: Pick<Prisma.UserCreateInput, 'id'>) {
-        const [accessToken, refreshToken] = await Promise.all([
-            this.jwtService.signAsync(payload, {
-                secret: this.configService.get('SECRET_ACCESS_TOKEN'),
-                expiresIn: this.configService.get('ACCESS_TOKEN_EXPIRE'),
-            }),
-            this.jwtService.signAsync(payload, {
-                secret: this.configService.get('SECRET_REFRESH_TOKEN'),
-                expiresIn: this.configService.get('REFRESH_TOKEN_EXPIRE'),
-            }),
-        ]);
+        const accessToken = await this.createToken(
+            payload,
+            'SECRET_ACCESS_TOKEN',
+            'ACCESS_TOKEN_EXPIRE'
+        );
+        const refreshToken = await this.createToken(
+            payload,
+            'SECRET_REFRESH_TOKEN',
+            'REFRESH_TOKEN_EXPIRE'
+        );
+
         return { accessToken, refreshToken };
+    }
+
+    private createToken(
+        payload: Record<any, unknown>,
+        secretKey: keyof EnvironmentVariables,
+        expireTime: keyof EnvironmentVariables
+    ) {
+        return this.jwtService.signAsync(payload, {
+            secret: this.configService.get(secretKey),
+            expiresIn: this.configService.get(expireTime),
+        });
     }
 }
