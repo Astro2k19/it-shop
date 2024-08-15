@@ -1,11 +1,12 @@
-import { ForbiddenException, Injectable } from '@nestjs/common';
+import {ForbiddenException, Inject, Injectable} from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { Strategy } from 'passport-jwt';
 import { Prisma } from '@prisma/client';
-import { PrismaService } from 'nestjs-prisma';
+import {CustomPrismaService} from 'nestjs-prisma';
 import { ConfigService } from '@nestjs/config';
 import { Request } from 'express';
 import { EnvironmentVariables } from '@/app/env.validation';
+import {ExtendedPrismaClient} from "@/prisma/prisma.extension";
 
 @Injectable()
 export class RefreshTokenStrategy extends PassportStrategy(
@@ -13,7 +14,8 @@ export class RefreshTokenStrategy extends PassportStrategy(
     'jwt-refresh'
 ) {
     constructor(
-        private prismaService: PrismaService,
+      @Inject('PrismaService')
+      private prismaService: CustomPrismaService<ExtendedPrismaClient>,
         configService: ConfigService<EnvironmentVariables>
     ) {
         super({
@@ -29,7 +31,7 @@ export class RefreshTokenStrategy extends PassportStrategy(
     }
 
     async validate(payload: Pick<Prisma.UserCreateInput, 'id'>) {
-        const refreshToken = await this.prismaService.token.findUnique({
+        const refreshToken = await this.prismaService.client.token.findUnique({
             where: {
                 userId: payload.id,
             },

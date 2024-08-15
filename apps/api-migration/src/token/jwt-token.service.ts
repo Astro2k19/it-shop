@@ -1,20 +1,22 @@
-import { Injectable } from '@nestjs/common';
+import {Inject, Injectable} from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { Prisma } from '@prisma/client';
-import { PrismaService } from 'nestjs-prisma';
+import {CustomPrismaService} from 'nestjs-prisma';
 import { EnvironmentVariables } from '@/app/env.validation';
+import {ExtendedPrismaClient} from "@/prisma/prisma.extension";
 
 @Injectable()
 export class JwtTokenService {
     constructor(
+      @Inject('PrismaService')
+      private prismaService: CustomPrismaService<ExtendedPrismaClient>,
         private jwtService: JwtService,
         private configService: ConfigService<EnvironmentVariables>,
-        private prismaService: PrismaService
     ) {}
 
     async saveRefreshToken(userId: string, refreshToken: string) {
-        return this.prismaService.token.upsert({
+        return this.prismaService.client.token.upsert({
             create: { userId, refreshToken },
             update: { refreshToken },
             where: { userId },
@@ -22,7 +24,7 @@ export class JwtTokenService {
     }
 
     async removeRefreshToken(userId: string) {
-        return this.prismaService.token.delete({
+        return this.prismaService.client.token.delete({
             where: { userId },
         });
     }

@@ -8,7 +8,7 @@ import { MailService } from './main.service';
 @Module({
     imports: [
         MailerModule.forRootAsync({
-            inject: [ConfigModule],
+          imports: [ConfigModule],
             useFactory: (
                 configService: ConfigService<EnvironmentVariables>
             ) => ({
@@ -35,6 +35,7 @@ import { MailService } from './main.service';
                     },
                 },
             }),
+          inject: [ConfigService],
         }),
     ],
     providers: [MailService],

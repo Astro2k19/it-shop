@@ -2,7 +2,6 @@ import { Module } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { UsersModule } from '@/users/users.module';
 import { PassportModule } from '@nestjs/passport';
-import { JwtModule } from '@nestjs/jwt';
 import { AuthController } from './auth.controller';
 import { AccessTokenStrategy } from './access-token.strategy';
 import { AccessTokenGuard } from './access-token-guard';
@@ -15,7 +14,6 @@ import { TokenModule } from '@/token/token.module';
     imports: [
         UsersModule,
         PassportModule,
-        JwtModule.register({ global: true }),
         TokenModule,
     ],
     exports: [AuthService],

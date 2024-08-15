@@ -1,7 +1,7 @@
 import {
-    BadRequestException,
-    Injectable,
-    NotFoundException,
+  BadRequestException, Inject,
+  Injectable,
+  NotFoundException,
 } from '@nestjs/common';
 import { CustomPrismaService } from 'nestjs-prisma';
 import {
@@ -20,6 +20,7 @@ import { ExtendedPrismaClient } from '@/prisma/prisma.extension';
 @Injectable()
 export class UsersService {
     constructor(
+      @Inject('PrismaService')
         private prismaService: CustomPrismaService<ExtendedPrismaClient>,
         private mailService: MailService,
         private resetTokenService: ResetTokenService

@@ -1,17 +1,21 @@
-import { Injectable } from '@nestjs/common';
+import {Inject, Injectable} from '@nestjs/common';
 import { transformFilterDtoToPrisma } from './utils/transform-filter';
 import {
     CreateProductDto,
     ProductFilterQueryDto,
     UpdateProductDto,
 } from '@it-shop/dtos';
-import { PrismaService } from 'nestjs-prisma';
+import {CustomPrismaService} from 'nestjs-prisma';
 import { Prisma } from '@prisma/client';
+import {ExtendedPrismaClient} from "@/prisma/prisma.extension";
 
 @Injectable()
 export class ProductsService {
     private readonly resPerPage = 4;
-    constructor(private readonly prismaService: PrismaService) {}
+    constructor(
+      @Inject('PrismaService')
+      private prismaService: CustomPrismaService<ExtendedPrismaClient>
+    ) {}
 
     async findMany(query: ProductFilterQueryDto) {
         const filter = transformFilterDtoToPrisma(query);
@@ -20,9 +24,9 @@ export class ProductsService {
             take: this.resPerPage,
             where: filter,
         };
-        const [count, products] = await this.prismaService.$transaction([
-            this.prismaService.product.count(args),
-            this.prismaService.product.findMany(args),
+        const [count, products] = await this.prismaService.client.$transaction([
+            this.prismaService.client.product.count(args),
+            this.prismaService.client.product.findMany(args),
         ]);
         return {
             count,
@@ -32,20 +36,20 @@ export class ProductsService {
     }
 
     getById(id: string) {
-        return this.prismaService.product.findUnique({
+        return this.prismaService.client.product.findUnique({
             where: { id },
         });
     }
 
     update(id: string, updateProductDto: UpdateProductDto) {
-        return this.prismaService.product.update({
+        return this.prismaService.client.product.update({
             where: { id },
             data: updateProductDto,
         });
     }
 
     create(createProductDto: CreateProductDto, user: Prisma.UserCreateInput) {
-        return this.prismaService.product.create({
+        return this.prismaService.client.product.create({
             data: {
                 ...createProductDto,
                 userId: user.id,
@@ -54,7 +58,7 @@ export class ProductsService {
     }
 
     delete(id: string) {
-        return this.prismaService.product.delete({
+        return this.prismaService.client.product.delete({
             where: { id },
         });
     }
