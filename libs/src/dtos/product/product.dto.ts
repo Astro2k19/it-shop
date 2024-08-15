@@ -1,10 +1,10 @@
-import { ProductImageDto } from '../product-image/product-image.dto';
+import { ImageDto } from '../image';
 
 export class ProductDto {
     id: string;
     category: string;
     description: string;
-    images: ProductImageDto[];
+    images: ImageDto[];
     name: string;
     price: number;
     seller: string;

@@ -1,15 +1,13 @@
 import { IsNotEmpty, IsString, MinLength } from 'class-validator';
-import { Match } from './match.decorator';
 
-export class ResetPasswordDto {
+export class UpdatePasswordDto {
     @IsNotEmpty()
     @IsString()
     @MinLength(8)
-    password: string;
+    newPassword: string;
 
-    @Match('password')
     @IsNotEmpty()
     @IsString()
     @MinLength(8)
-    comparedPassword: string;
+    oldPassword: string;
 }

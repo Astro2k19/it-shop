@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { UsersModule } from '../users/users.module';
+import { UsersModule } from '@/users/users.module';
 import { PassportModule } from '@nestjs/passport';
 import { JwtModule } from '@nestjs/jwt';
 import { AuthController } from './auth.controller';
@@ -9,7 +9,7 @@ import { AccessTokenGuard } from './access-token-guard';
 import { RolesGuard } from './roles.guard';
 import { RefreshTokenStrategy } from './refresh-token.strategy';
 import { RefreshTokenGuard } from './refresh-token-guard';
-import { TokenModule } from '../token/token.module';
+import { TokenModule } from '@/token/token.module';
 
 @Module({
     imports: [

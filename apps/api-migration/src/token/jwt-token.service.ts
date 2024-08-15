@@ -6,7 +6,7 @@ import { PrismaService } from 'nestjs-prisma';
 import { EnvironmentVariables } from '@/app/env.validation';
 
 @Injectable()
-export class TokenService {
+export class JwtTokenService {
     constructor(
         private jwtService: JwtService,
         private configService: ConfigService<EnvironmentVariables>,

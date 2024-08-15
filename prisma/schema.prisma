@@ -26,7 +26,7 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-type ProductImage {
+type Image {
   public_id String
   url       String
 }
@@ -103,7 +103,7 @@ model Product {
   id            String         @id @default(auto()) @map("_id") @db.ObjectId
   category      String
   description   String
-  images        ProductImage[]
+  images        Image[]
   ///@MaxLength(200)
   name          String
   ///@MaxLength(5)
@@ -144,19 +144,22 @@ model Token {
 
 model User {
   ///IsOptional
-  id        String    @id @default(auto()) @map("_id") @db.ObjectId
-  email     String    @unique()
+  id                  String    @id @default(auto()) @map("_id") @db.ObjectId
+  email               String    @unique()
   ///@MaxLength(50)
-  name      String
+  name                String
   ///@MinLength(8)
-  password  String
-  roles     Role[]    @default([User])
-  token     Token?
-  products  Product[]
-  reviews   Review[]
-  orders    Order[]
+  password            String
+  avatar              Image?
+  roles               Role[]    @default([User])
+  token               Token?
+  products            Product[]
+  reviews             Review[]
+  orders              Order[]
+  resetPasswordToken  String?
+  resetPasswordExpire DateTime?
   ///IsOptional
-  createdAt DateTime  @default(now()) @db.Date
+  createdAt           DateTime  @default(now()) @db.Date
   ///IsOptional
-  updatedAt DateTime  @updatedAt @db.Date
+  updatedAt           DateTime  @updatedAt @db.Date
 }

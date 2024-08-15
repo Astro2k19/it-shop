@@ -1,10 +1,13 @@
 import {
     IsEmail,
     IsNotEmpty,
+    IsOptional,
     IsString,
     MaxLength,
     MinLength,
 } from 'class-validator';
+import { ImageDto } from '../image';
+import { Type } from 'class-transformer';
 
 export class CreateUserDto {
     @IsNotEmpty()
@@ -20,4 +23,8 @@ export class CreateUserDto {
     @IsString()
     @MinLength(8)
     password: string;
+
+    @IsOptional()
+    @Type(() => ImageDto)
+    avatar: ImageDto;
 }

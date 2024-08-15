@@ -1,6 +1,5 @@
 import {
     IsArray,
-    IsDecimal,
     IsInt,
     IsNotEmpty,
     IsNumber,
@@ -9,7 +8,7 @@ import {
     ValidateNested,
 } from 'class-validator';
 import { Type } from 'class-transformer';
-import { CreateProductImageDto } from '../product-image/create-product-image.dto';
+import { ImageDto } from '../image';
 
 export class CreateProductDto {
     @IsNotEmpty()
@@ -23,8 +22,8 @@ export class CreateProductDto {
     @IsNotEmpty()
     @IsArray()
     @ValidateNested({ each: true })
-    @Type(() => CreateProductImageDto)
-    images: CreateProductImageDto[];
+    @Type(() => ImageDto)
+    images: ImageDto[];
 
     @IsNotEmpty()
     @IsString()

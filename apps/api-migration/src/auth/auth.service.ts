@@ -2,22 +2,23 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import { UsersService } from '../users/users.service';
 import bcrypt from 'bcrypt';
 import { CreateUserDto, LoginUserDto } from '@it-shop/dtos';
-import { TokenService } from '@/token/token.service';
+import { JwtTokenService } from '@/token/jwt-token.service';
 import { Prisma } from '@prisma/client';
 
 @Injectable()
 export class AuthService {
     constructor(
         private usersService: UsersService,
-        private tokenService: TokenService
+        private tokenService: JwtTokenService
     ) {}
 
     async login(loginUserDto: LoginUserDto) {
         const user = await this.usersService.findOneByEmail(loginUserDto.email);
-        if (
-            !user ||
-            !(await bcrypt.compare(loginUserDto.password, user.password))
-        ) {
+        const isMatch = await bcrypt.compare(
+            loginUserDto.password,
+            user.password
+        );
+        if (!user || !isMatch) {
             throw new BadRequestException('Invalid email or password');
         }
 
@@ -33,12 +34,7 @@ export class AuthService {
         if (existingUser) {
             throw new BadRequestException('Email is already taken');
         }
-
-        const hashedPassword = await bcrypt.hash(createUserDto.password, 10);
-        const { id } = await this.usersService.create({
-            ...createUserDto,
-            password: hashedPassword,
-        });
+        const { id } = await this.usersService.create(createUserDto);
         const tokens = await this.tokenService.getTokens({ id });
         await this.tokenService.saveRefreshToken(id, tokens.refreshToken);
         return tokens;

@@ -1,6 +1,6 @@
 import { IsNotEmpty, IsString } from 'class-validator';
 
-export class CreateProductImageDto {
+export class ImageDto {
     @IsNotEmpty()
     @IsString()
     public_id: string;
